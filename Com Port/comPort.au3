@@ -5,6 +5,8 @@
 #include <ArchLib.au3>
 #include <HerbieIO.au3>
 
+Local $NumericPort, $Baudrate = 9600
+
 $wbemFlagReturnImmediately = 0x10
 $wbemFlagForwardOnly = 0x20
 
@@ -13,18 +15,20 @@ $aPorts = $WMI.ExecQuery("SELECT * FROM Win32_SerialPort", "WQL", $wbemFlagRetur
 
 If IsObj($aPorts) then
 	For $Port In $aPorts
-		StringTrimLeft($Port, 3)
+		$NumericPort = StringTrimLeft($Port, 3)
+		$CommPort = $Port
+		If $NumericPort > 9 Then
+			$CommPort = "\\.\" & $CommPort
+		EndIf
+		$Baudrate
 		_OpenCommPort()
 		_SetCommPort()
+		_SetTimeouts()
+		SendToHerbie('ATI')
 		If StringInStr($RecievedFromHerbie, 'ELM327') <> 0 Then
-
-
-
-
-
-
-
-_OpenComPort()
-_SetComPort()
-_SetTimers()
-SendToHerbie('ATI')
+			ConsoleWrite("Yippie! It's on " & $CommPort)
+		Else
+			ConsoleWrite("Nope, not on comm port: " & $CommPort)
+		EndIf
+	Next
+EndIf
