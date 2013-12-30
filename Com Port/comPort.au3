@@ -12,7 +12,9 @@ $aPorts = $WMI.ExecQuery("SELECT * FROM Win32_SerialPort", "WQL", $wbemFlagRetur
 
 If IsObj($aPorts) then
 	For $Port In $aPorts
-		
+		StringTrimLeft($Port, 3)
+		_OpenCommPort()
+		_SetCommPort()
 		If StringInStr($RecievedFromHerbie, 'ELM327') <> 0 Then
 
 
