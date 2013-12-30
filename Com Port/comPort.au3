@@ -3,6 +3,7 @@
 #include <Constants.au3>
 #include <FileConstants.au3>
 #include <ArchLib.au3>
+#include <HerbieIO.au3>
 
 $wbemFlagReturnImmediately = 0x10
 $wbemFlagForwardOnly = 0x20
