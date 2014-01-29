@@ -6,20 +6,19 @@
 #include <EditConstants.au3>
 #include <Constants.au3>
 
-Local $
+Local $logFiles
 
-HotKeySet("{Esc}", "Quit")
 
-While 1
 
-WEnd
 
-Func ReadSize()
-	Local $iIndex, $aArray
-	$aArray = _FileListToArray(@ProgramFilesDir & "\logs", *, 1)
-EndFunc   ;==>ReadSize
+;---------------------------;
+;Function ReadFiles()
+;No Parameters
+;Builds $LogFiles array with a for loop
+;---------------------------;
+Func ReadFiles()
+	Local $iIndex
+	$logFiles = _FileListToArray(@ProgramFilesDir & "\logs", *, 1)
+EndFunc   ;==>ReadFiles
 
-Func Quit()
-	Exit
-EndFunc   ;==>Quit
 
