@@ -3,12 +3,16 @@
 
 #include <GUIConstantsEx.au3>
 #include <Crypt.au3>
+#include <WinAPI.au3>
+
+Opt("MustDeclareVars", 1)
 
 ; vars
 Local $hGUI, $msg = 0, $hInput, $iButton, $hDecode, $dButton
-Local $aChkBx[8], $cValue, $iChild, $iMsg, $iPswd, $iMsgBox
-Local $iPswdBox, $iSubmit
-;main line
+Local $aChkBx[8], $cValue, $iChild = 9999, $iMsg, $iPswd, $iMsgBox
+Local $iPswdBox, $iSubmit = 9999, $iChild2 = 9999
+
+; Main line
 
 GUI()
 
@@ -22,7 +26,6 @@ While 1
 				Case $iButton
 					getCheckbox()
 					inputChild()
-					;Crypt(, $cValue)
 				Case $dButton
 					getCheckbox()
 			EndSwitch
@@ -33,7 +36,12 @@ While 1
 				Case $iSubmit
 					$iMsg = GUICtrlRead($iMsgBox)
 					$iPswd = GUICtrlRead($iPswdBox)
-					MsgBox(0, "title", "msg:" & $iMsg & " paswrd:" & $iPswd)
+					Crypt($iMsg, $iPswd, $cValue)
+			EndSwitch
+		Case $iChild2
+			Switch $msg[0]
+				Case $GUI_EVENT_CLOSE
+					GUIDelete($iChild2)
 			EndSwitch
 	EndSwitch
 WEnd
@@ -93,19 +101,51 @@ Func inputChild()
 	GUISetState()
 EndFunc   ;==>inputChild
 
-#cs
-Func Crypt($iMsg, $iPass, $iflag)
-Local $mFlag[8]
-$mFlag[0] = "TEXT"
-$mFlag[1] = $CALG_3DES
-$mFlag[2] = $CALG_AES_128
-$mFlag[3] = $CALG_AES_192
-$mFlag[4] = $CALG_AES_256
-$mFlag[5] = $CALG_DES
-$mFlag[6] = $CALG_RC2
-$mFlag[7] = $CALG_RC4
+
+Func Crypt($iMess, $iPass, $iflag)
+	Local $mFlag[8], $eCrypt
+	$mFlag[0] = "TEXT"
+	$mFlag[1] = $CALG_3DES
+	$mFlag[2] = $CALG_AES_128
+	$mFlag[3] = $CALG_AES_192
+	$mFlag[4] = $CALG_AES_256
+	$mFlag[5] = $CALG_DES
+	$mFlag[6] = $CALG_RC2
+	$mFlag[7] = $CALG_RC4
+	If $iMess = "" Then
+		MsgBox(0, "ERROR", "Did not enter in a message to Encrypt.")
+		Return
+	ElseIf $iPass = "" Then
+		MsgBox(0, "ERROR", "Did not enter in a password or Encryption.")
+		Return
+	EndIf
+	If $iflag <> 0 Then
+		$eCrypt = _Crypt_EncryptData($iMess, $iPass, $mFlag[$iflag])
+	Else
+		;MsgBox(0, "Encrypted Data", "Congrats here is your code: " & $iMess)
+		Return
+	EndIf
+	If @error Then
+		MsgBox(0, "ERROR", "Could not Encrypt the data, exiting...")
+		Return
+	EndIf
+	;MsgBox(0, "Encrypted Data", "Congrats here is your code: " & $eCrypt)
 EndFunc   ;==>Crypt
-#ce
+
+Func showCode($code, $eType)
+	Local $aFlag[8]
+	$aFlag[0] = "Text"
+	$aFlag[1] = "3DES"
+	$aFlag[2] = "AES (128bit)"
+	$aFlag[3] = "AES (192bit)"
+	$aFlag[4] = "AES (256bit)"
+	$aFlag[5] = "DES"
+	$aFlag[6] = "RC2"
+	$aFlag[7] = "RC4"
+	GUIDelete($iChild)
+	$iChild2 = GUICreate("Secret Message - shhh!", 400, 200, -1, -1, -1, -1, $hGUI)
+	GUISetState()
+EndFunc
 
 Func Quit()
 	GUIDelete($hGUI)
