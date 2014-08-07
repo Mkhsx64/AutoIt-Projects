@@ -10,7 +10,9 @@ Opt("MustDeclareVars", 1)
 ; vars
 Local $hGUI, $msg = 0, $hInput, $iButton, $hDecode, $dButton
 Local $aChkBx[8], $cValue, $iChild = 9999, $iMsg, $iPswd, $iMsgBox
-Local $iPswdBox, $iSubmit = 9999, $iChild2 = 9999
+Local $iPswdBox, $iSubmit = 9999, $iChild2 = 9999, $cButton = 9999
+Local $eButton = 9999, $iEdit, $dChild = 9999, $dMsgBox, $dPswdBox
+Local $dSubmit = 9999, $dMsg, $dPswd
 
 ; Main line
 
@@ -28,6 +30,7 @@ While 1
 					inputChild()
 				Case $dButton
 					getCheckbox()
+					decryptChild()
 			EndSwitch
 		Case $iChild
 			Switch $msg[0]
@@ -41,7 +44,22 @@ While 1
 		Case $iChild2
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
+					GUICtrlSetState($aChkBx[$cValue], 4)
 					GUIDelete($iChild2)
+				Case $cButton
+					cpyToClipboard()
+				Case $eButton
+					GUICtrlSetState($aChkBx[$cValue], 4)
+					GUIDelete($iChild2)
+			EndSwitch
+		Case $dChild
+			Switch $msg[0]
+				Case $GUI_EVENT_CLOSE
+					GUIDelete($dChild)
+				Case $dSubmit
+					$dMsg = GUICtrlRead($dMsgBox)
+					$dPswd = GUICtrlRead($dPswdBox)
+					dCrypt($dMsg, $dPswd, $cValue)
 			EndSwitch
 	EndSwitch
 WEnd
@@ -84,6 +102,7 @@ Func getCheckbox()
 		Return
 	ElseIf $cCounter = 0 Then
 		MsgBox(0, "Encryption Type", "You must select an encryption type in the Short-Order Encrypter window")
+		$cValue = ""
 		Return
 	EndIf
 EndFunc   ;==>getCheckbox
@@ -101,6 +120,18 @@ Func inputChild()
 	GUISetState()
 EndFunc   ;==>inputChild
 
+Func decryptChild()
+	If $cValue = "" Then
+		Return
+	EndIf
+	$dChild = GUICreate("Input Message", 386, 120, -1, -1, -1, -1, $hGUI)
+	GUICtrlCreateLabel("Message", 5, 10)
+	GUICtrlCreateLabel("Password", 200, 10)
+	$dMsgBox = GUICtrlCreateInput("", 5, 25, 180, 60)
+	$dPswdBox = GUICtrlCreateInput("", 200, 25, 180, 60)
+	$dSubmit = GUICtrlCreateButton("Decrypt", 172, 90)
+	GUISetState()
+EndFunc   ;==>decryptChild
 
 Func Crypt($iMess, $iPass, $iflag)
 	Local $mFlag[8], $eCrypt
@@ -122,14 +153,44 @@ Func Crypt($iMess, $iPass, $iflag)
 	If $iflag <> 0 Then
 		$eCrypt = _Crypt_EncryptData($iMess, $iPass, $mFlag[$iflag])
 	Else
-		;MsgBox(0, "Encrypted Data", "Congrats here is your code: " & $iMess)
+		showCode($iMess, $mFlag[$iflag])
 		Return
 	EndIf
 	If @error Then
 		MsgBox(0, "ERROR", "Could not Encrypt the data, exiting...")
 		Return
 	EndIf
-	;MsgBox(0, "Encrypted Data", "Congrats here is your code: " & $eCrypt)
+	showCode($eCrypt, $mFlag[$iflag])
+EndFunc   ;==>Crypt
+
+Func dCrypt($iMess, $iPass, $iflag)
+	Local $mFlag[8], $dCt
+	$mFlag[0] = "TEXT"
+	$mFlag[1] = $CALG_3DES
+	$mFlag[2] = $CALG_AES_128
+	$mFlag[3] = $CALG_AES_192
+	$mFlag[4] = $CALG_AES_256
+	$mFlag[5] = $CALG_DES
+	$mFlag[6] = $CALG_RC2
+	$mFlag[7] = $CALG_RC4
+	If $iMess = "" Then
+		MsgBox(0, "ERROR", "Did not enter in a message to Decrypt.")
+		Return
+	ElseIf $iPass = "" Then
+		MsgBox(0, "ERROR", "Did not enter in a password.")
+		Return
+	EndIf
+	If $iflag <> 0 Then
+		$dCt = _Crypt_DecryptData($iMess, $iPass, $mFlag[$iflag])
+	Else
+		showCode($iMess, $mFlag[$iflag])
+		Return
+	EndIf
+	If @error Then
+		MsgBox(0, "ERROR", "Could not Encrypt the data, exiting...")
+		Return
+	EndIf
+	showCode($eCrypt, $mFlag[$iflag])
 EndFunc   ;==>Crypt
 
 Func showCode($code, $eType)
@@ -144,11 +205,27 @@ Func showCode($code, $eType)
 	$aFlag[7] = "RC4"
 	GUIDelete($iChild)
 	$iChild2 = GUICreate("Secret Message - shhh!", 400, 200, -1, -1, -1, -1, $hGUI)
+	$iEdit = GUICtrlCreateEdit($code, 9, 10, 380, 150)
+	$cButton = GUICtrlCreateButton("Copy to Clipboard", 100, 170)
+	$eButton = GUICtrlCreateButton("Close Window", 210, 170)
+	ControlClick($iChild2, $code, $iEdit)
 	GUISetState()
-EndFunc
+EndFunc   ;==>showCode
+
+Func cpyToClipboard()
+	Local $cInfo, $clip
+	$cInfo = GUICtrlRead($iEdit)
+	$clip = ClipPut($cInfo)
+	If $clip = 0 Then
+		MsgBox(0, "ERROR", "Could not copy code to clipboard.")
+		Return
+	EndIf
+	MsgBox(0, "Clipboard", "Successfully set code to the clipboard.")
+EndFunc   ;==>cpyToClipboard
 
 Func Quit()
 	GUIDelete($hGUI)
 	Exit
 EndFunc   ;==>Quit
+
 
