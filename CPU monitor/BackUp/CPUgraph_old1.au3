@@ -2,7 +2,6 @@
 
 #include <GraphGDIPlus.au3>
 #include <GUIConstants.au3>
-#include <AutoItObject.au3>
 
 AdlibRegister("findTemp", 9000)
 AdlibRegister("_Draw_Graph", 10000)
@@ -63,17 +62,16 @@ EndFunc   ;==>_Draw_Graph
 
 
 Func findTemp()
-	Local $oError
 	$wbemFlagReturnImmediately = 0x10
 	$wbemFlagForwardOnly = 0x20
 	$strComputer = "."
 	$objWMIService = ObjGet("winmgmts:\\" & $strComputer & "\root\wmi")
 	$Instances = $objWMIService.InstancesOf("MSAcpi_ThermalZoneTemperature")
-	;If $Instances.EOF = "" Then
-	;	MsgBox(0, "Not Supported", "Not supported on this computer. Exiting...")
-	;	Quit()
-	;EndIf
 	For $Item In $Instances
+		If $Item.CurrentTemperature = "" Then
+		MsgBox(0, "Temp - Not Supported", "Getting the tempurature from the CPU is not supported on your machine. Exiting...")
+		Quit()
+	EndIf
 		$temp = ($Item.CurrentTemperature - 2732) / 10 ; set the temp
 	Next
 EndFunc   ;==>findTemp
