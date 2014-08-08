@@ -63,16 +63,21 @@ EndFunc   ;==>_Draw_Graph
 
 
 Func findTemp()
-	Local $oError
+	Local $aClasses, $nCounter = 0
 	$wbemFlagReturnImmediately = 0x10
 	$wbemFlagForwardOnly = 0x20
 	$strComputer = "."
 	$objWMIService = ObjGet("winmgmts:\\" & $strComputer & "\root\wmi")
 	$Instances = $objWMIService.InstancesOf("MSAcpi_ThermalZoneTemperature")
-	;If $Instances.EOF = "" Then
-	;	MsgBox(0, "Not Supported", "Not supported on this computer. Exiting...")
-	;	Quit()
-	;EndIf
+	$aClasses = $objWMIService.subClassesOf()
+	For $class in $aClasses
+		If StringInStr($class.Path_.Path, "MSAcpi_ThermalZoneTemperature") <> 0 Then
+			$nCounter += 1
+		EndIf
+	Next
+	If $nCounter = 0 Then
+		Quit()
+	EndIf
 	For $Item In $Instances
 		$temp = ($Item.CurrentTemperature - 2732) / 10 ; set the temp
 	Next
