@@ -11,8 +11,12 @@ Local $hGUI, $msg = 0, $hInput, $iButton, $hDecode, $dButton
 Local $aChkBx[8], $cValue, $iChild = 9999, $iMsg, $iPswd, $iMsgBox
 Local $iPswdBox, $iSubmit = 9999, $iChild2 = 9999, $cButton = 9999
 Local $eButton = 9999, $iEdit, $dChild = 9999, $dMsgBox, $dPswdBox
+<<<<<<< HEAD
 Local $dSubmit = 9999, $dMsg, $dPswd, $iFileGetB, $dFileGetB
 Local $fChildi = 9999, $iFilePass, $iFilePassBox, $iPassSubmit
+=======
+Local $dSubmit = 9999, $dMsg, $dPswd
+>>>>>>> origin/master
 
 ; Main line
 
@@ -49,6 +53,14 @@ While 1
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					GUICtrlSetState($aChkBx[$cValue], 4)
+<<<<<<< HEAD
+=======
+					GUIDelete($iChild2)
+				Case $cButton
+					cpyToClipboard()
+				Case $eButton
+					GUICtrlSetState($aChkBx[$cValue], 4)
+>>>>>>> origin/master
 					GUIDelete($iChild2)
 					$cValue = ""
 				Case $cButton
@@ -80,6 +92,15 @@ While 1
 					$iFilePass = GUICtrlRead($iFilePassBox)
 					;encrypt the file function goes here <---
 					MsgBox(0, "", $iFilePass)
+			EndSwitch
+		Case $dChild
+			Switch $msg[0]
+				Case $GUI_EVENT_CLOSE
+					GUIDelete($dChild)
+				Case $dSubmit
+					$dMsg = GUICtrlRead($dMsgBox)
+					$dPswd = GUICtrlRead($dPswdBox)
+					dCrypt($dMsg, $dPswd, $cValue)
 			EndSwitch
 	EndSwitch
 WEnd
@@ -151,7 +172,10 @@ Func decryptChild()
 	$dMsgBox = GUICtrlCreateInput("", 5, 25, 180, 60)
 	$dPswdBox = GUICtrlCreateInput("", 200, 25, 180, 60)
 	$dSubmit = GUICtrlCreateButton("Decrypt", 172, 90)
+<<<<<<< HEAD
 	$dFileGetB = GUICtrlCreateButton("Get File", 335, 90)
+=======
+>>>>>>> origin/master
 	GUISetState()
 EndFunc   ;==>decryptChild
 
@@ -175,14 +199,52 @@ Func Crypt($iMess, $iPass, $iflag)
 	If $iflag <> 0 Then
 		$eCrypt = _Crypt_EncryptData($iMess, $iPass, $mFlag[$iflag])
 	Else
+<<<<<<< HEAD
 		showCode($iMess, $mFlag[$iflag], $E)
+=======
+		showCode($iMess, $mFlag[$iflag])
+>>>>>>> origin/master
 		Return
 	EndIf
 	If @error Then
 		MsgBox(0, "ERROR", "Could not Encrypt the data, exiting...")
 		Return
 	EndIf
+<<<<<<< HEAD
 	showCode($eCrypt, $mFlag[$iflag], $E)
+=======
+	showCode($eCrypt, $mFlag[$iflag])
+EndFunc   ;==>Crypt
+
+Func dCrypt($iMess, $iPass, $iflag)
+	Local $mFlag[8], $dCt
+	$mFlag[0] = "TEXT"
+	$mFlag[1] = $CALG_3DES
+	$mFlag[2] = $CALG_AES_128
+	$mFlag[3] = $CALG_AES_192
+	$mFlag[4] = $CALG_AES_256
+	$mFlag[5] = $CALG_DES
+	$mFlag[6] = $CALG_RC2
+	$mFlag[7] = $CALG_RC4
+	If $iMess = "" Then
+		MsgBox(0, "ERROR", "Did not enter in a message to Decrypt.")
+		Return
+	ElseIf $iPass = "" Then
+		MsgBox(0, "ERROR", "Did not enter in a password.")
+		Return
+	EndIf
+	If $iflag <> 0 Then
+		$dCt = _Crypt_DecryptData($iMess, $iPass, $mFlag[$iflag])
+	Else
+		showCode($iMess, $mFlag[$iflag])
+		Return
+	EndIf
+	If @error Then
+		MsgBox(0, "ERROR", "Could not Encrypt the data, exiting...")
+		Return
+	EndIf
+	showCode($eCrypt, $mFlag[$iflag])
+>>>>>>> origin/master
 EndFunc   ;==>Crypt
 
 Func dCrypt($iMess, $iPass, $iflag)
@@ -226,6 +288,7 @@ Func showCode($code, $eType, $DorE)
 	$aFlag[5] = "DES"
 	$aFlag[6] = "RC2"
 	$aFlag[7] = "RC4"
+<<<<<<< HEAD
 	If $DorE <> "D" Then ; check to see if we need to decrypt or encrypt
 		GUIDelete($iChild)
 		$iChild2 = GUICreate("Secret Message - shhh!", 400, 200, -1, -1, -1, -1, $hGUI)
@@ -233,6 +296,10 @@ Func showCode($code, $eType, $DorE)
 		GUIDelete($dChild)
 		$iChild2 = GUICreate("Here is your message - you spy you", 400, 200, -1, -1, -1, -1, $hGUI)
 	EndIf
+=======
+	GUIDelete($iChild)
+	$iChild2 = GUICreate("Secret Message - shhh!", 400, 200, -1, -1, -1, -1, $hGUI)
+>>>>>>> origin/master
 	$iEdit = GUICtrlCreateEdit($code, 9, 10, 380, 150)
 	$cButton = GUICtrlCreateButton("Copy to Clipboard", 100, 170)
 	$eButton = GUICtrlCreateButton("Close Window", 210, 170)
@@ -250,6 +317,7 @@ Func cpyToClipboard()
 	EndIf
 	MsgBox(0, "Clipboard", "Successfully set code to the clipboard.")
 EndFunc   ;==>cpyToClipboard
+<<<<<<< HEAD
 
 Func getFile($erd)
 	Local $fPath, $fArray, $fName, $i, $mBox
@@ -296,6 +364,8 @@ Func iPswdBox($Path, $eVal, $ed)
 	$iPassSubmit = GUICtrlCreateButton("Run", 80, 70)
 	GUISetState()
 EndFunc   ;==>iPswdBox
+=======
+>>>>>>> origin/master
 
 Func Quit()
 	GUIDelete($hGUI)
