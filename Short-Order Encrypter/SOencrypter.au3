@@ -77,10 +77,16 @@ While 1
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($fChildi)
 					GUICtrlSetState($aChkBx[$cValue], 4)
+<<<<<<< HEAD
 					$cValue = ""
 				Case $iPassSubmit
 					$iFilePass = GUICtrlRead($iFilePassBox)
 					fileCrypt($fcPath, $iFilePass, $cValue, $ED)
+=======
+				Case $iPassSubmit
+					$iFilePass = GUICtrlRead($iFilePassBox)
+					fileCrypt($fcPath, $iFilePass, $ED)
+>>>>>>> 5997c156a81178467b6be38d21380ec554ac0f83
 			EndSwitch
 	EndSwitch
 WEnd
@@ -287,9 +293,15 @@ Func getFile($erd)
 	EndIf
 EndFunc   ;==>getFile
 
+<<<<<<< HEAD
 Func iPswdBox($eord)
 	$ED = $eord
 	If $ED = "E" Then
+=======
+Func iPswdBox($ed)
+	$ED = $ed
+	If $ed = "E" Then
+>>>>>>> 5997c156a81178467b6be38d21380ec554ac0f83
 		GUIDelete($iChild)
 	Else
 		GUIDelete($dChild)
@@ -300,6 +312,7 @@ Func iPswdBox($eord)
 	GUISetState()
 EndFunc   ;==>iPswdBox
 
+<<<<<<< HEAD
 Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 	Local $fFlag[8], $sPath, $fEcrypt, $fDcrypt, $aError
 	$fFlag[0] = "TEXT"
@@ -352,6 +365,11 @@ Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 			$sPath = FileSaveDialog("Save Decrypted File", @WorkingDir, "All(*.*)", 2)
 	EndSwitch
 EndFunc   ;==>fileCrypt
+=======
+Func fileCrypt($Path, $Pass, $encORdec)
+
+EndFunc
+>>>>>>> 5997c156a81178467b6be38d21380ec554ac0f83
 
 Func Quit()
 	GUIDelete($hGUI)
