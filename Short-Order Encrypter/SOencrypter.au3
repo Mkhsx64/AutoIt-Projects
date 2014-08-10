@@ -1,3 +1,12 @@
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Icon=encKey.ico
+#AutoIt3Wrapper_Outfile=
+#AutoIt3Wrapper_Res_Comment=
+#AutoIt3Wrapper_Res_Description=Will encrypt and decrypt messages and files.
+#AutoIt3Wrapper_Res_Fileversion=1.0.0
+#AutoIt3Wrapper_Run_Au3Stripper=y
+#Au3Stripper_Parameters=/so
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
 ; includes
 
@@ -77,16 +86,10 @@ While 1
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($fChildi)
 					GUICtrlSetState($aChkBx[$cValue], 4)
-<<<<<<< HEAD
 					$cValue = ""
 				Case $iPassSubmit
 					$iFilePass = GUICtrlRead($iFilePassBox)
 					fileCrypt($fcPath, $iFilePass, $cValue, $ED)
-=======
-				Case $iPassSubmit
-					$iFilePass = GUICtrlRead($iFilePassBox)
-					fileCrypt($fcPath, $iFilePass, $ED)
->>>>>>> 5997c156a81178467b6be38d21380ec554ac0f83
 			EndSwitch
 	EndSwitch
 WEnd
@@ -293,15 +296,9 @@ Func getFile($erd)
 	EndIf
 EndFunc   ;==>getFile
 
-<<<<<<< HEAD
 Func iPswdBox($eord)
 	$ED = $eord
 	If $ED = "E" Then
-=======
-Func iPswdBox($ed)
-	$ED = $ed
-	If $ed = "E" Then
->>>>>>> 5997c156a81178467b6be38d21380ec554ac0f83
 		GUIDelete($iChild)
 	Else
 		GUIDelete($dChild)
@@ -312,9 +309,9 @@ Func iPswdBox($ed)
 	GUISetState()
 EndFunc   ;==>iPswdBox
 
-<<<<<<< HEAD
 Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 	Local $fFlag[8], $sPath, $fEcrypt, $fDcrypt, $aError
+	Local $getNameA, $gotName, $iN, $sis
 	$fFlag[0] = "TEXT"
 	$fFlag[1] = $CALG_3DES
 	$fFlag[2] = $CALG_AES_128
@@ -336,6 +333,18 @@ Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 				Return
 			ElseIf $aError = 2 Then
 				MsgBox(0, "ERROR", "Bad file filter")
+				Return
+			EndIf
+			$getNameA = StringSplit($sPath, "\")
+			If @error = 1 Then
+				MsgBox(0, "ERROR", "No path selected")
+				Return
+			EndIf
+			$iN = $getNameA[0]
+			$gotName = $getNameA[$iN]
+			$sis = StringInStr($gotName, ".")
+			If $sis = 0 Then
+				MsgBox(0, "ERROR", "Bad name; Must use file saving format *.*")
 				Return
 			EndIf
 			$fEcrypt = _Crypt_EncryptFile($Path, $sPath, $Pass, $fFlag[$cFlag])
@@ -360,16 +369,56 @@ Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 			EndIf
 			GUICtrlSetState($aChkBx[$cValue], 4)
 			GUIDelete($fChildi)
+			$cValue = ""
 			MsgBox(0, "Success!", "Successfully Encrypted")
 		Case "D"
 			$sPath = FileSaveDialog("Save Decrypted File", @WorkingDir, "All(*.*)", 2)
+			$aError = @error
+			If $aError = 1 Then
+				MsgBox(0, "ERROR", "No file name to save")
+				Return
+			ElseIf $aError = 2 Then
+				MsgBox(0, "ERROR", "Bad file filter")
+				Return
+			EndIf
+			$getNameA = StringSplit($sPath, "\")
+			If @error = 1 Then
+				MsgBox(0, "ERROR", "No path selected")
+				Return
+			EndIf
+			$iN = $getNameA[0]
+			$gotName = $getNameA[$iN]
+			$sis = StringInStr($gotName, ".")
+			If $sis = 0 Then
+				MsgBox(0, "ERROR", "Bad name; Must use file saving format *.*")
+				Return
+			EndIf
+			$fDcrypt = _Crypt_DecryptFile($Path, $sPath, $Pass, $fFlag[$cFlag])
+			If $fDcrypt = False Then
+				Select
+					Case @error >= 10 And @error < 400
+						MsgBox(0, "ERROR", "Failed to create key")
+						Return
+					Case @error >= 400
+						MsgBox(0, "ERROR", "Failed to decrypt final piece")
+						Return
+					Case @error >= 500
+						MsgBox(0, "ERROR", "Failed to encrypt piece")
+						Return
+					Case @error = 2
+						MsgBox(0, "ERROR", "Couldn't get source file")
+						Return
+					Case @error = 3
+						MsgBox(0, "ERROR", "Couldn't save to destination file")
+						Return
+				EndSelect
+			EndIf
+			GUICtrlSetState($aChkBx[$cValue], 4)
+			GUIDelete($fChildi)
+			$cValue = ""
+			MsgBox(0, "Success!", "Successfully Decrypted")
 	EndSwitch
 EndFunc   ;==>fileCrypt
-=======
-Func fileCrypt($Path, $Pass, $encORdec)
-
-EndFunc
->>>>>>> 5997c156a81178467b6be38d21380ec554ac0f83
 
 Func Quit()
 	GUIDelete($hGUI)
