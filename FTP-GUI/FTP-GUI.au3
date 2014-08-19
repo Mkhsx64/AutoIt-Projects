@@ -15,9 +15,13 @@
 #include <WindowsConstants.au3>
 
 
-; declared variables
+; misc vars
 
-Local $hParent, $msg
+Local $msg
+
+; gui vars
+
+Local $hParent, $bConnect, $IPedit
 
 ; main line
 
