@@ -25,7 +25,7 @@ Local $hParent, $bConnect, $IPedit
 
 ; main line
 
-HotKeySet("{END}", "Quit") ; if we press end it will call the Quit() function
+HotKeySet("{END}", "Quit") ; if we press end it will call the Quit() function; not to be confused with $GUI_EVENT_CLOSE --- this is for when I cannot close the gui manually
 
 GUI()
 
