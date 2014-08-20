@@ -2,7 +2,6 @@
 
 #include <GraphGDIPlus.au3>
 #include <GUIConstants.au3>
-#include <AutoItObject.au3>
 
 AdlibRegister("findTemp", 9000)
 AdlibRegister("_Draw_Graph", 10000)
