@@ -127,7 +127,7 @@ Func getCheckbox()
 		EndIf
 	Next
 	If $cCounter > 1 Then
-		MsgBox(0, "Encryption Type", "Could not specify encryption type due to multiple selections. Please make sure you have only selected on type of encryption")
+		MsgBox(0, "Encryption Type", "Could not specify encryption type due to multiple selections. Please make sure you have only selected one type of encryption")
 		$cValue = ""
 		Return
 	ElseIf $cCounter = 0 Then

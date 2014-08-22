@@ -45,8 +45,8 @@ WEnd
 Func GUI()
 	$hParent = GUICreate("FTP-GUI", 600, 500, -1, -1, $WS_SIZEBOX + $WS_SYSMENU + $WS_MAXIMIZEBOX + $WS_MINIMIZEBOX) ; creation of parent window with min, max, and exit
 	GUISetState() ; show the parent window
-EndFunc   ;==>GUI
+EndFunc
 
 Func Quit()
 	Exit ; stop the script
-EndFunc   ;==>Quit
+EndFunc
