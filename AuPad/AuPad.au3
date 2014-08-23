@@ -14,6 +14,7 @@
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow
 
+AdlibRegister("undoCounter", 5)
 GUI()
 
 While 1
@@ -47,11 +48,16 @@ Func GUI()
 	$fPrint = GUICtrlCreateMenuItem("Print...         Ctrl + P", $FileM, 5) ; create second level menu item print ^ file
 	$fExit = GUICtrlCreateMenuItem("Exit", $FileM, 6) ; create second level menu item exit ^ file
 	$EditM = GUICtrlCreateMenu("Edit") ; create the first level edit menu item
+
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
 	GUISetState() ; show the window
 EndFunc   ;==>GUI
+
+Func undoCounter()
+	; --- ;
+EndFunc
 
 Func setNew()
 	Local $titleNow, $title
