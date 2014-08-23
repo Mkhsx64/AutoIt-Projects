@@ -12,7 +12,7 @@
 #include <GUIConstants.au3>
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
-		$fPrint, $fExit
+		$fPrint, $fExit, $pEditWindow
 
 GUI()
 
@@ -37,6 +37,7 @@ Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX) ; created window with min, max, and resizing
+	$pEditWindow = GUICtrlCreateEdit("", 0, 0, 600, 495) ; creates the main text window for typing text
 	$FileM = GUICtrlCreateMenu("File") ; create the first level file menu item
 	$fNew = GUICtrlCreateMenuItem("New             Ctrl + N", $FileM, 0) ; create second level menu item new ^ file
 	$fOpen = GUICtrlCreateMenuItem("Open...        Ctrl + O", $FileM, 1) ; create second level menu item open ^ file
@@ -64,6 +65,5 @@ EndFunc   ;==>setNew
 Func Quit()
 	Exit
 EndFunc   ;==>Quit
-
 
 
