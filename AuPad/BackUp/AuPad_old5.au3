@@ -14,17 +14,14 @@
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow, $uArray[1000], $uCounter = 0, _
-		$uData[1000], $eUndo = 9999, $emgcyArray[5], $emgcyCounter = 0, _
-		$ofData[5], $uFcounter = 5, $oFCounter = 0
+		$uData[1000], $eUndo = 9999, $emgcyArray[5], $emgcyCounter = 0, $ofData, _
+		$uFcounter = 5
 
 
-
+AdlibRegister("undoCounter", 10)
 GUI()
 
 While 1
-
-	undoCounter()
-
 	$msg = GUIGetMsg(1) ; make a 2D array for GUI events
 	Switch $msg[1] ; check the events
 		Case $pWnd ; check the parent window
@@ -67,7 +64,7 @@ EndFunc   ;==>GUI
 Func undoCounter()
 	Local $cData, $rData
 	If $uCounter = 0 Then ; if the counter has been reset then
-		$uArray[$uCounter] = ""
+		$uCounter += 1 ; set counter
 		If $emgcyCounter = 1 Then ; if we've already been through the entire array
 			_ArrayDelete($emgcyArray, "0-5") ; delete the emergency array
 			$emgcyCounter = 0 ; reset the emergency counter
@@ -86,30 +83,25 @@ Func undoCounter()
 		Return
 	EndIf
 	If $uArray[$uCounter] <> "" Then
-		$rData = StringReplace($cData, $uArray[$uCounter - 1], "") ; replace the string already their with the string in the edit window
+	$rData = StringReplace($cData, $uArray[$uCounter], " ") ; replace the string already their with the string in the edit window
 	Else
 		Return
 	EndIf
-	If $rData <> "" Then ; if the data does not equal ""
+	If $rData <> " " Then ; if the data does not equal ""
 		$uArray[$uCounter] = $cData ; set the data into the array
 		$uCounter += 1 ; increment the counter by one
-		If $oFCounter = 5 Then
-			$oFCounter = 0
-			Return
-		EndIf
-		$ofData[$oFCounter] = $rData ; set the outside variable to the data for the undo function
-		$oFCounter += 1
+		$ofData &= $rData ; set the outside variable to the data for the undo function
+		Return ; exit the function
 	EndIf
-EndFunc   ;==>undoCounter
+EndFunc
 
 Func Undo()
 	Local $u, $r, $rp, $c
 	$r = GUICtrlRead($pEditWindow)
-	$c = StringCompare($r, $ofData[$oFCounter])
+	$c = StringCompare($r, $ofData)
 	If $c = 0 Then Return
 	If $uFcounter = 0 Then
 		If $uCounter = 0 Then
-			$uFcounter = 5
 			Return
 		Else
 			$uFcounter = 5
@@ -117,13 +109,13 @@ Func Undo()
 		EndIf
 	EndIf
 	$u = StringCompare($r, $uArray[$uCounter], 1)
-	If $u > 0 Then
+	If $u = 1 Then
 		MsgBox(0, "", $uArray[$uCounter] & "more")
 		$rp = StringReplace($r, $uArray[$uCounter], "")
 		GUICtrlSetData($pEditWindow, $rp)
 		$uFcounter -= 1
 		Return
-	ElseIf $u < 0 Then
+	ElseIf $u = -1 Then
 		MsgBox(0, "", $uArray[$uCounter] & "less")
 		$rp = StringReplace($r, $ofData, $uArray[$uCounter])
 		GUICtrlSetData($pEditWindow, $rp)
@@ -132,7 +124,7 @@ Func Undo()
 	Else
 		Return
 	EndIf
-EndFunc   ;==>Undo
+EndFunc
 
 Func setNew()
 	Local $titleNow, $title
