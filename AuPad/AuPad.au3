@@ -23,7 +23,7 @@ GUI()
 
 While 1
 
-	undoCounter()
+	undoCounter() ; need to find time it takes to run this in the while loop vs. AdlibRegister
 
 	$msg = GUIGetMsg(1) ; make a 2D array for GUI events
 	Switch $msg[1] ; check the events
@@ -61,6 +61,7 @@ Func GUI()
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
+	setNew() ; set the window to have a new file
 	GUISetState() ; show the window
 EndFunc   ;==>GUI
 
