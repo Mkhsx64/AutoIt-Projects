@@ -31,7 +31,7 @@ Func GUI()
 EndFunc   ;==>GUI
 
 Func Quit()
-	; --- ;
+	Exit
 EndFunc   ;==>Quit
 
 
