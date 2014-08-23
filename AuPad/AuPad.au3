@@ -58,9 +58,15 @@ EndFunc   ;==>GUI
 
 Func undoCounter()
 	Local $cData
+	If $uCounter = 0 And $uDataCounter = 0 Then
+		$uCounter += 1
+		$uDataCounter += 1
+	EndIf
 	$cData = GUICtrlRead($pEditWindow)
-	If $cData = $uArray[$
-	_ArrayAdd
+	If $cData = $uArray[$uDataCounter][$uCounter] Then
+		; -- do something -- ;
+	EndIf
+	;_ArrayAdd
 EndFunc
 
 Func setNew()
