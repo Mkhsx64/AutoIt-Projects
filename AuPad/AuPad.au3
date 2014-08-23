@@ -12,7 +12,8 @@
 #include <GUIConstants.au3>
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
-		$fPrint, $fExit, $pEditWindow
+		$fPrint, $fExit, $pEditWindow, $uArray[1000][1000], $uCounter = 0, _
+		$uData[1000], $uDataCounter = 0
 
 AdlibRegister("undoCounter", 5)
 GUI()
@@ -56,7 +57,10 @@ Func GUI()
 EndFunc   ;==>GUI
 
 Func undoCounter()
-	; --- ;
+	Local $cData
+	$cData = GUICtrlRead($pEditWindow)
+	If $cData = $uArray[$
+	_ArrayAdd
 EndFunc
 
 Func setNew()
