@@ -12,7 +12,7 @@
 #include <GUIConstants.au3>
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
-		$fPrint, $fExit
+$fPrint, $fExit
 
 GUI()
 
@@ -21,17 +21,24 @@ While 1
 	Switch $msg[1]
 		Case $pWnd
 			Switch $msg[0]
-				Case $fNew
-					$sNewTitle = setNew()
-					GUICtrlSetData($pWnd,
 				Case $GUI_EVENT_CLOSE
 					Quit()
-				Case $fExit
-					Quit()
+				Case $control
+					MsgBox(0, "TEST", "THIS IS JUST A TEST TO SEE HOW IT FUNCTIONS")
+					Exit
 			EndSwitch
 	EndSwitch
 WEnd
 
+#cs
+new
+open
+save
+save as
+page setup
+print
+exit
+#ce
 
 
 Func GUI()
@@ -39,23 +46,13 @@ Func GUI()
 			$HelpM
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX) ; created window with min, max, and resizing
 	$FileM = GUICtrlCreateMenu("File")
-	$fNew       = GUICtrlCreateMenuItem("New             Ctrl + N", $FileM, 0)
-	$fOpen      = GUICtrlCreateMenuItem("Open...        Ctrl + O", $FileM, 1)
-	$fSave      = GUICtrlCreateMenuItem("Save             Ctrl + S", $FileM, 2)
-	$fSaveAs    = GUICtrlCreateMenuItem("Save As...", $FileM, 3)
-	$fPageSetup = GUICtrlCreateMenuItem("Page Setup...", $FileM, 4)
-	$fPrint     = GUICtrlCreateMenuItem("Print...         Ctrl + P", $FileM, 5)
-	$fExit      = GUICtrlCreateMenuItem("Exit", $FileM, 6)
+	$control = GUICtrlCreateMenuItem("control", $FileM, 0)
 	$EditM = GUICtrlCreateMenu("Edit")
 	$FormatM = GUICtrlCreateMenu("Format")
 	$ViewM = GUICtrlCreateMenu("View")
 	$HelpM = GUICtrlCreateMenu("Help")
 	GUISetState() ; show the window
 EndFunc   ;==>GUI
-
-Func setNew()
-	; --- ;
-EndFunc
 
 Func Quit()
 	Exit
