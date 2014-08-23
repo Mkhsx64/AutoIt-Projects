@@ -22,8 +22,7 @@ While 1
 		Case $pWnd
 			Switch $msg[0]
 				Case $fNew
-					$sNewTitle = setNew()
-					GUICtrlSetData($pWnd,
+					setNew()
 				Case $GUI_EVENT_CLOSE
 					Quit()
 				Case $fExit
@@ -38,24 +37,29 @@ Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX) ; created window with min, max, and resizing
-	$FileM = GUICtrlCreateMenu("File")
-	$fNew       = GUICtrlCreateMenuItem("New             Ctrl + N", $FileM, 0)
-	$fOpen      = GUICtrlCreateMenuItem("Open...        Ctrl + O", $FileM, 1)
-	$fSave      = GUICtrlCreateMenuItem("Save             Ctrl + S", $FileM, 2)
-	$fSaveAs    = GUICtrlCreateMenuItem("Save As...", $FileM, 3)
-	$fPageSetup = GUICtrlCreateMenuItem("Page Setup...", $FileM, 4)
-	$fPrint     = GUICtrlCreateMenuItem("Print...         Ctrl + P", $FileM, 5)
-	$fExit      = GUICtrlCreateMenuItem("Exit", $FileM, 6)
-	$EditM = GUICtrlCreateMenu("Edit")
-	$FormatM = GUICtrlCreateMenu("Format")
-	$ViewM = GUICtrlCreateMenu("View")
-	$HelpM = GUICtrlCreateMenu("Help")
+	$FileM = GUICtrlCreateMenu("File") ; create the first level file menu item
+	$fNew = GUICtrlCreateMenuItem("New             Ctrl + N", $FileM, 0) ; create second level menu item new ^ file
+	$fOpen = GUICtrlCreateMenuItem("Open...        Ctrl + O", $FileM, 1) ; create second level menu item open ^ file
+	$fSave = GUICtrlCreateMenuItem("Save             Ctrl + S", $FileM, 2) ; create second level menu item save ^ file
+	$fSaveAs = GUICtrlCreateMenuItem("Save As...", $FileM, 3) ; create second level menu item save as ^ file
+	$fPageSetup = GUICtrlCreateMenuItem("Page Setup...", $FileM, 4) ; create second level menu item page setup ^ file
+	$fPrint = GUICtrlCreateMenuItem("Print...         Ctrl + P", $FileM, 5) ; create second level menu item print ^ file
+	$fExit = GUICtrlCreateMenuItem("Exit", $FileM, 6) ; create second level menu item exit ^ file
+	$EditM = GUICtrlCreateMenu("Edit") ; create the first level edit menu item
+	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
+	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
+	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
 	GUISetState() ; show the window
 EndFunc   ;==>GUI
 
 Func setNew()
-	; --- ;
-EndFunc
+	Local $titleNow, $title
+	$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
+	$title = WinSetTitle($pWnd, $titleNow, "Untitled - AuPad") ; set the title to untitled since this is a new file
+	If $title = "" Then ; if the title equals nothing
+		MsgBox(0, "error", "Could not set window title...", 10) ; tell us
+	EndIf
+EndFunc   ;==>setNew
 
 Func Quit()
 	Exit
