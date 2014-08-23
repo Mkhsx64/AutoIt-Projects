@@ -13,7 +13,7 @@
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow, $uArray[1000], $uCounter = 0, _
-		$uData[1000], $eUndo
+		$uData[1000], $eUndo, $emgcyArray[5], $emgcyCounter = 0
 
 AdlibRegister("undoCounter", 5)
 GUI()
@@ -57,16 +57,33 @@ Func GUI()
 EndFunc   ;==>GUI
 
 Func undoCounter()
-	Local $cData
+	Local $cData, $rData,
 	If $uCounter = 0 Then
 		$uCounter += 1
+		If $emgcyCounter = 1 Then
+			_ArrayDelete($emgcyArray, "0-5")
+		EndIf
 	EndIf
 	$cData = GUICtrlRead($pEditWindow)
-	If $cData <> $uArray[$uCounter] Then
+	$rData = StringReplace($cData, $uArray[$uCounter], "", 1)
+	If $uCounter = 999 Then
+		$emgcyArray[0] = $uArray[$uCounter - 4]
+		$emgcyArray[1] = $uArray[$uCounter - 3]
+		$emgcyArray[2] = $uArray[$uCounter - 2]
+		$emgcyArray[3] = $uArray[$uCounter - 1]
+		$emgcyArray[4] = $uArray[$uCounter]
+		_ArrayDelete($uArray, "0-999")
+		$uCounter = 1
+		$emgcyCounter += 1
+	EndIf
+	If $rData <> "" Then
 		$uArray[$uCounter] = $cData
 		$uCounter += 1
 	EndIf
-	;_ArrayAdd
+EndFunc
+
+Func Undo()
+
 EndFunc
 
 Func setNew()
