@@ -31,7 +31,7 @@ WEnd
 
 Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
-			$HelpM
+		$HelpM
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX) ; created window with min, max, and resizing
 	$FileM = GUICtrlCreateMenu("File")
 	$control = GUICtrlCreateMenuItem("control", $FileM, 0)
