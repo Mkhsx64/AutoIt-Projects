@@ -10,25 +10,30 @@
 
 #include <Constants.au3>
 #include <GUIConstants.au3>
+#include <Array.au3>
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow, $uArray[1000], $uCounter = 0, _
-		$uData[1000], $eUndo, $emgcyArray[5], $emgcyCounter = 0
+		$uData[1000], $eUndo, $emgcyArray[5], $emgcyCounter = 0, $ofData, _
+		$uFcounter = 5
 
-AdlibRegister("undoCounter", 5)
+
+AdlibRegister("undoCounter", 10)
 GUI()
 
 While 1
-	$msg = GUIGetMsg(1)
-	Switch $msg[1]
-		Case $pWnd
-			Switch $msg[0]
+	$msg = GUIGetMsg(1) ; make a 2D array for GUI events
+	Switch $msg[1] ; check the events
+		Case $pWnd ; check the parent window
+			Switch $msg[0] ; if the msg is in the 1D array
 				Case $fNew
-					setNew()
+					setNew() ; if new is selected run setNew function
 				Case $GUI_EVENT_CLOSE
-					Quit()
+					Quit() ; if the exit event is sent call the quit function
 				Case $fExit
-					Quit()
+					Quit() ; if exit option selected in file menu then call the quit function
+				Case $eUndo
+					Undo() ; call the Undo function when the undo option is selected
 			EndSwitch
 	EndSwitch
 WEnd
@@ -57,15 +62,15 @@ Func GUI()
 EndFunc   ;==>GUI
 
 Func undoCounter()
-	Local $cData, $rData,
+	Local $cData, $rData
 	If $uCounter = 0 Then ; if the counter has been reset then
 		$uCounter += 1 ; set counter
 		If $emgcyCounter = 1 Then ; if we've already been through the entire array
 			_ArrayDelete($emgcyArray, "0-5") ; delete the emergency array
+			$emgcyCounter = 0 ; reset the emergency counter
 		EndIf
 	EndIf
 	$cData = GUICtrlRead($pEditWindow) ; read the entire edit control in the parent window
-	$rData = StringReplace($cData, $uArray[$uCounter], "", 1) ; replace the string already their with the string in the edit window
 	If $uCounter = 999 Then ; if we reached the end of the array
 		$emgcyArray[0] = $uArray[$uCounter - 4] ; fill the emergency array
 		$emgcyArray[1] = $uArray[$uCounter - 3] ; fill the emergency array
@@ -75,16 +80,46 @@ Func undoCounter()
 		_ArrayDelete($uArray, "0-999") ; delete the primary array
 		$uCounter = 1 ; set the counter
 		$emgcyCounter += 1 ; increment the emergency counter
+		Return
 	EndIf
-	If $rData <> "" Then ; if the data does not equal ""
+	$rData = StringReplace($cData, $uArray[$uCounter], " ") ; replace the string already their with the string in the edit window
+	If $rData <> " " Then ; if the data does not equal ""
 		$uArray[$uCounter] = $cData ; set the data into the array
 		$uCounter += 1 ; increment the counter by one
+		$ofData &= $rData ; set the outside variable to the data for the undo function
 		Return ; exit the function
 	EndIf
 EndFunc
 
 Func Undo()
-
+	Local $u, $r, $rp, $c
+	$r = GUICtrlRead($pEditWindow)
+	$c = StringCompare($r, $ofData)
+	If $c = 0 Then Return
+	If $uFcounter = 0 Then
+		If $uCounter = 0 Then
+			Return
+		Else
+			$uFcounter = 5
+			Return
+		EndIf
+	EndIf
+	$u = StringCompare($r, $uArray[$uCounter], 1)
+	If $u = 1 Then
+		MsgBox(0, "", $uArray[$uCounter] & "more")
+		$rp = StringReplace($r, $uArray[$uCounter], "")
+		GUICtrlSetData($pEditWindow, $rp)
+		$uFcounter -= 1
+		Return
+	ElseIf $u = -1 Then
+		MsgBox(0, "", $uArray[$uCounter] & "less")
+		$rp = StringReplace($r, $ofData, $uArray[$uCounter])
+		GUICtrlSetData($pEditWindow, $rp)
+		$uFcounter -= 1
+		Return
+	Else
+		Return
+	EndIf
 EndFunc
 
 Func setNew()
