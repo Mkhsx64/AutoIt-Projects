@@ -7,3 +7,10 @@
 #AutoIt3Wrapper_Run_Au3Stripper=y
 #Au3Stripper_Parameters=/so
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+
+#include <Constants.au3>
+#include <GUIConstants.au3>
+
+
+
+
