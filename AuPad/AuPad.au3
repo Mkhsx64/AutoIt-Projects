@@ -12,8 +12,8 @@
 #include <GUIConstants.au3>
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
-		$fPrint, $fExit, $pEditWindow, $uArray[1000][1000], $uCounter = 0, _
-		$uData[1000], $uDataCounter = 0
+		$fPrint, $fExit, $pEditWindow, $uArray[1000], $uCounter = 0, _
+		$uData[1000], $eUndo
 
 AdlibRegister("undoCounter", 5)
 GUI()
@@ -49,7 +49,7 @@ Func GUI()
 	$fPrint = GUICtrlCreateMenuItem("Print...         Ctrl + P", $FileM, 5) ; create second level menu item print ^ file
 	$fExit = GUICtrlCreateMenuItem("Exit", $FileM, 6) ; create second level menu item exit ^ file
 	$EditM = GUICtrlCreateMenu("Edit") ; create the first level edit menu item
-
+	$eUndo = GUICtrlCreateMenuItem("Undo        Ctrl + Z", $EditM, 0) ; create the second level undo menu item
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
@@ -58,13 +58,13 @@ EndFunc   ;==>GUI
 
 Func undoCounter()
 	Local $cData
-	If $uCounter = 0 And $uDataCounter = 0 Then
+	If $uCounter = 0 Then
 		$uCounter += 1
-		$uDataCounter += 1
 	EndIf
 	$cData = GUICtrlRead($pEditWindow)
-	If $cData = $uArray[$uDataCounter][$uCounter] Then
-		; -- do something -- ;
+	If $cData <> $uArray[$uCounter] Then
+		$uArray[$uCounter] = $cData
+		$uCounter += 1
 	EndIf
 	;_ArrayAdd
 EndFunc
