@@ -58,27 +58,28 @@ EndFunc   ;==>GUI
 
 Func undoCounter()
 	Local $cData, $rData,
-	If $uCounter = 0 Then
-		$uCounter += 1
-		If $emgcyCounter = 1 Then
-			_ArrayDelete($emgcyArray, "0-5")
+	If $uCounter = 0 Then ; if the counter has been reset then
+		$uCounter += 1 ; set counter
+		If $emgcyCounter = 1 Then ; if we've already been through the entire array
+			_ArrayDelete($emgcyArray, "0-5") ; delete the emergency array
 		EndIf
 	EndIf
-	$cData = GUICtrlRead($pEditWindow)
-	$rData = StringReplace($cData, $uArray[$uCounter], "", 1)
-	If $uCounter = 999 Then
-		$emgcyArray[0] = $uArray[$uCounter - 4]
-		$emgcyArray[1] = $uArray[$uCounter - 3]
-		$emgcyArray[2] = $uArray[$uCounter - 2]
-		$emgcyArray[3] = $uArray[$uCounter - 1]
-		$emgcyArray[4] = $uArray[$uCounter]
-		_ArrayDelete($uArray, "0-999")
-		$uCounter = 1
-		$emgcyCounter += 1
+	$cData = GUICtrlRead($pEditWindow) ; read the entire edit control in the parent window
+	$rData = StringReplace($cData, $uArray[$uCounter], "", 1) ; replace the string already their with the string in the edit window
+	If $uCounter = 999 Then ; if we reached the end of the array
+		$emgcyArray[0] = $uArray[$uCounter - 4] ; fill the emergency array
+		$emgcyArray[1] = $uArray[$uCounter - 3] ; fill the emergency array
+		$emgcyArray[2] = $uArray[$uCounter - 2] ; fill the emergency array
+		$emgcyArray[3] = $uArray[$uCounter - 1] ; fill the emergency array
+		$emgcyArray[4] = $uArray[$uCounter] ; fill the emergency array
+		_ArrayDelete($uArray, "0-999") ; delete the primary array
+		$uCounter = 1 ; set the counter
+		$emgcyCounter += 1 ; increment the emergency counter
 	EndIf
-	If $rData <> "" Then
-		$uArray[$uCounter] = $cData
-		$uCounter += 1
+	If $rData <> "" Then ; if the data does not equal ""
+		$uArray[$uCounter] = $cData ; set the data into the array
+		$uCounter += 1 ; increment the counter by one
+		Return ; exit the function
 	EndIf
 EndFunc
 
