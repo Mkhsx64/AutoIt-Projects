@@ -11,6 +11,21 @@
 #include <Constants.au3>
 #include <GUIConstants.au3>
 
+Local $pWnd, $msg
+
+GUI()
+
+While 1
+	$msg = GUIGetMsg(1)
+	Switch $msg[1]
+		Case $pWnd
+			Switch $msg[0]
+				Case $GUI_EVENT_CLOSE
+					Quit()
+			EndSwitch
+	EndSwitch
+WEnd
+
 
 
 
