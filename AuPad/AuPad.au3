@@ -27,7 +27,7 @@ While 1
 WEnd
 
 Func GUI()
-	; --- ;
+	$pWnd = GUICreate("AuPad", 500, 600, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX) ; created window with min, max, and resizing
 EndFunc   ;==>GUI
 
 Func Quit()
