@@ -28,11 +28,11 @@ WEnd
 
 Func GUI()
 	; --- ;
-EndFunc   ;==>GUI
+EndFunc
 
 Func Quit()
 	; --- ;
-EndFunc   ;==>Quit
+EndFunc
 
 
 
