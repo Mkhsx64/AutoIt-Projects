@@ -11,7 +11,7 @@
 #include <Constants.au3>
 #include <GUIConstants.au3>
 
-Local $pWnd, $msg
+Local $pWnd, $msg, $control
 
 GUI()
 
@@ -22,12 +22,22 @@ While 1
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					Quit()
+				Case $control
+					MsgBox(0, "TEST", "THIS IS JUST A TEST TO SEE HOW IT FUNCTIONS")
+					Exit
 			EndSwitch
 	EndSwitch
 WEnd
 
 Func GUI()
-	$pWnd = GUICreate("AuPad", 500, 600, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX) ; created window with min, max, and resizing
+	Local $FileM
+	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX) ; created window with min, max, and resizing
+	$FileM = GUICtrlCreateMenu("File")
+	$control = GUICtrlCreateMenuItem("control", $FileM, 0)
+	GUICtrlCreateMenu("Click", $FileM, 1)
+	GUICtrlCreateMenuItem("Text", -1)
+	GUICtrlCreateMenuItem("View", -1)
+	GUICtrlCreateMenuItem("Select", -1)
 	GUISetState() ; show the window
 EndFunc   ;==>GUI
 
