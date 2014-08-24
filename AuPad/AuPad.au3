@@ -87,12 +87,12 @@ Func undoCounter()
 		Return
 	EndIf
 	If $uArray[$uCounter] <> "" Then
-		$rData = StringReplace($cData, $uArray[$uCounter - 1], "") ; replace the string already their with the string in the edit window
+		$rData = StringReplace($cData, $uArray[$uCounter], "") ; replace the string already their with the string in the edit window
 	Else
 		Return
 	EndIf
 	If $rData <> "" Then ; if the data does not equal ""
-		$uArray[$uCounter] = $cData ; set the data into the array
+		$uArray[$uCounter] = $rData ; set the data into the array
 		$uCounter += 1 ; increment the counter by one
 		If $oFCounter = 5 Then
 			$oFCounter = 0
