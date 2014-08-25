@@ -11,7 +11,7 @@
 #include <Constants.au3>
 #include <GUIConstants.au3>
 #include <Array.au3>
-#include <Date.au3>
+#include <GUIEdit.au3>
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow, $uArray[1000], $uCounter = 0, _
@@ -233,7 +233,18 @@ Func setNew()
 EndFunc   ;==>setNew
 
 Func Copy()
-	; --- ;
+	Local $gt, $st, $ct
+	$gt = _GUICtrlEdit_getsel($pEditWindow)
+	If $gt[0] = 0 And $gt[1] = 1 Then
+		Return
+	Else
+		$st = StringMid(GUICtrlRead($pEditWindow), $gt[0], $gt[1])
+	EndIf
+	$ct = ClipPut($st)
+	If $ct = 0 Then
+		MsgBox(0, "error", "Could not copy selected text")
+		Return
+	EndIf
 EndFunc   ;==>Copy
 
 Func timeDate()
