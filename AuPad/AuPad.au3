@@ -15,16 +15,14 @@
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow, $uArray[1000], $uCounter = 0, _
 		$uData[1000], $eUndo = 9999, $emgcyArray[5], $emgcyCounter = 0, _
-		$ofData[5], $uFcounter = 5, $oFCounter = 0
+		$ofData[6], $uFcounter = 5, $oFCounter = 0
 
-
+AdlibRegister("undoCounter", 250)
+AdlibRegister("tellMe", 4000)
 
 GUI()
 
 While 1
-
-	undoCounter() ; need to find time it takes to run this in the while loop vs. AdlibRegister
-
 	$msg = GUIGetMsg(1) ; make a 2D array for GUI events
 	Switch $msg[1] ; check the events
 		Case $pWnd ; check the parent window
@@ -67,12 +65,9 @@ EndFunc   ;==>GUI
 
 Func undoCounter()
 	Local $cData, $rData
-	If $uCounter = 0 Then ; if the counter has been reset then
-		$uArray[$uCounter] = ""
-		If $emgcyCounter = 1 Then ; if we've already been through the entire array
-			_ArrayDelete($emgcyArray, "0-5") ; delete the emergency array
-			$emgcyCounter = 0 ; reset the emergency counter
-		EndIf
+	If $uCounter = 0 And $emgcyCounter = 1 Then ; if we've already been through the entire array
+		_ArrayDelete($emgcyArray, "0-5") ; delete the emergency array
+		$emgcyCounter = 0 ; reset the emergency counter
 	EndIf
 	$cData = GUICtrlRead($pEditWindow) ; read the entire edit control in the parent window
 	If $uCounter = 999 Then ; if we reached the end of the array
@@ -82,51 +77,46 @@ Func undoCounter()
 		$emgcyArray[3] = $uArray[$uCounter - 1] ; fill the emergency array
 		$emgcyArray[4] = $uArray[$uCounter] ; fill the emergency array
 		_ArrayDelete($uArray, "0-999") ; delete the primary array
-		$uCounter = 1 ; set the counter
+		$uCounter = 0 ; set the counter
 		$emgcyCounter += 1 ; increment the emergency counter
 		Return
 	EndIf
-	If $uArray[$uCounter] <> "" Then
-		$rData = StringReplace($cData, $uArray[$uCounter], "") ; replace the string already their with the string in the edit window
-	Else
-		Return
-	EndIf
+	$rData = StringReplace($cData, $uArray[$uCounter], "") ; replace the string already their with the string in the edit window
 	If $rData <> "" Then ; if the data does not equal ""
 		$uArray[$uCounter] = $rData ; set the data into the array
 		$uCounter += 1 ; increment the counter by one
-		If $oFCounter = 5 Then
-			$oFCounter = 0
-			Return
-		EndIf
 		$ofData[$oFCounter] = $rData ; set the outside variable to the data for the undo function
-		$oFCounter += 1
 	EndIf
 EndFunc   ;==>undoCounter
 
 Func Undo()
 	Local $u, $r, $rp, $c
 	$r = GUICtrlRead($pEditWindow)
+	If $oFCounter = 4 Then
+		$oFCounter = 0
+		Return
+	EndIf
 	$c = StringCompare($r, $ofData[$oFCounter])
+	$oFCounter += 1
 	If $c = 0 Then Return
 	If $uFcounter = 0 Then
-		If $uCounter = 0 Then
-			$uFcounter = 5
-			Return
-		Else
-			$uFcounter = 5
-			Return
-		EndIf
+		$uFcounter = 5
+		Return
 	EndIf
-	$u = StringCompare($r, $uArray[$uCounter], 1)
+	If $uCounter = 0 Then
+		MsgBox(0, "", "theres nothing in the undo backend counter")
+		Return
+	EndIf
+	$u = StringCompare($r, $uArray[$uCounter], 2)
 	If $u > 0 Then
 		MsgBox(0, "", $uArray[$uCounter] & "more")
-		$rp = StringReplace($r, $uArray[$uCounter], "")
+		$rp = StringReplace($r, $uArray[$uCounter], "", -1)
 		GUICtrlSetData($pEditWindow, $rp)
 		$uFcounter -= 1
 		Return
 	ElseIf $u < 0 Then
 		MsgBox(0, "", $uArray[$uCounter] & "less")
-		$rp = StringReplace($r, $ofData, $uArray[$uCounter])
+		$rp = StringReplace($r, "", $uArray[$uCounter], -1)
 		GUICtrlSetData($pEditWindow, $rp)
 		$uFcounter -= 1
 		Return
@@ -148,4 +138,17 @@ Func Quit()
 	Exit
 EndFunc   ;==>Quit
 
+Func tellMe()
+	Local $ms, $cm
+	If $uCounter = 0 Then
+		MsgBox(0, "", $ofData[$oFCounter])
+		$cm = MsgBox(0, "", $uCounter)
+		Return
+	EndIf
+	$cm = MsgBox(0, "", $uCounter)
+	$ms = MsgBox(0, "", $uArray[$uCounter - 1])
+	If $ms = -1 Then
+		MsgBox(0, "", "Timeout")
+	EndIf
+EndFunc
 
