@@ -98,7 +98,12 @@ Func undoCounter()
 		$sCompare = StringCompare($rData[$rdCounter - 1], $uArray[$uCounter - 1])
 	EndIf
 	If $sCompare <> 0 Then
-		$uArray[$uCounter] = $rData[$rdCounter - 1] ; set the data into the array
+		If $uCounter = 0 Then
+		MsgBox(0, "", $rData[$rdCounter - 1] & " : " & $uArray[$uCounter])
+		Else
+		MsgBox(0, "", $rData[$rdCounter - 1] & " : " & $uArray[$uCounter - 1])
+		EndIf
+		$uArray[$uCounter] = "a";$rData[$rdCounter - 1] ; set the data into the array
 		MsgBox(0, "", $uArray[$uCounter])
 		$uCounter += 1 ; increment the counter by one
 		If $oFCounter = 4 Then
@@ -135,16 +140,16 @@ Func undoWork($readA, $count)
 	Local $u, $rp
 	Switch $count
 		Case 5
-			$u = StringCompare($readA, $uArray[$uCounter - 1], 2)
+			$u = StringCompare($readA, $uArray[$uCounter], 2)
 			If $u > 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 1] & " -- more")
-				$rp = StringReplace($readA, $uArray[$uCounter - 1], "", 1)
+				MsgBox(0, "", $uArray[$uCounter] & " -- more")
+				$rp = StringReplace($readA, $uArray[$uCounter], "", 1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
 				Return
 			ElseIf $u < 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 1] & " -- less")
-				$rp = StringReplace($readA, "", $uArray[$uCounter - 1], 1)
+				MsgBox(0, "", $uArray[$uCounter] & " -- less")
+				$rp = StringReplace($readA, "", $uArray[$uCounter], 1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
 				Return
