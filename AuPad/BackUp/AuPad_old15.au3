@@ -41,8 +41,6 @@ While 1
 					Undo() ; call the Undo function when the undo option is selected
 				Case $eCopy
 					Copy()
-				Case $eTD
-					timeDate()
 			EndSwitch
 	EndSwitch
 WEnd
@@ -234,20 +232,13 @@ EndFunc   ;==>setNew
 
 Func Copy()
 	; --- ;
-EndFunc   ;==>Copy
+EndFunc
 
 Func timeDate()
-	Local $r, $p, $h, $s
+	Local $r, $p
 	$r = GUICtrlRead($pEditWindow)
-	If @HOUR >= 12 Then
-		$h = @HOUR - 12
-		$s = Int($h)
-		MsgBox(0, "", $s)
-		$p = GUICtrlSetData($pEditWindow, $s & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR)
-	Else
-		$p = GUICtrlSetData($pEditWindow, @HOUR & @MIN & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR)
-	EndIf
-EndFunc   ;==>timeDate
+	$p = GUICtrlSetData($pEditWindow, $r & _NowCalc())
+EndFunc
 
 Func Quit()
 	Exit

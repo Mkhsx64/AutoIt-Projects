@@ -237,15 +237,13 @@ Func Copy()
 EndFunc   ;==>Copy
 
 Func timeDate()
-	Local $r, $p, $h, $s
+	Local $r, $p, $h
 	$r = GUICtrlRead($pEditWindow)
 	If @HOUR >= 12 Then
 		$h = @HOUR - 12
-		$s = Int($h)
-		MsgBox(0, "", $s)
-		$p = GUICtrlSetData($pEditWindow, $s & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR)
+	$p = GUICtrlSetData($pEditWindow, $r & @MIN & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR)
 	Else
-		$p = GUICtrlSetData($pEditWindow, @HOUR & @MIN & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR)
+	$p = GUICtrlSetData($pEditWindow, @HOUR & @MIN & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR)
 	EndIf
 EndFunc   ;==>timeDate
 
