@@ -83,9 +83,9 @@ Func undoCounter()
 		Return
 	EndIf
 	If $uCounter = 0 Then
-		$sis = StringMid($uArray[$uCounter], 1)
+	$sis = StringMid($uArray[$uCounter], 1)
 	Else
-		$sis = StringMid($uArray[$uCounter - 1], 1)
+	$sis = StringMid($uArray[$uCounter - 1], 1)
 	EndIf
 	$rData = StringSplit($cData, $sis) ; replace the string already their with the string in the edit window
 	If $rData[0] = 0 Then
