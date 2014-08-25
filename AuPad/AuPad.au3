@@ -85,6 +85,8 @@ Func undoCounter()
 	$rData = StringSplit($cData, $sis) ; replace the string already their with the string in the edit window
 	If $rData[0] = 0 Then
 		Return
+	ElseIf $rData[1] = "" Then
+		Return
 	EndIf
 	If $rData[1] <> "" Then ; if the data does not equal ""
 		$uArray[$uCounter] = $rData[1] ; set the data into the array
