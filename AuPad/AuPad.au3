@@ -17,7 +17,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$uData[1000], $eUndo = 9999, $emgcyArray[5], $emgcyCounter = 0, _
 		$ofData[6], $uFcounter = 5, $oFCounter = 0
 
-AdlibRegister("undoCounter", 750)
+AdlibRegister("undoCounter", 650)
 AdlibRegister("tellMe", 6000)
 
 GUI()
@@ -138,89 +138,69 @@ Func undoWork($readA, $count)
 	Local $u, $rp
 	Switch $count
 		Case 5
-			$u = StringCompare($readA, $uArray[$uCounter - 1], 2)
+			$u = StringCompare($readA, $uArray[$uCounter - 1])
 			If $u > 0 Then
 				MsgBox(0, "", $uArray[$uCounter - 1] & " -- more")
 				$rp = StringReplace($readA, $uArray[$uCounter - 1], "", -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
-				Return
 			ElseIf $u < 0 Then
 				MsgBox(0, "", $uArray[$uCounter - 1] & " -- less")
 				$rp = StringReplace($readA, "", $uArray[$uCounter - 1], -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
-				Return
-			Else
-				Return
 			EndIf
 		Case 4
-			$u = StringCompare($readA, $uArray[$uCounter - 2], 2)
+			$u = StringCompare($readA, $uArray[$uCounter - 2])
 			If $u > 0 Then
 				MsgBox(0, "", $uArray[$uCounter - 2] & " -- more")
 				$rp = StringReplace($readA, $uArray[$uCounter - 2], "", -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
-				Return
 			ElseIf $u < 0 Then
 				MsgBox(0, "", $uArray[$uCounter - 2] & " -- less")
 				$rp = StringReplace($readA, "", $uArray[$uCounter - 2], -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
-				Return
-			Else
-				Return
 			EndIf
 		Case 3
-			$u = StringCompare($readA, $uArray[$uCounter - 3], 2)
+			$u = StringCompare($readA, $uArray[$uCounter - 3])
 			If $u > 0 Then
 				MsgBox(0, "", $uArray[$uCounter - 3] & " -- more")
 				$rp = StringReplace($readA, $uArray[$uCounter - 3], "", -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
-				Return
 			ElseIf $u < 0 Then
 				MsgBox(0, "", $uArray[$uCounter - 3] & " -- less")
 				$rp = StringReplace($readA, "", $uArray[$uCounter - 3], -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
-				Return
-			Else
-				Return
 			EndIf
 		Case 2
-			$u = StringCompare($readA, $uArray[$uCounter - 4], 2)
+			$u = StringCompare($readA, $uArray[$uCounter - 4])
 			If $u > 0 Then
 				MsgBox(0, "", $uArray[$uCounter - 4] & " -- more")
 				$rp = StringReplace($readA, $uArray[$uCounter - 4], "", -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
-				Return
 			ElseIf $u < 0 Then
 				MsgBox(0, "", $uArray[$uCounter - 4] & " -- less")
 				$rp = StringReplace($readA, "", $uArray[$uCounter - 4], -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
-				Return
-			Else
-				Return
 			EndIf
 		Case 1
-			$u = StringCompare($readA, $uArray[$uCounter - 5], 2)
+			$u = StringCompare($readA, $uArray[$uCounter - 5])
 			If $u > 0 Then
 				MsgBox(0, "", $uArray[$uCounter - 5] & " -- more")
 				$rp = StringReplace($readA, $uArray[$uCounter - 5], "", -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
-				Return
 			ElseIf $u < 0 Then
 				MsgBox(0, "", $uArray[$uCounter - 5] & " -- less")
 				$rp = StringReplace($readA, "", $uArray[$uCounter - 5], -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
-				Return
-			Else
-				Return
 			EndIf
 	EndSwitch
 EndFunc   ;==>undoWork
