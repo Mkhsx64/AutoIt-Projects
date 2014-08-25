@@ -64,7 +64,7 @@ Func GUI()
 EndFunc   ;==>GUI
 
 Func undoCounter()
-	Local $cData = "", $rData = "", $sis, $ia
+	Local $cData, $rData, $sia
 	If $uCounter = 0 And $emgcyCounter = 1 Then ; if we've already been through the entire array
 		_ArrayDelete($emgcyArray, "0-5") ; delete the emergency array
 		$emgcyCounter = 0 ; reset the emergency counter
@@ -81,19 +81,15 @@ Func undoCounter()
 		$emgcyCounter += 1 ; increment the emergency counter
 		Return
 	EndIf
-	$sis = StringMid($uArray[$uCounter], 1, -1)
-	$rData = StringSplit($cData, $sis) ; replace the string already their with the string in the edit window
-	If $rData[0] = 0 Then
-		Return
-	EndIf
-	If $rData[1] <> "" Then ; if the data does not equal ""
-		$uArray[$uCounter] = $rData[1] ; set the data into the array
+		$rData = StringReplace($cData, $uArray[$uCounter], "") ; replace the string already their with the string in the edit window
+	If $rData <> "" Then ; if the data does not equal ""
+		$uArray[$uCounter] = $rData ; set the data into the array
 		$uCounter += 1 ; increment the counter by one
 		If $oFCounter = 4 Then
 			$oFCounter = 0
-			$ofData[$oFCounter] = $rData[1] ; set the outside variable to the data for the undo function
+			$ofData[$oFCounter] = $rData ; set the outside variable to the data for the undo function
 		Else
-			$ofData[$oFCounter] = $rData[1] ; set the outside variable to the data for the undo function
+			$ofData[$oFCounter] = $rData ; set the outside variable to the data for the undo function
 		EndIf
 	EndIf
 EndFunc   ;==>undoCounter
