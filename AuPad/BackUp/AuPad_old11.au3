@@ -162,16 +162,16 @@ Func undoWork($count)
 				Return
 			EndIf
 		Case 3
-			$u = StringCompare($r, $uArray[$uCounter - 2], 2)
+		$u = StringCompare($r, $uArray[$uCounter], 2)
 			If $u > 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 2] & " -- more")
-				$rp = StringReplace($r, $uArray[$uCounter - 2], "", -1)
+				MsgBox(0, "", $uArray[$uCounter] & " -- more")
+				$rp = StringReplace($r, $uArray[$uCounter], "", -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
 				Return
 			ElseIf $u < 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 2] & " -- less")
-				$rp = StringReplace($r, "", $uArray[$uCounter - 2], -1)
+				MsgBox(0, "", $uArray[$uCounter] & " -- less")
+				$rp = StringReplace($r, "", $uArray[$uCounter], -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
 				Return
@@ -179,16 +179,16 @@ Func undoWork($count)
 				Return
 			EndIf
 		Case 2
-			$u = StringCompare($r, $uArray[$uCounter - 3], 2)
+			$u = StringCompare($r, $uArray[$uCounter], 2)
 			If $u > 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 3] & " -- more")
-				$rp = StringReplace($r, $uArray[$uCounter - 3], "", -1)
+				MsgBox(0, "", $uArray[$uCounter] & " -- more")
+				$rp = StringReplace($r, $uArray[$uCounter], "", -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
 				Return
 			ElseIf $u < 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 3] & " -- less")
-				$rp = StringReplace($r, "", $uArray[$uCounter - 3], -1)
+				MsgBox(0, "", $uArray[$uCounter] & " -- less")
+				$rp = StringReplace($r, "", $uArray[$uCounter], -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
 				Return
@@ -196,16 +196,16 @@ Func undoWork($count)
 				Return
 			EndIf
 		Case 1
-			$u = StringCompare($r, $uArray[$uCounter - 4], 2)
+			$u = StringCompare($r, $uArray[$uCounter], 2)
 			If $u > 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 4] & " -- more")
-				$rp = StringReplace($r, $uArray[$uCounter - 4], "", -1)
+				MsgBox(0, "", $uArray[$uCounter] & " -- more")
+				$rp = StringReplace($r, $uArray[$uCounter], "", -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
 				Return
 			ElseIf $u < 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 4] & " -- less")
-				$rp = StringReplace($r, "", $uArray[$uCounter - 4], -1)
+				MsgBox(0, "", $uArray[$uCounter] & " -- less")
+				$rp = StringReplace($r, "", $uArray[$uCounter], -1)
 				GUICtrlSetData($pEditWindow, $rp)
 				$uFcounter -= 1
 				Return

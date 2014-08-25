@@ -88,7 +88,7 @@ Func undoCounter()
 	ElseIf $rData[1] = "" Then
 		Return
 	EndIf
-	For $i In $rData
+	For $i in $rData
 		$rdCounter += 1
 	Next
 	If $rData[$rdCounter - 1] <> "" Then ; if the data does not equal ""
@@ -121,7 +121,6 @@ Func Undo()
 		MsgBox(0, "", "theres nothing in the undo backend counter")
 		Return
 	EndIf
-	undoWork($uFcounter)
 EndFunc   ;==>Undo
 
 Func undoWork($count)
@@ -129,91 +128,23 @@ Func undoWork($count)
 	Switch $count
 		Case 5
 			$u = StringCompare($r, $uArray[$uCounter], 2)
-			If $u > 0 Then
-				MsgBox(0, "", $uArray[$uCounter] & " -- more")
-				$rp = StringReplace($r, $uArray[$uCounter], "", -1)
-				GUICtrlSetData($pEditWindow, $rp)
-				$uFcounter -= 1
-				Return
-			ElseIf $u < 0 Then
-				MsgBox(0, "", $uArray[$uCounter] & " -- less")
-				$rp = StringReplace($r, "", $uArray[$uCounter], -1)
-				GUICtrlSetData($pEditWindow, $rp)
-				$uFcounter -= 1
-				Return
-			Else
-				Return
-			EndIf
-		Case 4
-			$u = StringCompare($r, $uArray[$uCounter - 1], 2)
-			If $u > 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 1] & " -- more")
-				$rp = StringReplace($r, $uArray[$uCounter - 1], "", -1)
-				GUICtrlSetData($pEditWindow, $rp)
-				$uFcounter -= 1
-				Return
-			ElseIf $u < 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 1] & " -- less")
-				$rp = StringReplace($r, "", $uArray[$uCounter - 1], -1)
-				GUICtrlSetData($pEditWindow, $rp)
-				$uFcounter -= 1
-				Return
-			Else
-				Return
-			EndIf
-		Case 3
-			$u = StringCompare($r, $uArray[$uCounter - 2], 2)
-			If $u > 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 2] & " -- more")
-				$rp = StringReplace($r, $uArray[$uCounter - 2], "", -1)
-				GUICtrlSetData($pEditWindow, $rp)
-				$uFcounter -= 1
-				Return
-			ElseIf $u < 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 2] & " -- less")
-				$rp = StringReplace($r, "", $uArray[$uCounter - 2], -1)
-				GUICtrlSetData($pEditWindow, $rp)
-				$uFcounter -= 1
-				Return
-			Else
-				Return
-			EndIf
-		Case 2
-			$u = StringCompare($r, $uArray[$uCounter - 3], 2)
-			If $u > 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 3] & " -- more")
-				$rp = StringReplace($r, $uArray[$uCounter - 3], "", -1)
-				GUICtrlSetData($pEditWindow, $rp)
-				$uFcounter -= 1
-				Return
-			ElseIf $u < 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 3] & " -- less")
-				$rp = StringReplace($r, "", $uArray[$uCounter - 3], -1)
-				GUICtrlSetData($pEditWindow, $rp)
-				$uFcounter -= 1
-				Return
-			Else
-				Return
-			EndIf
-		Case 1
-			$u = StringCompare($r, $uArray[$uCounter - 4], 2)
-			If $u > 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 4] & " -- more")
-				$rp = StringReplace($r, $uArray[$uCounter - 4], "", -1)
-				GUICtrlSetData($pEditWindow, $rp)
-				$uFcounter -= 1
-				Return
-			ElseIf $u < 0 Then
-				MsgBox(0, "", $uArray[$uCounter - 4] & " -- less")
-				$rp = StringReplace($r, "", $uArray[$uCounter - 4], -1)
-				GUICtrlSetData($pEditWindow, $rp)
-				$uFcounter -= 1
-				Return
-			Else
-				Return
-			EndIf
+	If $u > 0 Then
+		MsgBox(0, "", $uArray[$uCounter] & " -- more")
+		$rp = StringReplace($r, $uArray[$uCounter], "", -1)
+		GUICtrlSetData($pEditWindow, $rp)
+		$uFcounter -= 1
+		Return
+	ElseIf $u < 0 Then
+		MsgBox(0, "", $uArray[$uCounter] & " -- less")
+		$rp = StringReplace($r, "", $uArray[$uCounter], -1)
+		GUICtrlSetData($pEditWindow, $rp)
+		$uFcounter -= 1
+		Return
+	Else
+		Return
+	EndIf
 	EndSwitch
-EndFunc   ;==>undoWork
+EndFunc
 
 Func setNew()
 	Local $titleNow, $title
