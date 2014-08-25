@@ -41,6 +41,8 @@ While 1
 					Undo() ; call the Undo function when the undo option is selected
 				Case $eCopy
 					Copy()
+				Case $ePaste
+					Paste()
 				Case $eTD
 					timeDate()
 			EndSwitch
@@ -246,6 +248,10 @@ Func Copy()
 		Return
 	EndIf
 EndFunc   ;==>Copy
+
+Func Paste()
+	; --- ;
+EndFunc
 
 Func timeDate()
 	Local $r, $p, $h, $s
