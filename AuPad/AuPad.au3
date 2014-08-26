@@ -77,6 +77,8 @@ Func GUI()
 	$eSA = GUICtrlCreateMenuItem("Select All...       Ctrl + A", $EditM, 9) ; create the second level select all menu item
 	$eTD = GUICtrlCreateMenuItem("Time/Date                 F5", $EditM, 10) ; create the second level time/date menu item
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
+	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
+	$forFont = GUICtrlCreateMenuItem("Font..."), $FormatM, 1) ; create the second level font menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
 	setNew() ; set the window to have a new file
