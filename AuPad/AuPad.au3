@@ -19,6 +19,9 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$ofData[6], $uFcounter = 5, $oFCounter = 0, $eCut, $eCopy, $ePaste, _
 		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, $eTD
 
+; child gui vars
+Local $cFwnd
+
 AdlibRegister("undoCounter", 650) ; run the undoCounter function every 650 ms to build the undo array determined by user input
 ;AdlibRegister("tellMe", 6000)
 
@@ -46,6 +49,8 @@ While 1
 					Paste() ; call the Paste function when the paste option is selected
 				Case $eTD
 					timeDate() ; call the timeDate function when the time/date option is selected
+				Case $eFind
+					findChild() ; call the findChild function when the find option is selected
 			EndSwitch
 	EndSwitch
 WEnd
@@ -278,7 +283,7 @@ Func setNew()
 EndFunc   ;==>setNew
 
 Func findChild()
-	; --- ;
+
 EndFunc
 
 Func Copy()
