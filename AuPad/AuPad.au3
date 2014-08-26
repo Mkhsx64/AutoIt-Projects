@@ -24,6 +24,7 @@ AdlibRegister("undoCounter", 650) ; run the undoCounter function every 650 ms to
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
 
+
 GUI() ; create the window
 
 While 1
@@ -275,6 +276,10 @@ Func setNew()
 		MsgBox(0, "error", "Could not set window title...", 10) ; tell us
 	EndIf
 EndFunc   ;==>setNew
+
+Func findChild()
+	; --- ;
+EndFunc
 
 Func Copy()
 	Local $gt, $st, $ct
