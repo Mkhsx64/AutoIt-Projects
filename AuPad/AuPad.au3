@@ -80,7 +80,10 @@ Func GUI()
 	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
 	$forFont = GUICtrlCreateMenuItem("Font..."), $FormatM, 1) ; create the second level font menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
+	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
+	$hVHelp = GUICtrlCreateMenuItem("View Help", $HelpM, 0) ; create the second level view help menu item
+	$hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 1) ; create the second level about aupad menu item
 	setNew() ; set the window to have a new file
 	GUISetState() ; show the window
 EndFunc   ;==>GUI
