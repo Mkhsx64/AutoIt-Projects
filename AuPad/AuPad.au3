@@ -293,14 +293,14 @@ EndFunc   ;==>setNew
 Func findChild()
 	Local $tb, $fw
 	$cFwnd = GUICreate("Find", 325, 95, -1, -1, -1, -1, $pWnd) ; create the child window
-	$cfFindNextB = GUICtrlCreateButton("Find Next", 250, 2, 70)
-	$cfCancel = GUICtrlCreateButton("Cancel", 250, 30, 70)
-	$tb = GUICtrlCreateLabel("Direction", 150, 40)
-	$fw = GUICtrlCreateLabel("Find what:", 4, 5)
-	$cfEditWindow = GUICtrlCreateInput("", 65, 5, 170)
-	$tCheck = GUICtrlCreateRadio("Top", 150, 60)
-	$bCheck = GUICtrlCreateRadio("Bottom", 190, 60)
-	$mCheck = GUICtrlCreateCheckbox("Match Case", 13, 65)
+	$cfFindNextB = GUICtrlCreateButton("Find Next", 250, 2, 70) ; create the find next button
+	$cfCancel = GUICtrlCreateButton("Cancel", 250, 30, 70) ; create the cancel button
+	$tb = GUICtrlCreateLabel("Direction", 150, 40) ; create the direction label
+	$fw = GUICtrlCreateLabel("Find what:", 4, 5) ; create the find what label
+	$cfEditWindow = GUICtrlCreateInput("", 65, 5, 170) ; creat the input control
+	$tCheck = GUICtrlCreateRadio("Top", 150, 60) ; create the radio control
+	$bCheck = GUICtrlCreateRadio("Bottom", 190, 60) ; create the radio control
+	$mCheck = GUICtrlCreateCheckbox("Match Case", 13, 60) ; create the checkbox
 	GUISetState() ; show the child window
 EndFunc   ;==>findChild
 
