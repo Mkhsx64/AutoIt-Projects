@@ -56,6 +56,8 @@ While 1
 			Switch $msg[0] ; if the msg is in the 1D array
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($cFwnd)
+				Case $cfCancel
+					GUIDelete($cFwnd)
 			EndSwitch
 	EndSwitch
 WEnd
