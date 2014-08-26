@@ -20,7 +20,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, $eTD
 
 ; child gui vars
-Local $cFwnd
+Local $cFwnd, $cfCancel
 
 AdlibRegister("undoCounter", 650) ; run the undoCounter function every 650 ms to build the undo array determined by user input
 ;AdlibRegister("tellMe", 6000)
@@ -51,6 +51,11 @@ While 1
 					timeDate() ; call the timeDate function when the time/date option is selected
 				Case $eFind
 					findChild() ; call the findChild function when the find option is selected
+			EndSwitch
+		Case $cFwnd ; check the find child window
+			Switch $msg[0] ; if the msg is in the 1D array
+				Case $GUI_EVENT_CLOSE
+					GUIDelete($cFwnd)
 			EndSwitch
 	EndSwitch
 WEnd
@@ -84,7 +89,7 @@ Func GUI()
 	$eTD = GUICtrlCreateMenuItem("Time/Date                 F5", $EditM, 10) ; create the second level time/date menu item
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
-	$forFont = GUICtrlCreateMenuItem("Font..."), $FormatM, 1) ; create the second level font menu item
+	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
@@ -283,7 +288,9 @@ Func setNew()
 EndFunc   ;==>setNew
 
 Func findChild()
-
+	$cFwnd = GUICreate("Find", 250, 125, -1, -1, -1, -1, $pWnd) ; create the child window
+	$cfCancel = GUICtrlCreateButton("Cancel", 225, 85)
+	GUISetState() ; show the child window
 EndFunc
 
 Func Copy()
