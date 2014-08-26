@@ -300,6 +300,7 @@ Func findChild()
 	$cfEditWindow = GUICtrlCreateInput("", 65, 5, 170)
 	$tCheck = GUICtrlCreateRadio("Top", 150, 60)
 	$bCheck = GUICtrlCreateRadio("Bottom", 190, 60)
+	$mCheck = GUICtrlCreateCheckbox("Match Case", 13, 65)
 	GUISetState() ; show the child window
 EndFunc   ;==>findChild
 
