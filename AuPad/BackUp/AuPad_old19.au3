@@ -21,7 +21,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 
 ; child gui vars
 Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
-		$cfEditWindow
+	$cfEditWindow
 
 AdlibRegister("undoCounter", 650) ; run the undoCounter function every 650 ms to build the undo array determined by user input
 ;AdlibRegister("tellMe", 6000)
@@ -297,11 +297,10 @@ Func findChild()
 	$cfCancel = GUICtrlCreateButton("Cancel", 250, 30, 70)
 	$tb = GUICtrlCreateLabel("Direction", 150, 40)
 	$fw = GUICtrlCreateLabel("Find what:", 4, 5)
-	$cfEditWindow = GUICtrlCreateInput("", 65, 5, 170)
 	$tCheck = GUICtrlCreateRadio("Top", 150, 60)
 	$bCheck = GUICtrlCreateRadio("Bottom", 190, 60)
 	GUISetState() ; show the child window
-EndFunc   ;==>findChild
+EndFunc
 
 Func Copy()
 	Local $gt, $st, $ct
