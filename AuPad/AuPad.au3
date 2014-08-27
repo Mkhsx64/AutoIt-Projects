@@ -18,7 +18,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$eUndo, $emgcyArray[5], $emgcyCounter = 0, _
 		$ofData[6], $uFcounter = 5, $oFCounter = 0, $eCut, $eCopy, $ePaste, _
 		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, $emgcyFcounter = 0, _
-		$eTD
+		$eTD, $saveCounter, $fe, $fs, $fn, $fo, $fs
 
 ; child gui vars
 Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
@@ -396,7 +396,32 @@ Func exitSaveDialog()
 EndFunc
 
 Func Save()
-	; --- ;
+	Local $r
+	If $saveCounter = 0 Then
+		$saveCounter += 1
+	EndIf
+	$r = GUICtrlRead($pEditWindow)
+	If $saveCounter <> 1 Then
+		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt", ".txt", $pWnd)
+		$fn = StringSplit($fs, "|")
+		If $fn[1] = ".txt" Then
+			MsgBox(0, "error", "did not give a name to your file")
+			$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt", ".txt", $pWnd)
+			$fn = StringSplit($fs, "|")
+		EndIf
+		$fo = FileOpen($fs[1], 2 + 8)
+		If $fo = -1 Then
+			MsgBox(0, "error", "Could not create file")
+		EndIf
+		$fs = FileWrite($fs, $r)
+		$fc = FileClose($fs[1])
+	EndIf
+	$fo = FileOpen($fs[1], 2)
+	If $fo = -1 Then
+			MsgBox(0, "error", "Could not create file")
+	EndIf
+	$fs = FileWrite($fs, $r)
+	$fc = FileClose($fs[1])
 EndFunc
 
 Func tellMe()
