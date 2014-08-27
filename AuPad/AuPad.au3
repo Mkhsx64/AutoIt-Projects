@@ -28,7 +28,7 @@ AdlibRegister("undoCounter", 650) ; run the undoCounter function every 650 ms to
 ;AdlibRegister("tellMe", 6000)
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
-
+HotKeySet("{F3}", "findChild") ; if the user hits the F3 key, then run the findChild function
 
 GUI() ; create the window
 
@@ -329,6 +329,7 @@ Func findChild()
 	$tCheck = GUICtrlCreateRadio("Top", 150, 60) ; create the radio control
 	$bCheck = GUICtrlCreateRadio("Bottom", 190, 60) ; create the radio control
 	$mCheck = GUICtrlCreateCheckbox("Match Case", 13, 60) ; create the checkbox
+	GUICtrlSetState($cfEditWindow, 256) ; give the input focus
 	GUISetState() ; show the child window
 EndFunc   ;==>findChild
 
