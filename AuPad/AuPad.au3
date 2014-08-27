@@ -368,8 +368,26 @@ Func timeDate()
 EndFunc   ;==>timeDate
 
 Func Quit()
+	Local $wgt, $rd, $stringis
+	$rd = GUICtrlRead($pEditWindow)
+	$wgt = WinGetTitle("AuPad", $rd)
+	$stringis = StringInStr($wgt, "Untitled")
+	If $rd = "" And $stringis > 0 Then
+		; --- ;
+	ElseIf $rd = "" And $stringis = 0 Then
+		Exit
+	Else
+
 	Exit
 EndFunc   ;==>Quit
+
+Func exitSaveDialog()
+	; --- ;
+EndFunc
+
+Func Save()
+	; --- ;
+EndFunc
 
 Func tellMe()
 	Local $ms, $cm
