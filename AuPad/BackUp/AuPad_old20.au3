@@ -178,10 +178,10 @@ Func undoWork($readA, $count)
 	Switch $count ; look for the undo function counter value
 		Case 5 ; if it is the first time running
 			If $emgcyCounter = 1 And $uCounter = 999 Then
-				emergFunc()
-				$sArray = $emgcyArray[4]
+					emergFunc()
+					$sArray = $emgcyArray[4]
 			Else
-				$sArray = $uArray[$uCounter - 1]
+					$sArray = $uArray[$uCounter - 1]
 			EndIf
 			$u = StringCompare($readA, $uArray[$uCounter - 1]) ; compare the edit string with the last undo array value
 			If $u < 0 Then ; if the current string in the edit window is smaller then the last undo array value
