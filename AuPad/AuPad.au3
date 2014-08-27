@@ -368,22 +368,24 @@ Func timeDate()
 EndFunc   ;==>timeDate
 
 Func Quit()
-	Local $wgt, $rd, $stringis, $title, $st, $active
-	$rd = GUICtrlRead($pEditWindow)
-	$st = StringLen($rd)
-	$active = WinActive("- AuPad", $rd)
-	If $active = 0 Then
-		WinActivate("- AuPad")
+	Local $wgt, $rd, $stringis, $title, $st, $active, $mBox
+	$rd = GUICtrlRead($pEditWindow) ; read the edit control
+	$st = StringLen($rd) ; find the length of the string read from the edit control
+	$active = WinActive("- AuPad", $rd) ; fin if the window is active or not
+	If $active = 0 Then ; if it isn't
+		WinActivate("- AuPad") ; activate it
 	EndIf
-	$wgt = WinGetTitle("", "")
-	$title = StringSplit($wgt, " - ")
-	$stringis = StringInStr($wgt, $title[1])
+	$wgt = WinGetTitle("", "") ; get the title of the window
+	$title = StringSplit($wgt, " - ") ; split the window title
 	If $st = 0 And $title[1] = "Untitled" Then
 		MsgBox(0, "", "works")
 		Exit
-	ElseIf $st > 0 And $stringis > 0 Then
-		MsgBox(0, "", "theres stuff in that window, want to save?")
-	ElseIf $title[1] <> "Untitled" And $stringis > 0 Then
+	ElseIf $st > 0 Then
+		$mBox = MsgBox(4, "", "theres stuff in that window, want to save?")
+		If $mBox = 6 Then
+			exitSaveDialog()
+		EndIf
+	ElseIf $title[1] <> "Untitled" And $st = 0 Then
 		MsgBox(0, "", "there isn't stuff, but it's your file, want to save?")
 	EndIf
 	Exit
