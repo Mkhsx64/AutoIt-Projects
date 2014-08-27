@@ -18,7 +18,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$eUndo, $emgcyArray[5], $emgcyCounter = 0, _
 		$ofData[6], $uFcounter = 5, $oFCounter = 0, $eCut, $eCopy, $ePaste, _
 		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, $emgcyFcounter = 0, _
-		$eTD, $saveCounter, $fe, $fs, $fn, $fo, $fs
+		$eTD, $saveCounter = 0, $fe, $fs, $fn, $fo, $fs
 
 ; child gui vars
 Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
@@ -53,6 +53,11 @@ While 1
 					timeDate() ; call the timeDate function when the time/date option is selected
 				Case $eFind
 					findChild() ; call the findChild function when the find option is selected
+				Case $fSave
+					Save()
+				Case $fSaveAs
+					$saveCounter = 0
+					Save()
 			EndSwitch
 		Case $cFwnd ; check the find child window
 			Switch $msg[0] ; if the msg is in the 1D array
@@ -388,6 +393,7 @@ Func Quit()
 		$mBox = MsgBox(4, "AuPad", "there isn't stuff, but it's your file, want to save?")
 		If $mBox = 6 Then
 			exitSaveDialog()
+		EndIf
 	EndIf
 	Exit
 EndFunc   ;==>Quit
@@ -398,31 +404,32 @@ EndFunc
 
 Func Save()
 	Local $r
-	If $saveCounter = 0 Then
-		$saveCounter += 1
-	EndIf
 	$r = GUICtrlRead($pEditWindow)
-	If $saveCounter <> 1 Then
-		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt", ".txt", $pWnd)
+	If $saveCounter = 0 Then
+		$fs = FileOpenDialog("Save File", @WorkingDir, "Text files (*.txt", ".txt")
+		MsgBox(0, "", $fs)
 		$fn = StringSplit($fs, "|")
 		If $fn[1] = ".txt" Then
 			MsgBox(0, "error", "did not give a name to your file")
-			$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt", ".txt", $pWnd)
+			$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt", ".txt")
 			$fn = StringSplit($fs, "|")
 		EndIf
-		$fo = FileOpen($fs[1], 2 + 8)
+		$fo = FileOpen($fn[1], 8)
 		If $fo = -1 Then
-			MsgBox(0, "error", "Could not create file")
+			MsgBox(0, "error", "Could not create file : " & $saveCounter)
+			Return
 		EndIf
 		$fs = FileWrite($fs, $r)
-		$fc = FileClose($fs[1])
+		$fc = FileClose($fn[1])
+		$saveCounter += 1
+		Return
 	EndIf
-	$fo = FileOpen($fs[1], 2)
+	$fo = FileOpen($fn[1], 2)
 	If $fo = -1 Then
 			MsgBox(0, "error", "Could not create file")
 	EndIf
 	$fs = FileWrite($fs, $r)
-	$fc = FileClose($fs[1])
+	$fc = FileClose($fn[1])
 EndFunc
 
 Func tellMe()
