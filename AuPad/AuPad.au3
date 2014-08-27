@@ -406,8 +406,7 @@ Func Save()
 	Local $r
 	$r = GUICtrlRead($pEditWindow)
 	If $saveCounter = 0 Then
-		$fs = FileOpenDialog("Save File", @WorkingDir, "Text files (*.txt", ".txt")
-		MsgBox(0, "", $fs)
+		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt", ".txt")
 		$fn = StringSplit($fs, "|")
 		If $fn[1] = ".txt" Then
 			MsgBox(0, "error", "did not give a name to your file")
