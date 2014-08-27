@@ -368,17 +368,22 @@ Func timeDate()
 EndFunc   ;==>timeDate
 
 Func Quit()
-	Local $wgt, $rd, $stringis, $title
+	Local $wgt, $rd, $stringis, $title, $st, $active
 	$rd = GUICtrlRead($pEditWindow)
-	$wgt = WinGetTitle("AuPad", $rd)
+	$st = StringLen($rd)
+	$active = WinActive("- AuPad", $rd)
+	If $active = 0 Then
+		WinActivate("- AuPad")
+	EndIf
+	$wgt = WinGetTitle("", "")
 	$title = StringSplit($wgt, " - ")
 	$stringis = StringInStr($wgt, $title[1])
-	If $rd = "" And $title[1] = "Untitled" Then
+	If $st = 0 And $title[1] = "Untitled" Then
 		MsgBox(0, "", "works")
 		Exit
-	ElseIf $rd <> "" And $stringis > 0 Then
+	ElseIf $st > 0 And $stringis > 0 Then
 		MsgBox(0, "", "theres stuff in that window, want to save?")
-	ElseIf $stringis > 0 Then
+	ElseIf $title[1] <> "Untitled" And $stringis > 0 Then
 		MsgBox(0, "", "there isn't stuff, but it's your file, want to save?")
 	EndIf
 	Exit
