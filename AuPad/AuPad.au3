@@ -15,7 +15,7 @@
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow, $uArray[1000], $uCounter = 0, _
-		$uData[1000], $eUndo, $emgcyArray[5], $emgcyCounter = 0, _
+		$eUndo, $emgcyArray[5], $emgcyCounter = 0, _
 		$ofData[6], $uFcounter = 5, $oFCounter = 0, $eCut, $eCopy, $ePaste, _
 		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, $emgcyFcounter = 0, _
 		$eTD
@@ -109,6 +109,7 @@ Func undoCounter()
 	If $uCounter = 0 And $emgcyCounter = 1 And $emgcyFcounter = 1 Then ; if we've already been through the entire undo array
 		_ArrayDelete($emgcyArray, "0-5") ; delete the emergency array
 		$emgcyCounter = 0 ; reset the emergency counter
+		$emgcyFcounter = 0 ; reset the emergency array functionality counter
 	EndIf
 	$cData = GUICtrlRead($pEditWindow) ; read the entire edit control in the parent window
 	If $uCounter = 999 Then ; if we reached the end of the array
@@ -120,34 +121,34 @@ Func undoCounter()
 		_ArrayDelete($uArray, "0-999") ; delete the primary array
 		$uCounter = 0 ; set the counter
 		$emgcyCounter += 1 ; increment the emergency counter
-		Return
+		Return ; get out
 	EndIf
-	If $uCounter = 0 Then
-		$sis = StringMid($uArray[$uCounter], 1)
-	Else
-		$sis = StringMid($uArray[$uCounter - 1], 1)
+	If $uCounter = 0 Then ; if the counter is just starting
+		$sis = StringMid($uArray[$uCounter], 1) ; get the characters of the undo array
+	Else ; if the counter has already been ran through
+		$sis = StringMid($uArray[$uCounter - 1], 1) ; set it to the characters in the undo array function one back
 	EndIf
 	$rData = StringSplit($cData, $sis) ; replace the string already their with the string in the edit window
-	If $rData[0] = 0 Then
-		Return
-	ElseIf $rData[1] = "" Then
-		Return
+	If $rData[0] = 0 Then ; if their is nothing in the window
+		Return ; get out
+	ElseIf $rData[1] = "" Then ; or if the first data is a blank string
+		Return ; get out
 	EndIf
-	For $i In $rData
-		$rdCounter += 1
+	For $i In $rData ; for every piece of data in the $rData array
+		$rdCounter += 1 ; increment the rdata counter
 	Next
-	If $uCounter = 0 Then
-		$sCompare = StringCompare($rData[$rdCounter - 1], $uArray[$uCounter])
+	If $uCounter = 0 Then ; if the undo counter is at 0
+		$sCompare = StringCompare($rData[$rdCounter - 1], $uArray[$uCounter]) ; compare $rdata one back to the current undo array value
 	Else
-		$sCompare = StringCompare($rData[$rdCounter - 1], $uArray[$uCounter - 1])
+		$sCompare = StringCompare($rData[$rdCounter - 1], $uArray[$uCounter - 1]) ; compare $rdata one back to the undo array value one back
 	EndIf
-	If $sCompare <> 0 Then
+	If $sCompare <> 0 Then ; if the string is not the same
 		$uArray[$uCounter] = $rData[$rdCounter - 1] ; set the data into the array
 		$uCounter += 1 ; increment the counter by one
-		If $oFCounter = 4 Then
-			$oFCounter = 0
+		If $oFCounter = 4 Then ; if the outer function counter equals 4 (last array value)
+			$oFCounter = 0 ; set the outer function counter equal to 0 (first array value)
 			$ofData[$oFCounter] = $rData[$rdCounter - 1] ; set the outside variable to the data for the undo function
-		Else
+		Else ; if it does not equal 4
 			$ofData[$oFCounter] = $rData[$rdCounter - 1] ; set the outside variable to the data for the undo function
 		EndIf
 	EndIf
