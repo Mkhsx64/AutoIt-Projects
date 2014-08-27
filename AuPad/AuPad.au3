@@ -378,15 +378,16 @@ Func Quit()
 	$wgt = WinGetTitle("", "") ; get the title of the window
 	$title = StringSplit($wgt, " - ") ; split the window title
 	If $st = 0 And $title[1] = "Untitled" Then
-		MsgBox(0, "", "works")
 		Exit
 	ElseIf $st > 0 Then
-		$mBox = MsgBox(4, "", "theres stuff in that window, want to save?")
+		$mBox = MsgBox(4, "AuPad", "theres stuff in that window, want to save?")
 		If $mBox = 6 Then
 			exitSaveDialog()
 		EndIf
 	ElseIf $title[1] <> "Untitled" And $st = 0 Then
-		MsgBox(0, "", "there isn't stuff, but it's your file, want to save?")
+		$mBox = MsgBox(4, "AuPad", "there isn't stuff, but it's your file, want to save?")
+		If $mBox = 6 Then
+			exitSaveDialog()
 	EndIf
 	Exit
 EndFunc   ;==>Quit
