@@ -407,6 +407,10 @@ Func Quit()
 	Exit
 EndFunc   ;==>Quit
 
+Func Open()
+	; --- ;
+EndFunc
+
 Func Save()
 	Local $r, $sd, $cn
 	$r = GUICtrlRead($pEditWindow) ; read the edit control
