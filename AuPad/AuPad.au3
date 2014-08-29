@@ -21,7 +21,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$eUndo, $emgcyArray[5], $emgcyCounter = 0, _
 		$ofData[6], $uFcounter = 5, $oFCounter = 0, $eCut, $eCopy, $ePaste, _
 		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, $emgcyFcounter = 0, _
-		$eTD, $saveCounter = 0, $fe, $fs, $fn, $fo, $fw, $hDLL
+		$eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $hDLL, $oIndex = 0
 
 ; child gui vars
 Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
@@ -408,7 +408,32 @@ Func Quit()
 EndFunc   ;==>Quit
 
 Func Open()
-	; --- ;
+	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
+		$strinString, $read, $stripString
+	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)", BitOR( 1, 2))
+	$strSplit = StringSplit($fileOpenD, "\")
+	$oIndex = $strSplit[0]
+	If $strSplit[$oIndex] = "" Or $strSplit[$oIndex] = ".txt" Then
+		MsgBox(0, "error", "Did not open a file")
+		Return
+	EndIf
+	$strinString = StringSplit($strSplit[$oIndex], ".")
+	If $strinString[2] <> "txt" Then
+		MsgBox(0, "error", "Invalid file type selected")
+		Return
+	EndIf
+	$fileOpen = FileOpen($fileOpenD, 0)
+	If $fileOpen = -1 Then
+		MsgBox(0, "error", "Could not open the file")
+		Return
+	EndIf
+	$fileRead = FileRead($fileOpen)
+	$read = GUICtrlRead($pEditWindow)
+	$stripString = StringReplace($strSplit[$oIndex], ".txt", "")
+	WinSetTitle($pWnd, $read, $stripString & " - AuPad")
+	GUICtrlSetData($pEditWindow, $fileRead, $read)
+	$fn[$oIndex] = $strSplit[$oIndex]
+	MsgBox(0, "", $fn[$oIndex])
 EndFunc
 
 Func Save()
@@ -416,12 +441,14 @@ Func Save()
 	$r = GUICtrlRead($pEditWindow) ; read the edit control
 	If $saveCounter = 0 Then ; if we haven't saved before
 		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", ".txt") ; tell us where and what to call your file
-		$fn = StringSplit($fs, "|") ; split the saved directory and name
-		If $fn[1] = ".txt" Or $fn[1] = "" Then ; if the value in the filesavedialog is not valid
+		$fn = StringSplit($fs, "\") ; split the saved directory and name
+		$i = $fn[0]
+		If $fn[$i] = ".txt" Or $fn[$i] = "" Then ; if the value in the filesavedialog is not valid
 			MsgBox(0, "error", "did not give a name to your file") ; tell us
 			$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", ".txt") ; try to tell us where and what to call your file
-			$fn = StringSplit($fs, "|") ; split the saved directory and name
-			If $fn[1] = ".txt" Or $fn[1] = "" Then ; if you didn't set it again
+			$fn = StringSplit($fs, "\") ; split the saved directory and name
+			$i = $fn[0]
+			If $fn[$i] = ".txt" Or $fn[$i] = "" Then ; if you didn't set it again
 				MsgBox(0, "error", "No name chosen exiting save function...") ; tell us
 				Return ; get out
 			EndIf
@@ -438,13 +465,13 @@ Func Save()
 		$saveCounter += 1 ; increment the save counter
 		Return ; get out
 	EndIf
-	$fo = FileOpen($fn[1], 2) ; if we've already saved before, open the file and set it to overwrite current contents
+	$fo = FileOpen($fn[$oIndex], 2) ; if we've already saved before, open the file and set it to overwrite current contents
 	If $fo = -1 Then ; if it didn't work
 		MsgBox(0, "error", "Could not create file") ; tell us
 		Return ; get out
 	EndIf
 	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
-	$fc = FileClose($fn[1]) ; close the file we specified
+	$fc = FileClose($fn[$oIndex]) ; close the file we specified
 EndFunc   ;==>Save
 
 Func tellMe()
