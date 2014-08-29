@@ -384,11 +384,7 @@ Func Quit()
 	Local $wgt, $rd, $stringis, $title, $st, $active, $mBox
 	$rd = GUICtrlRead($pEditWindow) ; read the edit control
 	$st = StringLen($rd) ; find the length of the string read from the edit control
-	$active = WinActive("- AuPad", $rd) ; fin if the window is active or not
-	If $active = 0 Then ; if it isn't
-		WinActivate("- AuPad") ; activate it
-	EndIf
-	$wgt = WinGetTitle("", "") ; get the title of the window
+	$wgt = WinGetTitle($pWnd, "") ; get the title of the window
 	$title = StringSplit($wgt, " - ") ; split the window title
 	If $st = 0 And $title[1] = "Untitled" Then
 		Exit
