@@ -410,30 +410,30 @@ EndFunc   ;==>Quit
 Func Open()
 	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
 		$strinString, $read, $stripString
-	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)", BitOR( 1, 2))
-	$strSplit = StringSplit($fileOpenD, "\")
-	$oIndex = $strSplit[0]
-	If $strSplit[$oIndex] = "" Or $strSplit[$oIndex] = ".txt" Then
-		MsgBox(0, "error", "Did not open a file")
-		Return
+	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)", BitOR( 1, 2)) ; ask the user what they would like to open
+	$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
+	$oIndex = $strSplit[0] ; set the $oIndex to the last value in the split array
+	If $strSplit[$oIndex] = "" Or $strSplit[$oIndex] = ".txt" Then ; if there is not value or just .txt then tell us and return
+		MsgBox(0, "error", "Did not open a file") ; tell us
+		Return ; get out
 	EndIf
-	$strinString = StringSplit($strSplit[$oIndex], ".")
-	If $strinString[2] <> "txt" Then
-		MsgBox(0, "error", "Invalid file type selected")
-		Return
+	$strinString = StringSplit($strSplit[$oIndex], ".") ; split the file name by the . char
+	If $strinString[2] <> "txt" Then ; if the file extension does not equal text
+		MsgBox(0, "error", "Invalid file type selected") ; tell us
+		Return ; get out
 	EndIf
-	$fileOpen = FileOpen($fileOpenD, 0)
-	If $fileOpen = -1 Then
-		MsgBox(0, "error", "Could not open the file")
-		Return
+	$fileOpen = FileOpen($fileOpenD, 0) ; open the file specified
+	If $fileOpen = -1 Then ; if that didn't work
+		MsgBox(0, "error", "Could not open the file") ; tell us
+		Return ; get out
 	EndIf
-	$fileRead = FileRead($fileOpen)
-	$read = GUICtrlRead($pEditWindow)
-	$stripString = StringReplace($strSplit[$oIndex], ".txt", "")
-	WinSetTitle($pWnd, $read, $stripString & " - AuPad")
-	GUICtrlSetData($pEditWindow, $fileRead, $read)
-	$fn[$oIndex] = $strSplit[$oIndex]
-	MsgBox(0, "", $fn[$oIndex])
+	$fileRead = FileRead($fileOpen) ; read the open file
+	$read = GUICtrlRead($pEditWindow) ; get the current text in the window
+	$stripString = StringReplace($strSplit[$oIndex], ".txt", "") ; replace the file name extension with nothing
+	WinSetTitle($pWnd, $read, $stripString & " - AuPad") ; set the title of the window
+	GUICtrlSetData($pEditWindow, $fileRead, $read) ; set the read data into the window
+	$fn[$oIndex] = $strSplit[$oIndex] ; set the file name save variable to the name of the opened file
+	FileClose($fileOpen) ; close the file
 EndFunc
 
 Func Save()
