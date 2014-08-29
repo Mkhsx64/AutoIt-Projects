@@ -74,7 +74,7 @@ While 1
 	EndSwitch
 	Select
 		Case _IsPressed("11", $hDLL) And _IsPressed("53", $hDLL)
-			Save()
+		Save()
 		Case _IsPressed("11", $hDLL) And _IsPressed("4F", $hDLL)
 			Open()
 	EndSelect
@@ -408,7 +408,7 @@ Func Quit()
 EndFunc   ;==>Quit
 
 Func Save()
-	Local $r, $sd, $cn
+	Local $r
 	$r = GUICtrlRead($pEditWindow) ; read the edit control
 	If $saveCounter = 0 Then ; if we haven't saved before
 		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", ".txt") ; tell us where and what to call your file
@@ -429,8 +429,6 @@ Func Save()
 		EndIf
 		$fw = FileWrite($fs, $r) ; write everything into the file we specified
 		$fc = FileClose($fn[1]) ; then close the file we specified
-		$cn = StringSplit($fn[1], ".") ; split the file name
-		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
 		Return ; get out
 	EndIf
