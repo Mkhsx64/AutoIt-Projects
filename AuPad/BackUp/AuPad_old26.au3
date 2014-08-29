@@ -73,8 +73,8 @@ While 1
 			EndSwitch
 	EndSwitch
 	If _IsPressed("11", $hDLL) And _IsPressed("53", $hDLL) Then
-		Save()
-	EndIf
+				Save()
+			EndIf
 WEnd
 
 
@@ -395,18 +395,21 @@ Func Quit()
 	ElseIf $st > 0 Then
 		$mBox = MsgBox(4, "AuPad", "theres stuff in that window, want to save?")
 		If $mBox = 6 Then
-			$saveCounter = 0
-			Save()
+			exitSaveDialog()
 		EndIf
 	ElseIf $title[1] <> "Untitled" And $st = 0 Then
 		$mBox = MsgBox(4, "AuPad", "there isn't stuff, but it's your file, want to save?")
 		If $mBox = 6 Then
-			Save()
+			exitSaveDialog()
 		EndIf
 	EndIf
 	DllClose($hDLL)
 	Exit
 EndFunc   ;==>Quit
+
+Func exitSaveDialog()
+	; --- ;
+EndFunc
 
 Func Save()
 	Local $r
@@ -435,12 +438,12 @@ Func Save()
 	EndIf
 	$fo = FileOpen($fn[1], 2) ; if we've already saved before, open the file and set it to overwrite current contents
 	If $fo = -1 Then ; if it didn't work
-		MsgBox(0, "error", "Could not create file") ; tell us
-		Return ; get out
+			MsgBox(0, "error", "Could not create file") ; tell us
+			Return ; get out
 	EndIf
 	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
 	$fc = FileClose($fn[1]) ; close the file we specified
-EndFunc   ;==>Save
+EndFunc
 
 Func tellMe()
 	Local $ms, $cm
