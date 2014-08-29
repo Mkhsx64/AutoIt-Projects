@@ -408,11 +408,11 @@ Func Save()
 	Local $r
 	$r = GUICtrlRead($pEditWindow)
 	If $saveCounter = 0 Then
-		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt", ".txt")
+		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", ".txt")
 		$fn = StringSplit($fs, "|")
 		If $fn[1] = ".txt" Or $fn[1] = "" Then
 			MsgBox(0, "error", "did not give a name to your file")
-			$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt", ".txt")
+			$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", ".txt")
 			$fn = StringSplit($fs, "|")
 			If $fn[1] = ".txt" Or $fn[1] = "" Then
 				MsgBox(0, "error", "No name chosen exiting save function...")
