@@ -8,6 +8,8 @@
 #Au3Stripper_Parameters=/so
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
+
+
 #include <Constants.au3>
 #include <GUIConstants.au3>
 #include <Array.au3>
@@ -18,7 +20,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$eUndo, $emgcyArray[5], $emgcyCounter = 0, _
 		$ofData[6], $uFcounter = 5, $oFCounter = 0, $eCut, $eCopy, $ePaste, _
 		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, $emgcyFcounter = 0, _
-		$eTD, $saveCounter = 0, $fe, $fs, $fn, $fo, $fs
+		$eTD, $saveCounter = 0, $fe, $fs, $fn, $fo, $fw
 
 ; child gui vars
 Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
@@ -408,17 +410,21 @@ Func Save()
 	If $saveCounter = 0 Then
 		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt", ".txt")
 		$fn = StringSplit($fs, "|")
-		If $fn[1] = ".txt" Then
+		If $fn[1] = ".txt" Or $fn[1] = "" Then
 			MsgBox(0, "error", "did not give a name to your file")
 			$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt", ".txt")
 			$fn = StringSplit($fs, "|")
+			If $fn[1] = ".txt" Or $fn[1] = "" Then
+				MsgBox(0, "error", "No name chosen exiting save function...")
+				Return
+			EndIf
 		EndIf
 		$fo = FileOpen($fn[1], 8)
 		If $fo = -1 Then
 			MsgBox(0, "error", "Could not create file : " & $saveCounter)
 			Return
 		EndIf
-		$fs = FileWrite($fs, $r)
+		$fw = FileWrite($fs, $r)
 		$fc = FileClose($fn[1])
 		$saveCounter += 1
 		Return
@@ -427,7 +433,7 @@ Func Save()
 	If $fo = -1 Then
 			MsgBox(0, "error", "Could not create file")
 	EndIf
-	$fs = FileWrite($fs, $r)
+	$fw = FileWrite($fs, $r)
 	$fc = FileClose($fn[1])
 EndFunc
 
