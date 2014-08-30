@@ -107,7 +107,7 @@ While 1
 			EndIf
 			Undo() ; call the undo function if it is the active window
 	EndSelect
-WEnd
+	WEnd
 
 
 
