@@ -389,14 +389,14 @@ EndFunc   ;==>setWW
 
 Func chkSel()
 	Local $gs, $gc, $getState
-	$gs = _GUICtrlEdit_GetSel($pEditWindow)
-	$gc = $gs[1] - $gs[0]
-	If $gc <> 1 Then
-		$getState = GUICtrlGetState($eDelete)
-		If $getState = 2 Then
-			Return
+	$gs = _GUICtrlEdit_GetSel($pEditWindow) ; get the selected text
+	$gc = $gs[1] - $gs[0] ; get how many characters have been selected
+	If $gc <> 1 Then ; if the selection is not blank
+		$getState = GUICtrlGetState($eDelete) ; get the state of the control
+		If $getState = 2 Then ; if it is already greyed out
+			Return ; get out
 		Else
-			GUICtrlSetState($eDelete, 2)
+			GUICtrlSetState($eDelete, 2) ; otherwise, set the state
 		EndIf
 	EndIf
 EndFunc
