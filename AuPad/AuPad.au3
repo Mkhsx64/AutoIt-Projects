@@ -439,21 +439,22 @@ Func Quit()
 	$st = StringLen($rd) ; find the length of the string read from the edit control
 	$wgt = WinGetTitle($pWnd, "") ; get the title of the window
 	$title = StringSplit($wgt, " - ") ; split the window title
-	If $st = 0 And $title[1] = "Untitled" Then
-		Exit
-	ElseIf $st > 0 Then
-		$mBox = MsgBox(4, "AuPad", "theres stuff in that window, want to save?")
-		If $mBox = 6 Then
-			$saveCounter = 0
-			Save()
+	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
+		DllClose($hDLL) ; close the DLL before we exit
+		Exit ; get out
+	ElseIf $st > 0 Then ; if there is something in the window, and it is called Untitled
+		$mBox = MsgBox(4, "AuPad", "theres stuff in that window, want to save?") ; ask us
+		If $mBox = 6 Then ; if we said yes
+			$saveCounter = 0 ; reset the save counter
+			Save() ; call the save function
 		EndIf
-	ElseIf $title[1] <> "Untitled" And $st = 0 Then
-		$mBox = MsgBox(4, "AuPad", "there isn't stuff, but it's your file, want to save?")
-		If $mBox = 6 Then
-			Save()
+	ElseIf $title[1] <> "Untitled" And $st = 0 Then ; if the title is not Untitled and there is data in the window
+		$mBox = MsgBox(4, "AuPad", "there isn't stuff, but it's your file, want to save?") ; ask us
+		If $mBox = 6 Then ; if we said yes
+			Save() ; run the save function
 		EndIf
 	EndIf
-	DllClose($hDLL)
+	DllClose($hDLL) ; close the DLL before we exit
 	Exit
 EndFunc   ;==>Quit
 
