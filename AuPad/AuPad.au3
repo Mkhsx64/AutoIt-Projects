@@ -419,23 +419,20 @@ Func delSelected()
 	EndIf
 	$readW = GUICtrlRead($pEditWindow) ; read the current data in the edit window
 	$stringI = StringMid($readW, $getS[0] + 1, $getS[1]) ; get the characters from the positions returned by _GUICtrlEdit_getSel
-	$stringS = StringSplit($readW, $stringI)
-	$strIstr = StringInStr($stringI, " ")
-	MsgBox(0, "", $strIstr)
-	If $strIstr > 0 Then
-		MsgBox(0, "", "here")
-		$strSplEx = StringSplit($stringI, " ")
+	$stringS = StringSplit($readW, $stringI) ; split the string by the selected string in the string
+	$strIstr = StringInStr($stringI, " ") ; find out if there is a space in the string
+	If $strIstr > 0 Then ; if we did find a space
+		$strSplEx = StringSplit($stringI, " ") ; split it by the space
 	EndIf
-	If $stringS[1] <> "" Then
+	If $stringS[1] <> "" Then ; if the first string is not null
 		$stringR = StringReplace($readW, $stringI, "", -1) ; replace the string with nothing
 	Else
-		If $strIstr > 0 Then
-			MsgBox(0, "", $strSplEx[1])
-			$strTl = StringTrimLeft($readW, $getS[0])
-			$strTlEx = StringTrimLeft($strTl, $getS[0])
-			$stringR = StringReplace($strTl, $strSplEx[1], "", 1)
+		If $strIstr > 0 Then ; if there was a space
+			$strTl = StringTrimLeft($readW, $getS[0]) ; trim the whole string by the character position
+			$strTlEx = StringTrimLeft($strTl, $getS[0]) ; trim it again for the set data call
+			$stringR = StringReplace($strTl, $strSplEx[1], "", 1) ; replace the new window string with the single sel string
 			GUICtrlSetData($pEditWindow, $strTlEx & $stringR) ; set the new string in the data window
-			Return
+			Return ; get out
 		EndIf
 		$stringR = StringReplace($readW, $stringI, "", 1) ; replace the string with nothing
 	EndIf
