@@ -69,14 +69,14 @@ While 1
 				Case $eDelete
 					delSelected() ; call the delSelected function when the menu option is pressed
 				Case $forWW
-					If $WWcounter = 1 Then
-						GUICtrlSetState($forWW, $GUI_UNCHECKED)
-						setWW($WWcounter)
-						$WWcounter -= 1
+					If $WWcounter = 1 Then ; if the counter is at 1
+						GUICtrlSetState($forWW, $GUI_UNCHECKED) ; set the state of the menu item to be unchecked
+						setWW($WWcounter) ; call the setWW function passing it the $WWcounter
+						$WWcounter -= 1 ; increment the counter
 					Else
-						GUICtrlSetState($forWW, $GUI_CHECKED)
-						setWW($WWcounter)
-						$WWcounter += 1
+						GUICtrlSetState($forWW, $GUI_CHECKED) ; set the state of the menu item to be checked
+						setWW($WWcounter) ; call the setWW function passing it the $WWcounter
+						$WWcounter += 1 ; increment the counter
 					EndIf
 			EndSwitch
 		Case $cFwnd ; check the find child window
