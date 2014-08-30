@@ -431,8 +431,10 @@ Func delSelected()
 	Else
 		If $strIstr > 0 Then
 			MsgBox(0, "", $strSplEx[1])
-			$stringR = StringReplace($readW, $strSplEx[1], "", 1)
-			GUICtrlSetData($pEditWindow, $stringR) ; set the new string in the data window
+			$strTl = StringTrimLeft($readW, $getS[0])
+			$strTlEx = StringTrimLeft($strTl, $getS[0])
+			$stringR = StringReplace($strTl, $strSplEx[1], "", 1)
+			GUICtrlSetData($pEditWindow, $strTlEx & $stringR) ; set the new string in the data window
 			Return
 		EndIf
 		$stringR = StringReplace($readW, $stringI, "", 1) ; replace the string with nothing
