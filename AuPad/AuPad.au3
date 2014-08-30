@@ -18,7 +18,7 @@
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow, $uArray[1000], $uCounter = 0, _
-		$eUndo, $emgcyArray[5], $emgcyCounter = 0, _
+		$eUndo, $emgcyArray[5], $emgcyCounter = 0, $pActiveW, _
 		$ofData[6], $uFcounter = 5, $oFCounter = 0, $eCut, $eCopy, $ePaste, _
 		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, $emgcyFcounter = 0, _
 		$eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $hDLL, $oIndex = 0
@@ -74,8 +74,16 @@ While 1
 	EndSwitch
 	Select
 		Case _IsPressed("11", $hDLL) And _IsPressed("53", $hDLL)
+			$pActiveW = WinActive($pWnd)
+			If $pActiveW = 0 Then
+				ContinueLoop
+			EndIf
 			Save()
 		Case _IsPressed("11", $hDLL) And _IsPressed("4F", $hDLL)
+			$pActiveW = WinActive($pWnd)
+			If $pActiveW = 0 Then
+				ContinueLoop
+			EndIf
 			Open()
 	EndSelect
 WEnd
