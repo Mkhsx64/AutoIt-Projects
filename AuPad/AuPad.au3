@@ -362,7 +362,15 @@ Func findChild()
 EndFunc   ;==>findChild
 
 Func delSelected()
-	; --- ;
+	Local $getS, $stringR, $readW, $stringI
+	$getS = _GUICtrlEdit_GetSel($pEditWindow)
+	If $getS[0] = 0 And $getS[1] = 1 Then
+		Return
+	EndIf
+	$readW = GUICtrlRead($pEditWindow)
+	$stringI = StringMid($readW, $getS[0], $getS[1])
+	$stringR = StringReplace($readW, $stringI, "")
+	GUICtrlSetData($pEditWindow, $stringR)
 EndFunc   ;==>delSelected
 
 Func Copy()
