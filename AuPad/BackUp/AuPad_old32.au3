@@ -392,159 +392,155 @@ Func chkSel()
 	$gs = _GUICtrlEdit_GetSel($pEditWindow) ; get the selected text
 	$gc = $gs[1] - $gs[0] ; get how many characters have been selected
 	If $gc > 0 Then ; if the selection is not blank
-		GUICtrlSetState($eDelete, 64) ; otherwise, set the state
+		GUICtrlSetState($eDelete, 2) ; otherwise, set the state
 	Else
 		$getState = GUICtrlGetState($eDelete) ; get the state of the control
-		If $getState = 128 Then ; if it is already greyed out
+		If $getState = 2 Then ; if it is already greyed out
 			Return ; get out
 		Else
-			GUICtrlSetState($eDelete, 128) ; otherwise, set the state
+			GUICtrlSetState($eDelete, 2) ; otherwise, set the state
 		EndIf
-	EndIf
-EndFunc   ;==>chkSel
-
-Func delSelected()
-	Local $getS, $stringR, $readW, $stringI, $getCount, _
-			$stringS
-	$getS = _GUICtrlEdit_GetSel($pEditWindow) ; get the selected start and end position in the edit window
-	$getCount = $getS[1] - $getS[0] ; get the count of the selected text
-	If $getCount = 1 Then ; if there is no selection
-		Return ; get out
-	EndIf
-	$readW = GUICtrlRead($pEditWindow) ; read the current data in the edit window
-	$stringI = StringMid($readW, $getS[0], $getS[1]) ; get the characters from the positions returned by _GUICtrlEdit_getSel
-	$stringS = StringSplit($readW, $stringI)
-	If $stringS[0] = 1 Then
-		$stringR = StringReplace($readW, $stringI, "", -1) ; replace the string with nothing
-	Else
-		$stringR = StringReplace($readW, $stringI, "") ; replace the string with nothing
-	EndIf
-	GUICtrlSetData($pEditWindow, $stringR) ; set the new string in the data window
-EndFunc   ;==>delSelected
-
-Func Copy()
-	Local $gt, $st, $ct
-	$gt = _GUICtrlEdit_GetSel($pEditWindow) ; get the start ($gt[0]) and end ($gt[1]) positions of the selected text
-	If $gt[0] = 0 And $gt[1] = 1 Then ; if there is no selected text in the edit control
-		Return ; get out
-	Else
-		$st = StringMid(GUICtrlRead($pEditWindow), $gt[0], $gt[1]) ; get the characters between the start and end characters from the selected text in theedit control
-	EndIf
-	$ct = ClipPut($st) ; put the selected text into the clipboard
-	If $ct = 0 Then ; check if it worked
-		MsgBox(0, "error", "Could not copy selected text") ; tell us if it didn't
-	EndIf
-EndFunc   ;==>Copy
-
-Func Paste()
-	Local $g, $p
-	$g = ClipGet() ; get the string from the clipboard
-	If @error Then Return ; if @error is set get out
-	$r = GUICtrlRead($pEditWindow) ; read the edit control
-	$p = GUICtrlSetData($pEditWindow, $g) ; set the string into the edit control
-EndFunc   ;==>Paste
-
-Func timeDate()
-	Local $r, $p, $h, $s
-	$r = GUICtrlRead($pEditWindow) ; read the window for the current text
-	If @HOUR >= 12 Then ; if it is after 11:59 AM
-		$h = @HOUR - 12 ; set it to the windows standard notepad hour notation
-		$s = Int($h) ; turn the string into an integer
-		$p = GUICtrlSetData($pEditWindow, $r & $s & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
-	Else ; otherwise if it is in the AM
-		$p = GUICtrlSetData($pEditWindow, $r & @HOUR & ":" & @MIN & " AM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
-	EndIf
-EndFunc   ;==>timeDate
-
-Func Open()
-	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
-			$strinString, $read, $stripString
-	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)", BitOR(1, 2)) ; ask the user what they would like to open
-	$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
-	$oIndex = $strSplit[0] ; set the $oIndex to the last value in the split array
-	If $strSplit[$oIndex] = "" Or $strSplit[$oIndex] = ".txt" Then ; if there is not value or just .txt then tell us and return
-		MsgBox(0, "error", "Did not open a file") ; tell us
-		Return ; get out
-	EndIf
-	$strinString = StringSplit($strSplit[$oIndex], ".") ; split the file name by the . char
-	If $strinString[2] <> "txt" Then ; if the file extension does not equal text
-		MsgBox(0, "error", "Invalid file type selected") ; tell us
-		Return ; get out
-	EndIf
-	$fileOpen = FileOpen($fileOpenD, 0) ; open the file specified
-	If $fileOpen = -1 Then ; if that didn't work
-		MsgBox(0, "error", "Could not open the file") ; tell us
-		Return ; get out
-	EndIf
-	$fileRead = FileRead($fileOpen) ; read the open file
-	$read = GUICtrlRead($pEditWindow) ; get the current text in the window
-	$stripString = StringReplace($strSplit[$oIndex], ".txt", "") ; replace the file name extension with nothing
-	WinSetTitle($pWnd, $read, $stripString & " - AuPad") ; set the title of the window
-	GUICtrlSetData($pEditWindow, $fileRead, $read) ; set the read data into the window
-	$fn[$oIndex] = $strSplit[$oIndex] ; set the file name save variable to the name of the opened file
-	FileClose($fileOpen) ; close the file
-EndFunc   ;==>Open
-
-Func Save()
-	Local $r, $sd, $cn
-	$r = GUICtrlRead($pEditWindow) ; read the edit control
-	If $saveCounter = 0 Then ; if we haven't saved before
-		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", ".txt") ; tell us where and what to call your file
-		$fn = StringSplit($fs, "\") ; split the saved directory and name
-		$i = $fn[0]
-		If $fn[$i] = ".txt" Or $fn[$i] = "" Then ; if the value in the filesavedialog is not valid
-			MsgBox(0, "error", "did not give a name to your file") ; tell us
-			$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", ".txt") ; try to tell us where and what to call your file
-			$fn = StringSplit($fs, "\") ; split the saved directory and name
-			$i = $fn[0]
-			If $fn[$i] = ".txt" Or $fn[$i] = "" Then ; if you didn't set it again
-				MsgBox(0, "error", "No name chosen exiting save function...") ; tell us
-				Return ; get out
-			EndIf
 		EndIf
-		$fo = FileOpen($fn[1], 2 + 8) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
-		If $fo = -1 Then ; if it didn't work
-			MsgBox(0, "error", "Could not create file : " & $saveCounter) ; tell us
+;### Tidy Error -> "endfunc" is closing previous "if" on line 394
+	EndFunc   ;==>chkSel
+
+	Func delSelected()
+		Local $getS, $stringR, $readW, $stringI, $getCount
+		$getS = _GUICtrlEdit_GetSel($pEditWindow) ; get the selected start and end position in the edit window
+		$getCount = $getS[1] - $getS[0] ; get the count of the selected text
+		If $getCount = 1 Then ; if there is no selection
 			Return ; get out
 		EndIf
-		$fw = FileWrite($fs, $r) ; write everything into the file we specified
-		$fc = FileClose($fn[1]) ; then close the file we specified
-		$cn = StringSplit($fn[1], ".") ; split the file name
-		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
-		$saveCounter += 1 ; increment the save counter
-		Return ; get out
-	EndIf
-	$fo = FileOpen($fn[$oIndex], 2) ; if we've already saved before, open the file and set it to overwrite current contents
-	If $fo = -1 Then ; if it didn't work
-		MsgBox(0, "error", "Could not create file") ; tell us
-		Return ; get out
-	EndIf
-	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
-	$fc = FileClose($fn[$oIndex]) ; close the file we specified
-EndFunc   ;==>Save
+		$readW = GUICtrlRead($pEditWindow) ; read the current data in the edit window
+		$stringI = StringMid($readW, $getS[0], $getS[1]) ; get the characters from the positions returned by _GUICtrlEdit_getSel
+		$stringR = StringReplace($readW, $stringI, "") ; replace the string with nothing
+		GUICtrlSetData($pEditWindow, $stringR) ; set the new string in the data window
+	EndFunc   ;==>delSelected
 
-Func Quit()
-	Local $wgt, $rd, $stringis, $title, $st, $active, $mBox
-	$rd = GUICtrlRead($pEditWindow) ; read the edit control
-	$st = StringLen($rd) ; find the length of the string read from the edit control
-	$wgt = WinGetTitle($pWnd, "") ; get the title of the window
-	$title = StringSplit($wgt, " - ") ; split the window title
-	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
+	Func Copy()
+		Local $gt, $st, $ct
+		$gt = _GUICtrlEdit_GetSel($pEditWindow) ; get the start ($gt[0]) and end ($gt[1]) positions of the selected text
+		If $gt[0] = 0 And $gt[1] = 1 Then ; if there is no selected text in the edit control
+			Return ; get out
+		Else
+			$st = StringMid(GUICtrlRead($pEditWindow), $gt[0], $gt[1]) ; get the characters between the start and end characters from the selected text in theedit control
+		EndIf
+		$ct = ClipPut($st) ; put the selected text into the clipboard
+		If $ct = 0 Then ; check if it worked
+			MsgBox(0, "error", "Could not copy selected text") ; tell us if it didn't
+		EndIf
+	EndFunc   ;==>Copy
+
+	Func Paste()
+		Local $g, $p
+		$g = ClipGet() ; get the string from the clipboard
+		If @error Then Return ; if @error is set get out
+		$r = GUICtrlRead($pEditWindow) ; read the edit control
+		$p = GUICtrlSetData($pEditWindow, $g) ; set the string into the edit control
+	EndFunc   ;==>Paste
+
+	Func timeDate()
+		Local $r, $p, $h, $s
+		$r = GUICtrlRead($pEditWindow) ; read the window for the current text
+		If @HOUR >= 12 Then ; if it is after 11:59 AM
+			$h = @HOUR - 12 ; set it to the windows standard notepad hour notation
+			$s = Int($h) ; turn the string into an integer
+			$p = GUICtrlSetData($pEditWindow, $r & $s & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
+		Else ; otherwise if it is in the AM
+			$p = GUICtrlSetData($pEditWindow, $r & @HOUR & ":" & @MIN & " AM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
+		EndIf
+	EndFunc   ;==>timeDate
+
+	Func Open()
+		Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
+				$strinString, $read, $stripString
+		$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)", BitOR(1, 2)) ; ask the user what they would like to open
+		$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
+		$oIndex = $strSplit[0] ; set the $oIndex to the last value in the split array
+		If $strSplit[$oIndex] = "" Or $strSplit[$oIndex] = ".txt" Then ; if there is not value or just .txt then tell us and return
+			MsgBox(0, "error", "Did not open a file") ; tell us
+			Return ; get out
+		EndIf
+		$strinString = StringSplit($strSplit[$oIndex], ".") ; split the file name by the . char
+		If $strinString[2] <> "txt" Then ; if the file extension does not equal text
+			MsgBox(0, "error", "Invalid file type selected") ; tell us
+			Return ; get out
+		EndIf
+		$fileOpen = FileOpen($fileOpenD, 0) ; open the file specified
+		If $fileOpen = -1 Then ; if that didn't work
+			MsgBox(0, "error", "Could not open the file") ; tell us
+			Return ; get out
+		EndIf
+		$fileRead = FileRead($fileOpen) ; read the open file
+		$read = GUICtrlRead($pEditWindow) ; get the current text in the window
+		$stripString = StringReplace($strSplit[$oIndex], ".txt", "") ; replace the file name extension with nothing
+		WinSetTitle($pWnd, $read, $stripString & " - AuPad") ; set the title of the window
+		GUICtrlSetData($pEditWindow, $fileRead, $read) ; set the read data into the window
+		$fn[$oIndex] = $strSplit[$oIndex] ; set the file name save variable to the name of the opened file
+		FileClose($fileOpen) ; close the file
+	EndFunc   ;==>Open
+
+	Func Save()
+		Local $r, $sd, $cn
+		$r = GUICtrlRead($pEditWindow) ; read the edit control
+		If $saveCounter = 0 Then ; if we haven't saved before
+			$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", ".txt") ; tell us where and what to call your file
+			$fn = StringSplit($fs, "\") ; split the saved directory and name
+			$i = $fn[0]
+			If $fn[$i] = ".txt" Or $fn[$i] = "" Then ; if the value in the filesavedialog is not valid
+				MsgBox(0, "error", "did not give a name to your file") ; tell us
+				$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", ".txt") ; try to tell us where and what to call your file
+				$fn = StringSplit($fs, "\") ; split the saved directory and name
+				$i = $fn[0]
+				If $fn[$i] = ".txt" Or $fn[$i] = "" Then ; if you didn't set it again
+					MsgBox(0, "error", "No name chosen exiting save function...") ; tell us
+					Return ; get out
+				EndIf
+			EndIf
+			$fo = FileOpen($fn[1], 2 + 8) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
+			If $fo = -1 Then ; if it didn't work
+				MsgBox(0, "error", "Could not create file : " & $saveCounter) ; tell us
+				Return ; get out
+			EndIf
+			$fw = FileWrite($fs, $r) ; write everything into the file we specified
+			$fc = FileClose($fn[1]) ; then close the file we specified
+			$cn = StringSplit($fn[1], ".") ; split the file name
+			$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
+			$saveCounter += 1 ; increment the save counter
+			Return ; get out
+		EndIf
+		$fo = FileOpen($fn[$oIndex], 2) ; if we've already saved before, open the file and set it to overwrite current contents
+		If $fo = -1 Then ; if it didn't work
+			MsgBox(0, "error", "Could not create file") ; tell us
+			Return ; get out
+		EndIf
+		$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
+		$fc = FileClose($fn[$oIndex]) ; close the file we specified
+	EndFunc   ;==>Save
+
+	Func Quit()
+		Local $wgt, $rd, $stringis, $title, $st, $active, $mBox
+		$rd = GUICtrlRead($pEditWindow) ; read the edit control
+		$st = StringLen($rd) ; find the length of the string read from the edit control
+		$wgt = WinGetTitle($pWnd, "") ; get the title of the window
+		$title = StringSplit($wgt, " - ") ; split the window title
+		If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
+			DllClose($hDLL) ; close the DLL before we exit
+			Exit ; get out
+		ElseIf $st > 0 Then ; if there is something in the window, and it is called Untitled
+			$mBox = MsgBox(4, "AuPad", "theres stuff in that window, want to save?") ; ask us
+			If $mBox = 6 Then ; if we said yes
+				$saveCounter = 0 ; reset the save counter
+				Save() ; call the save function
+			EndIf
+		ElseIf $title[1] <> "Untitled" And $st = 0 Then ; if the title is not Untitled and there is data in the window
+			$mBox = MsgBox(4, "AuPad", "there isn't stuff, but it's your file, want to save?") ; ask us
+			If $mBox = 6 Then ; if we said yes
+				Save() ; run the save function
+			EndIf
+		EndIf
 		DllClose($hDLL) ; close the DLL before we exit
 		Exit ; get out
-	ElseIf $st > 0 Then ; if there is something in the window, and it is called Untitled
-		$mBox = MsgBox(4, "AuPad", "theres stuff in that window, want to save?") ; ask us
-		If $mBox = 6 Then ; if we said yes
-			$saveCounter = 0 ; reset the save counter
-			Save() ; call the save function
-		EndIf
-	ElseIf $title[1] <> "Untitled" And $st = 0 Then ; if the title is not Untitled and there is data in the window
-		$mBox = MsgBox(4, "AuPad", "there isn't stuff, but it's your file, want to save?") ; ask us
-		If $mBox = 6 Then ; if we said yes
-			Save() ; run the save function
-		EndIf
-	EndIf
-	DllClose($hDLL) ; close the DLL before we exit
-	Exit ; get out
-EndFunc   ;==>Quit
+	EndFunc   ;==>Quit
 
+;### Tidy Error -> func is never closed in your script.

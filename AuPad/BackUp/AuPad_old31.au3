@@ -392,20 +392,18 @@ Func chkSel()
 	$gs = _GUICtrlEdit_GetSel($pEditWindow) ; get the selected text
 	$gc = $gs[1] - $gs[0] ; get how many characters have been selected
 	If $gc > 0 Then ; if the selection is not blank
-		GUICtrlSetState($eDelete, 64) ; otherwise, set the state
+		GUICtrlSetState($eDelete, 2) ; otherwise, set the state
 	Else
 		$getState = GUICtrlGetState($eDelete) ; get the state of the control
-		If $getState = 128 Then ; if it is already greyed out
+		If $getState = 2 Then ; if it is already greyed out
 			Return ; get out
 		Else
-			GUICtrlSetState($eDelete, 128) ; otherwise, set the state
+			GUICtrlSetState($eDelete, 2) ; otherwise, set the state
 		EndIf
-	EndIf
 EndFunc   ;==>chkSel
 
 Func delSelected()
-	Local $getS, $stringR, $readW, $stringI, $getCount, _
-			$stringS
+	Local $getS, $stringR, $readW, $stringI, $getCount
 	$getS = _GUICtrlEdit_GetSel($pEditWindow) ; get the selected start and end position in the edit window
 	$getCount = $getS[1] - $getS[0] ; get the count of the selected text
 	If $getCount = 1 Then ; if there is no selection
@@ -413,12 +411,7 @@ Func delSelected()
 	EndIf
 	$readW = GUICtrlRead($pEditWindow) ; read the current data in the edit window
 	$stringI = StringMid($readW, $getS[0], $getS[1]) ; get the characters from the positions returned by _GUICtrlEdit_getSel
-	$stringS = StringSplit($readW, $stringI)
-	If $stringS[0] = 1 Then
-		$stringR = StringReplace($readW, $stringI, "", -1) ; replace the string with nothing
-	Else
-		$stringR = StringReplace($readW, $stringI, "") ; replace the string with nothing
-	EndIf
+	$stringR = StringReplace($readW, $stringI, "") ; replace the string with nothing
 	GUICtrlSetData($pEditWindow, $stringR) ; set the new string in the data window
 EndFunc   ;==>delSelected
 
@@ -547,4 +540,3 @@ Func Quit()
 	DllClose($hDLL) ; close the DLL before we exit
 	Exit ; get out
 EndFunc   ;==>Quit
-

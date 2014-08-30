@@ -405,7 +405,7 @@ EndFunc   ;==>chkSel
 
 Func delSelected()
 	Local $getS, $stringR, $readW, $stringI, $getCount, _
-			$stringS
+		$stringS
 	$getS = _GUICtrlEdit_GetSel($pEditWindow) ; get the selected start and end position in the edit window
 	$getCount = $getS[1] - $getS[0] ; get the count of the selected text
 	If $getCount = 1 Then ; if there is no selection
@@ -415,9 +415,9 @@ Func delSelected()
 	$stringI = StringMid($readW, $getS[0], $getS[1]) ; get the characters from the positions returned by _GUICtrlEdit_getSel
 	$stringS = StringSplit($readW, $stringI)
 	If $stringS[0] = 1 Then
-		$stringR = StringReplace($readW, $stringI, "", -1) ; replace the string with nothing
+	$stringR = StringReplace($readW, $stringI, "", -1) ; replace the string with nothing
 	Else
-		$stringR = StringReplace($readW, $stringI, "") ; replace the string with nothing
+	$stringR = StringReplace($readW, $stringI, "") ; replace the string with nothing
 	EndIf
 	GUICtrlSetData($pEditWindow, $stringR) ; set the new string in the data window
 EndFunc   ;==>delSelected
