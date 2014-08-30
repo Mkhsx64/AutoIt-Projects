@@ -455,7 +455,7 @@ Func Quit()
 		EndIf
 	EndIf
 	DllClose($hDLL) ; close the DLL before we exit
-	Exit
+	Exit ; get out
 EndFunc   ;==>Quit
 
 Func Open()
