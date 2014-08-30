@@ -34,7 +34,7 @@ AdlibRegister("undoCounter", 650) ; run the undoCounter function every 650 ms to
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
 HotKeySet("{F3}", "findChild") ; if the user hits the F3 key, then run the findChild function
 
-$hDLL = DllOpen("user32.dll")
+$hDLL = DllOpen("user32.dll") ; open the user32.dll file
 
 GUI() ; create the window
 
