@@ -34,6 +34,8 @@ AdlibRegister("chkSel")
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
 HotKeySet("{F3}", "findChild") ; if the user hits the F3 key, then run the findChild function
 
+OnAutoItExitRegister("Quit") ; register the quit function to run if it is exited unexpectendly
+
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
 
 GUI() ; create the window
@@ -141,6 +143,7 @@ Func GUI()
 	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
+	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
 	$hVHelp = GUICtrlCreateMenuItem("View Help", $HelpM, 0) ; create the second level view help menu item
 	$hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 1) ; create the second level about aupad menu item
