@@ -59,10 +59,12 @@ While 1
 				Case $eFind
 					findChild() ; call the findChild function when the find option is selected
 				Case $fSave
-					Save()
+					Save() ; call the save function when the save menu option is selected
 				Case $fSaveAs
-					$saveCounter = 0
-					Save()
+					$saveCounter = 0 ; reset the counter if it is not already 0
+					Save() ; call the save function when the save as menu option is selected and the counter has been reset
+				Case $fOpen
+					Open() ; call the open function when the open menu option is selected
 			EndSwitch
 		Case $cFwnd ; check the find child window
 			Switch $msg[0] ; if the msg is in the 1D array
@@ -73,18 +75,18 @@ While 1
 			EndSwitch
 	EndSwitch
 	Select
-		Case _IsPressed("11", $hDLL) And _IsPressed("53", $hDLL)
-			$pActiveW = WinActive($pWnd)
-			If $pActiveW = 0 Then
-				ContinueLoop
+		Case _IsPressed("11", $hDLL) And _IsPressed("53", $hDLL) ; if CTRL + S is pressed
+			$pActiveW = WinActive($pWnd) ; check what the active window is
+			If $pActiveW = 0 Then ; if it is not the active window
+				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
 			EndIf
-			Save()
-		Case _IsPressed("11", $hDLL) And _IsPressed("4F", $hDLL)
-			$pActiveW = WinActive($pWnd)
-			If $pActiveW = 0 Then
-				ContinueLoop
+			Save() ; call the save function if it is the active window
+		Case _IsPressed("11", $hDLL) And _IsPressed("4F", $hDLL) ; if CTRL + O is pressed
+			$pActiveW = WinActive($pWnd) ; check what the active window is
+			If $pActiveW = 0 Then ; if it is not the active window
+				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
 			EndIf
-			Open()
+			Open() ; call the open function if it is the active window
 	EndSelect
 WEnd
 
