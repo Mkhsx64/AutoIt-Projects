@@ -18,10 +18,11 @@
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow, $uArray[1000], $uCounter = 0, _
-		$eUndo, $emgcyArray[5], $emgcyCounter = 0, $pActiveW, _
+		$eUndo, $emgcyArray[5], $emgcyCounter = 0, $pActiveW, $WWcounter = 0, _
 		$ofData[6], $uFcounter = 5, $oFCounter = 0, $eCut, $eCopy, $ePaste, _
 		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, $emgcyFcounter = 0, _
-		$eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $hDLL, $oIndex = 0
+		$eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $hDLL, $oIndex = 0, _
+		$forWW, $forFont, $vStatus, $hVHelp, $hAA
 
 ; child gui vars
 Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
@@ -67,8 +68,15 @@ While 1
 					Open() ; call the open function when the open menu option is selected
 				Case $eDelete
 					delSelected() ; call the delSelected function when the menu option is pressed
+				Case $forWW
+					If $WWcounter = 1 Then
+						GUICtrlSetState($forWW, $GUI_UNCHECKED)
+					Else
+						GUICtrlSetState($forWW, $GUI_CHECKED)
+						setWW()
+					EndIf
 			EndSwitch
-		Case $cFwnd ; check the find child window
+			Case $cFwnd ; check the find child window
 			Switch $msg[0] ; if the msg is in the 1D array
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($cFwnd) ; if the exit event is sent call the GUIDelete function
@@ -361,16 +369,20 @@ Func findChild()
 	GUISetState() ; show the child window
 EndFunc   ;==>findChild
 
+Func setWW()
+	; --- ;
+EndFunc
+
 Func delSelected()
 	Local $getS, $stringR, $readW, $stringI
-	$getS = _GUICtrlEdit_GetSel($pEditWindow)
-	If $getS[0] = 0 And $getS[1] = 1 Then
-		Return
+	$getS = _GUICtrlEdit_GetSel($pEditWindow) ; get the selected start and end position in the edit window
+	If $getS[0] = 0 And $getS[1] = 1 Then ; if there is no selection
+		Return ; get out
 	EndIf
-	$readW = GUICtrlRead($pEditWindow)
-	$stringI = StringMid($readW, $getS[0], $getS[1])
-	$stringR = StringReplace($readW, $stringI, "")
-	GUICtrlSetData($pEditWindow, $stringR)
+	$readW = GUICtrlRead($pEditWindow) ; read the current data in the edit window
+	$stringI = StringMid($readW, $getS[0], $getS[1]) ; get the characters from the positions returned by _GUICtrlEdit_getSel
+	$stringR = StringReplace($readW, $stringI, "") ; replace the string with nothing
+	GUICtrlSetData($pEditWindow, $stringR) ; set the new string in the data window
 EndFunc   ;==>delSelected
 
 Func Copy()
