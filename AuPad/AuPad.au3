@@ -22,13 +22,14 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$ofData[6], $uFcounter = 5, $oFCounter = 0, $eCut, $eCopy, $ePaste, _
 		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, $emgcyFcounter = 0, _
 		$eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $hDLL, $oIndex = 0, _
-		$forWW, $forFont, $vStatus, $hVHelp, $hAA
+		$forWW, $forFont, $vStatus, $hVHelp, $hAA, $chkSel
 
 ; child gui vars
 Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
 		$cfEditWindow
 
 AdlibRegister("undoCounter", 650) ; run the undoCounter function every 650 ms to build the undo array determined by user input
+AdlibRegister("checkSel")
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
 HotKeySet("{F3}", "findChild") ; if the user hits the F3 key, then run the findChild function
@@ -386,10 +387,15 @@ Func setWW($check)
 	EndIf
 EndFunc   ;==>setWW
 
+Func chkSel()
+	; --- ;
+EndFunc
+
 Func delSelected()
-	Local $getS, $stringR, $readW, $stringI
+	Local $getS, $stringR, $readW, $stringI, $getCount
 	$getS = _GUICtrlEdit_GetSel($pEditWindow) ; get the selected start and end position in the edit window
-	If $getS[0] = 0 And $getS[1] = 1 Then ; if there is no selection
+	$getCount = $getS[1] - $getS[0] ; get the count of the selected text
+	If $getCount = 1 Then ; if there is no selection
 		Return ; get out
 	EndIf
 	$readW = GUICtrlRead($pEditWindow) ; read the current data in the edit window
