@@ -68,7 +68,7 @@ While 1
 				Case $eDelete
 					delSelected() ; call the delSelected function when the menu option is pressed
 			EndSwitch
-		Case $cFwnd ; check the find child window
+			Case $cFwnd ; check the find child window
 			Switch $msg[0] ; if the msg is in the 1D array
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($cFwnd) ; if the exit event is sent call the GUIDelete function
@@ -363,7 +363,7 @@ EndFunc   ;==>findChild
 
 Func delSelected()
 	; --- ;
-EndFunc   ;==>delSelected
+EndFunc
 
 Func Copy()
 	Local $gt, $st, $ct
@@ -425,8 +425,8 @@ EndFunc   ;==>Quit
 
 Func Open()
 	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
-			$strinString, $read, $stripString
-	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)", BitOR(1, 2)) ; ask the user what they would like to open
+		$strinString, $read, $stripString
+	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)", BitOR( 1, 2)) ; ask the user what they would like to open
 	$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
 	$oIndex = $strSplit[0] ; set the $oIndex to the last value in the split array
 	If $strSplit[$oIndex] = "" Or $strSplit[$oIndex] = ".txt" Then ; if there is not value or just .txt then tell us and return
@@ -450,7 +450,7 @@ Func Open()
 	GUICtrlSetData($pEditWindow, $fileRead, $read) ; set the read data into the window
 	$fn[$oIndex] = $strSplit[$oIndex] ; set the file name save variable to the name of the opened file
 	FileClose($fileOpen) ; close the file
-EndFunc   ;==>Open
+EndFunc
 
 Func Save()
 	Local $r, $sd, $cn
