@@ -525,18 +525,4 @@ Func Save()
 	$fc = FileClose($fn[$oIndex]) ; close the file we specified
 EndFunc   ;==>Save
 
-Func tellMe()
-	Local $ms, $cm
-	If $uCounter = 0 Then
-		MsgBox(0, "", $ofData[$oFCounter], 1)
-		MsgBox(0, "", GUICtrlRead($pEditWindow), 1)
-		$cm = MsgBox(0, "", $uCounter, 1)
-		Return
-	EndIf
-	$cm = MsgBox(0, "", $uCounter, 1)
-	$ms = MsgBox(0, "", $uArray[$uCounter - 1], 1)
-	If $ms = -1 Then
-		MsgBox(0, "", "Timeout")
-	EndIf
-EndFunc   ;==>tellMe
 
