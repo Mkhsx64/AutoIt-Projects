@@ -399,7 +399,7 @@ Func chkSel()
 			GUICtrlSetState($eDelete, 2) ; otherwise, set the state
 		EndIf
 	EndIf
-EndFunc   ;==>chkSel
+EndFunc
 
 Func delSelected()
 	Local $getS, $stringR, $readW, $stringI, $getCount
