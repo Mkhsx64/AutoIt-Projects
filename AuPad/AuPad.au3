@@ -373,8 +373,19 @@ Func findChild()
 EndFunc   ;==>findChild
 
 Func setWW($check)
-	; --- ;
-EndFunc
+	Local $rw
+	If $check = 0 Then ; if we turned word wrap on
+		$rw = GUICtrlRead($pEditWindow) ; get the data in the window
+		GUICtrlDelete($pEditWindow) ; delete the edit control
+		$pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495, BitOR($ES_AUTOVSCROLL,$ES_WANTRETURN,$WS_VSCROLL)) ; create the edit with the word wrap ability
+		ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490) ; click the window, so that it is focused at the end of the string
+	Else
+		$rw = GUICtrlRead($pEditWindow) ; get the data in the window
+		GUICtrlDelete($pEditWindow) ; delete the edit control
+		$pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495) ; create the edit window without word wrap
+		ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490) ; click the window, so that it is focused at the end of the string
+	EndIf
+	EndFunc
 
 Func delSelected()
 	Local $getS, $stringR, $readW, $stringI
