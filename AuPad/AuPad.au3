@@ -388,7 +388,17 @@ Func setWW($check)
 EndFunc   ;==>setWW
 
 Func chkSel()
-	; --- ;
+	Local $gs, $gc, $getState
+	$gs = _GUICtrlEdit_GetSel($pEditWindow)
+	$gc = $gs[1] - $gs[0]
+	If $gc <> 1 Then
+		$getState = GUICtrlGetState($eDelete)
+		If $getState = 2 Then
+			Return
+		Else
+			GUICtrlSetState($eDelete, 2)
+		EndIf
+	EndIf
 EndFunc
 
 Func delSelected()
