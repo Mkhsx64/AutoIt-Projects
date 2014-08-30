@@ -79,7 +79,7 @@ While 1
 						$WWcounter += 1
 					EndIf
 			EndSwitch
-		Case $cFwnd ; check the find child window
+			Case $cFwnd ; check the find child window
 			Switch $msg[0] ; if the msg is in the 1D array
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($cFwnd) ; if the exit event is sent call the GUIDelete function
@@ -377,7 +377,7 @@ Func setWW($check)
 	If $check = 0 Then ; if we turned word wrap on
 		$rw = GUICtrlRead($pEditWindow) ; get the data in the window
 		GUICtrlDelete($pEditWindow) ; delete the edit control
-		$pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495, BitOR($ES_AUTOVSCROLL, $ES_WANTRETURN, $WS_VSCROLL)) ; create the edit with the word wrap ability
+		$pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495, BitOR($ES_AUTOVSCROLL,$ES_WANTRETURN,$WS_VSCROLL)) ; create the edit with the word wrap ability
 		ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490) ; click the window, so that it is focused at the end of the string
 	Else
 		$rw = GUICtrlRead($pEditWindow) ; get the data in the window
@@ -385,7 +385,7 @@ Func setWW($check)
 		$pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495) ; create the edit window without word wrap
 		ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490) ; click the window, so that it is focused at the end of the string
 	EndIf
-EndFunc   ;==>setWW
+	EndFunc
 
 Func delSelected()
 	Local $getS, $stringR, $readW, $stringI
