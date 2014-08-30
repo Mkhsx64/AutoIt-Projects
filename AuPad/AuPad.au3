@@ -29,7 +29,6 @@ Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
 		$cfEditWindow
 
 AdlibRegister("undoCounter", 650) ; run the undoCounter function every 650 ms to build the undo array determined by user input
-;AdlibRegister("tellMe", 6000)
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
 HotKeySet("{F3}", "findChild") ; if the user hits the F3 key, then run the findChild function
