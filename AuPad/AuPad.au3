@@ -28,7 +28,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
 		$cfEditWindow
 
-AdlibRegister("undoCounter", 650) ; run the undoCounter function every 650 ms to build the undo array determined by user input
+AdlibRegister("undoCounter", 700) ; run the undoCounter function every 650 ms to build the undo array determined by user input
 AdlibRegister("chkSel")
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
@@ -100,8 +100,14 @@ While 1
 				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
 			EndIf
 			Open() ; call the open function if it is the active window
+		Case _IsPressed("11", $hDLL) And _IsPressed("5A", $hDLL) ; if CTRL + Z is pressed
+			$pActiveW = WinActive($pWnd) ; check what the active window is
+			If $pActiveW = 0 Then ; if it is not the active window
+				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
+			EndIf
+			Undo() ; call the undo function if it is the active window
 	EndSelect
-WEnd
+	WEnd
 
 
 
