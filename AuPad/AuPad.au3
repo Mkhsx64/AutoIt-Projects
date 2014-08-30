@@ -71,9 +71,12 @@ While 1
 				Case $forWW
 					If $WWcounter = 1 Then
 						GUICtrlSetState($forWW, $GUI_UNCHECKED)
+						setWW($WWcounter)
+						$WWcounter -= 1
 					Else
 						GUICtrlSetState($forWW, $GUI_CHECKED)
-						setWW()
+						setWW($WWcounter)
+						$WWcounter += 1
 					EndIf
 			EndSwitch
 			Case $cFwnd ; check the find child window
@@ -369,7 +372,7 @@ Func findChild()
 	GUISetState() ; show the child window
 EndFunc   ;==>findChild
 
-Func setWW()
+Func setWW($check)
 	; --- ;
 EndFunc
 
