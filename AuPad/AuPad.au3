@@ -79,6 +79,8 @@ While 1
 						setWW($WWcounter) ; call the setWW function passing it the $WWcounter
 						$WWcounter += 1 ; increment the counter
 					EndIf
+				Case $eSA
+					_GUICtrlEdit_SetSel($pEditWindow, 0, -1)
 			EndSwitch
 		Case $cFwnd ; check the find child window
 			Switch $msg[0] ; if the msg is in the 1D array
