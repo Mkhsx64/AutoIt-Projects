@@ -395,8 +395,17 @@ Func findChild()
 EndFunc   ;==>findChild
 
 Func aChild()
-	$abChild = GUICreate("About AuPad", 200, 300)
-	GUISetState()
+	Local $authLabel, $nameLabel
+	$abChild = GUICreate("About AuPad", 150, 150) ; create the window
+	$authLabel = GUICtrlCreateLabel("Author:", 55, 25) ; set the author label
+	GUICtrlSetFont(-1, 9, 600) ; set the font
+	$nameLabel = GUICtrlCreateLabel("MikahS", 58, 45) ; set name
+	GUICtrlSetFont(-1, 8, 500)  ; set the font
+	GUICtrlCreateLabel("Just a simple notepad program", 10, 80) ; set the label description 1
+	GUICtrlSetFont(-1, 7, 500) ; set the font
+	GUICtrlCreateLabel("Made completely with AutoIt", 15, 100) ; set the label description 2
+	GUICtrlSetFont(-1, 7, 500) ; set the font
+	GUISetState() ; show the window
 EndFunc
 
 Func setWW($check)
