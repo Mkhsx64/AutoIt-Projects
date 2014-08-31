@@ -34,7 +34,6 @@ AdlibRegister("chkSel")
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
 HotKeySet("{F3}", "findChild") ; if the user hits the F3 key, then run the findChild function
 
-OnAutoItExitRegister("Quit") ; register the quit function to run if it is exited unexpectendly
 
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
 
@@ -108,6 +107,12 @@ While 1
 				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
 			EndIf
 			Undo() ; call the undo function if it is the active window
+		Case _IsPressed("11", $hDLL) And _IsPressed("41", $hDLL) ; CTRL + A is pressed
+			$pActiveW = WinActivate($pWnd) ; check what the active window is
+			If $pActiveW = 0 Then ; if it is not the active window
+				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
+			EndIf
+			_GUICtrlEdit_SetSel($pEditWindow, 0, -1)
 	EndSelect
 WEnd
 
