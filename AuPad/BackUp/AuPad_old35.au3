@@ -26,7 +26,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 
 ; child gui vars
 Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
-		$cfEditWindow, $abChild
+		$cfEditWindow
 
 AdlibRegister("undoCounter", 700) ; run the undoCounter function every 650 ms to build the undo array determined by user input
 AdlibRegister("chkSel")
@@ -83,17 +83,12 @@ While 1
 				Case $hAA
 					aChild()
 			EndSwitch
-		Case $cFwnd ; check the find child window
+			Case $cFwnd ; check the find child window
 			Switch $msg[0] ; if the msg is in the 1D array
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($cFwnd) ; if the exit event is sent call the GUIDelete function
 				Case $cfCancel
 					GUIDelete($cFwnd) ; if the cancel button is clicked call the GUIDelete function
-			EndSwitch
-		Case $abChild
-			Switch $msg[0]
-				Case $GUI_EVENT_CLOSE
-					GUIDelete()
 			EndSwitch
 	EndSwitch
 	Select
@@ -393,11 +388,6 @@ Func findChild()
 	GUICtrlSetState($cfEditWindow, 256) ; give the input focus
 	GUISetState() ; show the child window
 EndFunc   ;==>findChild
-
-Func aChild()
-	$abChild = GUICreate("About AuPad", 200, 300)
-	GUISetState()
-EndFunc
 
 Func setWW($check)
 	Local $rw
