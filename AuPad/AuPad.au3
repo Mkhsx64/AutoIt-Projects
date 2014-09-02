@@ -60,7 +60,7 @@ While 1
 				Case $fExit
 					Quit() ; if exit option selected in file menu then call the quit function
 				Case $eUndo
-					_GUICtrlEdit_Undo($pEditWindow)
+					_GUICtrlEdit_Undo($pEditWindow) ; undo the last action in the edit window
 				Case $eCopy
 					Copy() ; call the Copy function when the copy option is selected
 				Case $ePaste
@@ -105,7 +105,7 @@ While 1
 		Case $abChild
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
-					GUIDelete()
+					GUIDelete() ; if the exit event is sent call the GUIDelete Function
 			EndSwitch
 	EndSwitch
 	Select
@@ -126,7 +126,7 @@ While 1
 			If $pActiveW = 0 Then ; if it is not the active window
 				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
 			EndIf
-			_GUICtrlEdit_SetSel($pEditWindow, 0, -1)
+			_GUICtrlEdit_SetSel($pEditWindow, 0, -1) ; set the selected text to everything in the edit control
 	EndSelect
 WEnd
 
@@ -272,21 +272,21 @@ EndFunc   ;==>delSelected
 
 Func Print()
 	Local $tPRINTPAGERANGE, $tPRINTDLGEX
-	$tPRINTPAGERANGE = DllStructCreate($tagPRINTPAGERANGE)
-	DllStructSetData($tPRINTPAGERANGE, 'FromPage', 1)
-	DllStructSetData($tPRINTPAGERANGE, 'ToPage', 2)
-	$tPRINTDLGEX = DllStructCreate($tagPRINTDLGEX)
-	DllStructSetData($tPRINTDLGEX, 'Size', DllStructGetSize($tPRINTDLGEX))
-	DllStructSetData($tPRINTDLGEX, 'hOwner', WinGetHandle(AutoItWinGetTitle()))
-	DllStructSetData($tPRINTDLGEX, 'Flags', BitOR($PD_PAGENUMS, $PD_NOCURRENTPAGE, $PD_NOSELECTION))
-	DllStructSetData($tPRINTDLGEX, 'NumPageRanges', 1)
-	DllStructSetData($tPRINTDLGEX, 'MaxPageRanges', 1)
-	DllStructSetData($tPRINTDLGEX, 'PageRanges', DllStructGetPtr($tPRINTPAGERANGE))
-	DllStructSetData($tPRINTDLGEX, 'MinPage', 1)
-	DllStructSetData($tPRINTDLGEX, 'MaxPage', 9)
-	DllStructSetData($tPRINTDLGEX, 'Copies', 1)
-	DllStructSetData($tPRINTDLGEX, 'StartPage', -1)
-	_WinAPI_PrintDlgEx($tPRINTDLGEX)
+	$tPRINTPAGERANGE = DllStructCreate($tagPRINTPAGERANGE) ; create the page dll structure
+	DllStructSetData($tPRINTPAGERANGE, 'FromPage', 1) ; set the from page option
+	DllStructSetData($tPRINTPAGERANGE, 'ToPage', 2) ; set the to page option
+	$tPRINTDLGEX = DllStructCreate($tagPRINTDLGEX) ; create the dialog dll structure
+	DllStructSetData($tPRINTDLGEX, 'Size', DllStructGetSize($tPRINTDLGEX)) ; get the size of the printer
+	DllStructSetData($tPRINTDLGEX, 'hOwner', WinGetHandle(AutoItWinGetTitle())) ; get the owner
+	DllStructSetData($tPRINTDLGEX, 'Flags', BitOR($PD_PAGENUMS, $PD_NOCURRENTPAGE, $PD_NOSELECTION)) ; any flags
+	DllStructSetData($tPRINTDLGEX, 'NumPageRanges', 1) ; num page range
+	DllStructSetData($tPRINTDLGEX, 'MaxPageRanges', 1) ; max page range
+	DllStructSetData($tPRINTDLGEX, 'PageRanges', DllStructGetPtr($tPRINTPAGERANGE)) ; page ranges
+	DllStructSetData($tPRINTDLGEX, 'MinPage', 1) ; min page(s)
+	DllStructSetData($tPRINTDLGEX, 'MaxPage', 9) ; max pages
+	DllStructSetData($tPRINTDLGEX, 'Copies', 1) ; copies
+	DllStructSetData($tPRINTDLGEX, 'StartPage', -1) ; start page
+	_WinAPI_PrintDlgEx($tPRINTDLGEX) ; show the window
 EndFunc   ;==>Print
 
 Func Copy()
