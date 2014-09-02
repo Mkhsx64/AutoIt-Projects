@@ -65,11 +65,11 @@ While 1
 				Case $eTD
 					timeDate() ; call the timeDate function when the time/date option is selected
 				Case $eFind
-					$fCount = 0 ; reset the find counter
-					Find($fCount) ; call the find function when the find option is selected and pass it 0
+					$fCount = 0
+					Find($fCount)
 				Case $eReplace
-					$fCount += 1 ; increment the find counter
-					Find($fCount) ; call the find function when the replace option is selected and pass it 1
+					$fCount += 1
+					Find($fCount)
 				Case $fSave
 					Save() ; call the save function when the save menu option is selected
 				Case $fSaveAs
@@ -262,7 +262,7 @@ Func Find($count)
 	Else
 		_GUICtrlEdit_Find($pEditWindow, True) ; bring up the find and replace dialog
 	EndIf
-EndFunc   ;==>Find
+EndFunc
 
 Func Copy()
 	Local $gt, $st, $ct
