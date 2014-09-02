@@ -189,21 +189,6 @@ Func setNew()
 	EndIf
 EndFunc   ;==>setNew
 
-Func findChild()
-	Local $tb, $fw
-	$cFwnd = GUICreate("Find", 325, 95, -1, -1, -1, -1, $pWnd) ; create the child window
-	$cfFindNextB = GUICtrlCreateButton("Find Next", 250, 2, 70) ; create the find next button
-	$cfCancel = GUICtrlCreateButton("Cancel", 250, 30, 70) ; create the cancel button
-	$tb = GUICtrlCreateLabel("Direction", 150, 40) ; create the direction label
-	$fw = GUICtrlCreateLabel("Find what:", 4, 5) ; create the find what label
-	$cfEditWindow = GUICtrlCreateInput("", 65, 5, 170) ; creat the input control
-	$tCheck = GUICtrlCreateRadio("Top", 150, 60) ; create the radio control
-	$bCheck = GUICtrlCreateRadio("Bottom", 190, 60) ; create the radio control
-	$mCheck = GUICtrlCreateCheckbox("Match Case", 13, 60) ; create the checkbox
-	GUICtrlSetState($cfEditWindow, 256) ; give the input focus
-	GUISetState() ; show the child window
-EndFunc   ;==>findChild
-
 Func aChild()
 	Local $authLabel, $nameLabel
 	$abChild = GUICreate("About AuPad", 150, 150) ; create the window
