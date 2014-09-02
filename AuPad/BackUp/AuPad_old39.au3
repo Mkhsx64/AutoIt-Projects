@@ -267,8 +267,8 @@ EndFunc   ;==>delSelected
 Func Print()
 	Local $tPRINTPAGERANGE, $tPRINTDLGEX
 	$tPRINTPAGERANGE = DllStructCreate($tagPRINTPAGERANGE)
-	DllStructSetData($tPRINTPAGERANGE, 'FromPage', 1)
-	DllStructSetData($tPRINTPAGERANGE, 'ToPage', 2)
+	DllStructSetData($tPRINTPAGERANGE, 'FromPage', 2)
+	DllStructSetData($tPRINTPAGERANGE, 'ToPage', 3)
 	$tPRINTDLGEX = DllStructCreate($tagPRINTDLGEX)
 	DllStructSetData($tPRINTDLGEX, 'Size', DllStructGetSize($tPRINTDLGEX))
 	DllStructSetData($tPRINTDLGEX, 'hOwner', WinGetHandle(AutoItWinGetTitle()))
@@ -278,9 +278,9 @@ Func Print()
 	DllStructSetData($tPRINTDLGEX, 'PageRanges', DllStructGetPtr($tPRINTPAGERANGE))
 	DllStructSetData($tPRINTDLGEX, 'MinPage', 1)
 	DllStructSetData($tPRINTDLGEX, 'MaxPage', 9)
-	DllStructSetData($tPRINTDLGEX, 'Copies', 1)
+	DllStructSetData($tPRINTDLGEX, 'Copies', 4)
 	DllStructSetData($tPRINTDLGEX, 'StartPage', -1)
-	_WinAPI_PrintDlgEx($tPRINTDLGEX)
+	 _WinAPI_PrintDlgEx($tPRINTDLGEX
 EndFunc   ;==>Print
 
 Func Copy()

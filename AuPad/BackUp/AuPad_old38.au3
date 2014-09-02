@@ -16,10 +16,6 @@
 #include <GUIEdit.au3>
 #include <misc.au3>
 #include <File.au3>
-#include <WinAPIDlg.au3>
-#include <WinAPIFiles.au3>
-#include <APIDlgConstants.au3>
-
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow, $uArray[1000], $uCounter = 0, _
@@ -73,8 +69,6 @@ While 1
 					Open() ; call the open function when the open menu option is selected
 				Case $eDelete
 					delSelected() ; call the delSelected function when the menu option is pressed
-				Case $fPrint
-					Print()
 				Case $forWW
 					If $WWcounter = 1 Then ; if the counter is at 1
 						GUICtrlSetState($forWW, $GUI_UNCHECKED) ; set the state of the menu item to be unchecked
@@ -265,23 +259,21 @@ Func delSelected()
 EndFunc   ;==>delSelected
 
 Func Print()
-	Local $tPRINTPAGERANGE, $tPRINTDLGEX
-	$tPRINTPAGERANGE = DllStructCreate($tagPRINTPAGERANGE)
-	DllStructSetData($tPRINTPAGERANGE, 'FromPage', 1)
-	DllStructSetData($tPRINTPAGERANGE, 'ToPage', 2)
-	$tPRINTDLGEX = DllStructCreate($tagPRINTDLGEX)
-	DllStructSetData($tPRINTDLGEX, 'Size', DllStructGetSize($tPRINTDLGEX))
-	DllStructSetData($tPRINTDLGEX, 'hOwner', WinGetHandle(AutoItWinGetTitle()))
-	DllStructSetData($tPRINTDLGEX, 'Flags', BitOR($PD_PAGENUMS, $PD_NOCURRENTPAGE, $PD_NOSELECTION))
-	DllStructSetData($tPRINTDLGEX, 'NumPageRanges', 1)
-	DllStructSetData($tPRINTDLGEX, 'MaxPageRanges', 1)
-	DllStructSetData($tPRINTDLGEX, 'PageRanges', DllStructGetPtr($tPRINTPAGERANGE))
-	DllStructSetData($tPRINTDLGEX, 'MinPage', 1)
-	DllStructSetData($tPRINTDLGEX, 'MaxPage', 9)
-	DllStructSetData($tPRINTDLGEX, 'Copies', 1)
-	DllStructSetData($tPRINTDLGEX, 'StartPage', -1)
-	_WinAPI_PrintDlgEx($tPRINTDLGEX)
-EndFunc   ;==>Print
+	Local $tPRINTPAGERANGE = DllStructCreate($tagPRINTPAGERANGE)
+DllStructSetData($tPRINTPAGERANGE, 'FromPage', 2)
+DllStructSetData($tPRINTPAGERANGE, 'ToPage', 3)
+Local $tPRINTDLGEX = DllStructCreate($tagPRINTDLGEX)
+DllStructSetData($tPRINTDLGEX, 'Size', DllStructGetSize($tPRINTDLGEX))
+DllStructSetData($tPRINTDLGEX, 'hOwner', WinGetHandle(AutoItWinGetTitle()))
+DllStructSetData($tPRINTDLGEX, 'Flags', BitOR($PD_PAGENUMS, $PD_NOCURRENTPAGE, $PD_NOSELECTION))
+DllStructSetData($tPRINTDLGEX, 'NumPageRanges', 1)
+DllStructSetData($tPRINTDLGEX, 'MaxPageRanges', 1)
+DllStructSetData($tPRINTDLGEX, 'PageRanges', DllStructGetPtr($tPRINTPAGERANGE))
+DllStructSetData($tPRINTDLGEX, 'MinPage', 1)
+DllStructSetData($tPRINTDLGEX, 'MaxPage', 9)
+DllStructSetData($tPRINTDLGEX, 'Copies', 4)
+DllStructSetData($tPRINTDLGEX, 'StartPage', -1)
+EndFunc
 
 Func Copy()
 	Local $gt, $st, $ct
