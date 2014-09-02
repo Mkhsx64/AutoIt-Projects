@@ -144,21 +144,26 @@ Func GUI()
 	$fOpen = GUICtrlCreateMenuItem("Open..." & @TAB & "Ctrl + O", $FileM, 1) ; create second level menu item open ^ file
 	$fSave = GUICtrlCreateMenuItem("Save" & @TAB & "Ctrl + S", $FileM, 2) ; create second level menu item save ^ file
 	$fSaveAs = GUICtrlCreateMenuItem("Save As...", $FileM, 3) ; create second level menu item save as ^ file
-	$fPageSetup = GUICtrlCreateMenuItem("Page Setup...", $FileM, 4) ; create second level menu item page setup ^ file
-	$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 5) ; create second level menu item print ^ file
-	$fExit = GUICtrlCreateMenuItem("Exit", $FileM, 6) ; create second level menu item exit ^ file
+	GUICtrlCreateMenuItem("", $FileM, 4) ; create line
+	$fPageSetup = GUICtrlCreateMenuItem("Page Setup...", $FileM, 5) ; create second level menu item page setup ^ file
+	$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 6) ; create second level menu item print ^ file
+	GUICtrlCreateMenuItem("", $FileM, 7) ; create line
+	$fExit = GUICtrlCreateMenuItem("Exit", $FileM, 8) ; create second level menu item exit ^ file
 	$EditM = GUICtrlCreateMenu("Edit") ; create the first level edit menu item
 	$eUndo = GUICtrlCreateMenuItem("Undo" & @TAB & "Ctrl + Z", $EditM, 0) ; create the second level undo menu item
-	$eCut = GUICtrlCreateMenuItem("Cut" & @TAB & "Ctrl + X", $EditM, 1) ; create the second level cut menu item
-	$eCopy = GUICtrlCreateMenuItem("Copy" & @TAB & "Ctrl + C", $EditM, 2) ; create the second level copy menu item
-	$ePaste = GUICtrlCreateMenuItem("Paste" & @TAB & "Ctrl + V", $EditM, 3) ; create the second level paste menu item
-	$eDelete = GUICtrlCreateMenuItem("Delete" & @TAB & "Del", $EditM, 4) ; create the second level delete menu item
-	$eFind = GUICtrlCreateMenuItem("Find..." & @TAB & "Ctrl + F", $EditM, 5) ; create the second level find menu item
-	$eFN = GUICtrlCreateMenuItem("Find Next" & @TAB & "F3", $EditM, 6) ; create the second level find next menu item
-	$eReplace = GUICtrlCreateMenuItem("Replace..." & @TAB & "Ctrl + H", $EditM, 7) ; create the second level replace menu item
-	$eGT = GUICtrlCreateMenuItem("Go To..." & @TAB & "Ctrl + G", $EditM, 8) ; create the second level go to menu item
-	$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 9) ; create the second level select all menu item
-	$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 10) ; create the second level time/date menu item
+	GUICtrlCreateMenuItem("", $EditM, 1) ; create line
+	$eCut = GUICtrlCreateMenuItem("Cut" & @TAB & "Ctrl + X", $EditM, 2) ; create the second level cut menu item
+	$eCopy = GUICtrlCreateMenuItem("Copy" & @TAB & "Ctrl + C", $EditM, 3) ; create the second level copy menu item
+	$ePaste = GUICtrlCreateMenuItem("Paste" & @TAB & "Ctrl + V", $EditM, 4) ; create the second level paste menu item
+	$eDelete = GUICtrlCreateMenuItem("Delete" & @TAB & "Del", $EditM, 5) ; create the second level delete menu item
+	GUICtrlCreateMenuItem("", $EditM, 6) ; create line
+	$eFind = GUICtrlCreateMenuItem("Find..." & @TAB & "Ctrl + F", $EditM, 7) ; create the second level find menu item
+	$eFN = GUICtrlCreateMenuItem("Find Next" & @TAB & "F3", $EditM, 8) ; create the second level find next menu item
+	$eReplace = GUICtrlCreateMenuItem("Replace..." & @TAB & "Ctrl + H", $EditM, 9) ; create the second level replace menu item
+	$eGT = GUICtrlCreateMenuItem("Go To..." & @TAB & "Ctrl + G", $EditM, 10) ; create the second level go to menu item
+	GUICtrlCreateMenuItem("", $EditM, 11) ; create line
+	$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 12) ; create the second level select all menu item
+	$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 13) ; create the second level time/date menu item
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
 	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
@@ -167,7 +172,8 @@ Func GUI()
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
 	$hVHelp = GUICtrlCreateMenuItem("View Help", $HelpM, 0) ; create the second level view help menu item
-	$hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 1) ; create the second level about aupad menu item
+	GUICtrlCreateMenuItem("", $HelpM, 1) ; create line
+	$hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 2) ; create the second level about aupad menu item
 	setNew() ; set the window to have a new file
 	GUISetState() ; show the window
 EndFunc   ;==>GUI
