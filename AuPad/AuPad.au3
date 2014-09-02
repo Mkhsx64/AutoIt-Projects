@@ -65,9 +65,9 @@ While 1
 				Case $eTD
 					timeDate() ; call the timeDate function when the time/date option is selected
 				Case $eFind
-					_GUICtrlEdit_Find($pEditWindow)
+					_GUICtrlEdit_Find($pEditWindow) ; bring up the find dialog
 				Case $eReplace
-					_GUICtrlEdit_Find($pEditWindow, True)
+					_GUICtrlEdit_Find($pEditWindow, True) ; bring up the find and replace dialog
 				Case $fSave
 					Save() ; call the save function when the save menu option is selected
 				Case $fSaveAs
