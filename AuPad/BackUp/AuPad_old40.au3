@@ -292,15 +292,14 @@ Func Print()
 EndFunc   ;==>Print
 
 Func pageSetup()
-	Local $tPAGESETUPDLG = DllStructCreate($tagPAGESETUPDLG) ; create the page setup dll structure
-	DllStructSetData($tPAGESETUPDLG, 'Size', DllStructGetSize($tPAGESETUPDLG)) ; get the size
-	DllStructSetData($tPAGESETUPDLG, 'Flags', BitOR($PSD_INHUNDREDTHSOFMILLIMETERS, $PSD_MARGINS)) ; the flags
-	DllStructSetData($tPAGESETUPDLG, 'MarginLeft', 0.75 * 100) ; set the left margin
-	DllStructSetData($tPAGESETUPDLG, 'MarginTop', 1 * 100) ; set the top margin
-	DllStructSetData($tPAGESETUPDLG, 'MarginRight', 0.75 * 100) ; set the right margin
-	DllStructSetData($tPAGESETUPDLG, 'MarginBottom', 1 * 100) ; set the bottom margin
-	_WinAPI_PageSetupDlg($tPAGESETUPDLG) ; show the window
-EndFunc   ;==>pageSetup
+	Local $tPAGESETUPDLG = DllStructCreate($tagPAGESETUPDLG)
+DllStructSetData($tPAGESETUPDLG, 'Size', DllStructGetSize($tPAGESETUPDLG))
+DllStructSetData($tPAGESETUPDLG, 'Flags', BitOR($PSD_INHUNDREDTHSOFMILLIMETERS, $PSD_MARGINS))
+DllStructSetData($tPAGESETUPDLG, 'MarginLeft', 10 * 100)
+DllStructSetData($tPAGESETUPDLG, 'MarginTop', 10 * 100)
+DllStructSetData($tPAGESETUPDLG, 'MarginRight', 10 * 100)
+DllStructSetData($tPAGESETUPDLG, 'MarginBottom', 10 * 100)
+EndFunc
 
 Func Copy()
 	Local $gt, $st, $ct
