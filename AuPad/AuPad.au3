@@ -19,19 +19,25 @@
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
 
-Opt("MustDeclareVars", 1)
+Opt("MustDeclareVars", 1) ; added for clarity purposes
 
-Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
+Local $pWnd, $msg, $control, $fNew, $fOpen, _
+		$fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow, _
 		$eUndo, $pActiveW, $WWcounter = 0, _
 		$eCut, $eCopy, $ePaste, _
-		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, _
-		$eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $hDLL, $oIndex = 0, _
-		$forWW, $forFont, $vStatus, $hVHelp, $hAA
+		$eDelete, $eFind, $eFN, $eReplace, _
+		$eGT, $eSA, $oIndex = 0, _
+		$eTD, $saveCounter = 0, $fe, $fs, _
+		$fn[20], $fo, $fw, $hDLL, _
+		$forWW, $forFont, $vStatus, $hVHelp, _
+		$hAA
 
 ; child gui vars
-Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
-		$cfEditWindow, $abChild, $mCheck
+Local $cFwnd = 9999, $cfCancel = 9999, _
+		$cfFindNextB = 9999, $tCheck,
+		$bCheck, $cfEditWindow, _
+		$abChild, $mCheck
 
 AdlibRegister("chkSel")
 
