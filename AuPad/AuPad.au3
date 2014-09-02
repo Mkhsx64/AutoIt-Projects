@@ -35,7 +35,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 
 ; child gui vars
 Local $cFwnd = 9999, $cfCancel = 9999, _
-		$cfFindNextB = 9999, $tCheck,
+		$cfFindNextB = 9999, $tCheck, _
 		$bCheck, $cfEditWindow, _
 		$abChild, $mCheck
 
