@@ -91,9 +91,9 @@ While 1
 						$WWcounter += 1 ; increment the counter
 					EndIf
 				Case $eSA
-					_GUICtrlEdit_SetSel($pEditWindow, 0, -1)
+					_GUICtrlEdit_SetSel($pEditWindow, 0, -1) ; call the setSel edit function if the user selects the select all option
 				Case $hAA
-					aChild()
+					aChild() ; call the about aupad child window if the menu option has been selected
 			EndSwitch
 		Case $cFwnd ; check the find child window
 			Switch $msg[0] ; if the msg is in the 1D array
