@@ -246,18 +246,15 @@ Func undoWork($readA, $count)
 			EndIf
 			$u = StringCompare($readA, $sArray) ; compare the edit string with the last undo array value
 			If $u < 0 Then ; if the current string in the edit window is smaller then the last undo array value
-				MsgBox(0, "", $sArray & " -- more") ; tell us we are putting a certain string
 				$rp = StringReplace($readA, $readA & "", $sArray, -1) ; take away the string
 				GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
 				$uFcounter -= 1 ; increment the undo function counter
 			ElseIf $u > 0 Then ; if the current string in the edit window is bigger than the last undo array value
-				MsgBox(0, "", $sArray & " -- less") ; tell us we are taking away a certain string
 				$rp = StringReplace($readA, $sArray, "", -1) ; replace the string in the window
 				GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
 				$uFcounter -= 1 ; increment the undo function counter
 			EndIf
 			If $u = 0 Then ; if the string is the same
-				MsgBox(0, "", $sArray & " -- taking away everything") ; tell us we are taking away everything
 				$rp = StringReplace($readA, $sArray, -1) ; replace everything in the edit window with the array value
 				GUICtrlSetData($pEditWindow, $rp) ; set the data
 				$uFcounter -= 1 ; increment the counter
@@ -271,18 +268,15 @@ Func undoWork($readA, $count)
 				EndIf
 				$u = StringCompare($readA, $sArray) ; compare the edit string with the last undo array value
 				If $u < 0 Then ; if the current string in the edit window is smaller then the last undo array value
-					MsgBox(0, "", $sArray & " -- more") ; tell us we are putting a certain string
 					$rp = StringReplace($readA, $readA & "", $sArray, -1) ; take away the string
 					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
 					$uFcounter -= 1 ; increment the undo function counter
 				ElseIf $u > 0 Then ; if the current string in the edit window is bigger than the last undo array value
-					MsgBox(0, "", $sArray & " -- less") ; tell us we are taking away a certain string
 					$rp = StringReplace($readA, $sArray, "", -1) ; replace the string in the window
 					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
 					$uFcounter -= 1 ; increment the undo function counter
 				EndIf
 				If $u = 0 Then ; if the string is the same
-					MsgBox(0, "", $sArray & " -- taking away everything") ; tell us we are taking away everything
 					$rp = StringReplace($readA, $sArray, -1) ; replace everything in the edit window with the array value
 					GUICtrlSetData($pEditWindow, $rp) ; set the data
 					$uFcounter -= 1 ; increment the counter
@@ -297,18 +291,15 @@ Func undoWork($readA, $count)
 				EndIf
 				$u = StringCompare($readA, $sArray) ; compare the edit string with the last undo array value
 				If $u < 0 Then ; if the current string in the edit window is smaller then the last undo array value
-					MsgBox(0, "", $sArray & " -- more") ; tell us we are putting a certain string
 					$rp = StringReplace($readA, $readA & "", $sArray, -1) ; take away the string
 					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
 					$uFcounter -= 1 ; increment the undo function counter
 				ElseIf $u > 0 Then ; if the current string in the edit window is bigger than the last undo array value
-					MsgBox(0, "", $sArray & " -- less") ; tell us we are taking away a certain string
 					$rp = StringReplace($readA, $sArray, "", -1) ; replace the string in the window
 					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
 					$uFcounter -= 1 ; increment the undo function counter
 				EndIf
 				If $u = 0 Then ; if the string is the same
-					MsgBox(0, "", $sArray & " -- taking away everything") ; tell us we are taking away everything
 					$rp = StringReplace($readA, $sArray, -1) ; replace everything in the edit window with the array value
 					GUICtrlSetData($pEditWindow, $rp) ; set the data
 					$uFcounter -= 1 ; increment the counter
@@ -323,18 +314,15 @@ Func undoWork($readA, $count)
 				EndIf
 				$u = StringCompare($readA, $sArray) ; compare the edit string with the last undo array value
 				If $u < 0 Then ; if the current string in the edit window is smaller then the last undo array value
-					MsgBox(0, "", $sArray & " -- more") ; tell us we are putting a certain string
 					$rp = StringReplace($readA, $readA & "", $sArray, -1) ; take away the string
 					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
 					$uFcounter -= 1 ; increment the undo function counter
 				ElseIf $u > 0 Then ; if the current string in the edit window is bigger than the last undo array value
-					MsgBox(0, "", $sArray & " -- less") ; tell us we are taking away a certain string
 					$rp = StringReplace($readA, $sArray, "", -1) ; replace the string in the window
 					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
 					$uFcounter -= 1 ; increment the undo function counter
 				EndIf
 				If $u = 0 Then ; if the string is the same
-					MsgBox(0, "", $sArray & " -- taking away everything") ; tell us we are taking away everything
 					$rp = StringReplace($readA, $sArray, -1) ; replace everything in the edit window with the array value
 					GUICtrlSetData($pEditWindow, $rp) ; set the data
 					$uFcounter -= 1 ; increment the counter
@@ -350,18 +338,15 @@ Func undoWork($readA, $count)
 				EndIf
 				$u = StringCompare($readA, $sArray) ; compare the edit string with the last undo array value
 				If $u < 0 Then ; if the current string in the edit window is smaller then the last undo array value
-					MsgBox(0, "", $sArray & " -- more") ; tell us we are putting a certain string
 					$rp = StringReplace($readA, $readA & "", $sArray, -1) ; take away the string
 					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
 					$uFcounter -= 1 ; increment the undo function counter
 				ElseIf $u > 0 Then ; if the current string in the edit window is bigger than the last undo array value
-					MsgBox(0, "", $sArray & " -- less") ; tell us we are taking away a certain string
 					$rp = StringReplace($readA, $sArray, "", -1) ; replace the string in the window
 					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
 					$uFcounter -= 1 ; increment the undo function counter
 				EndIf
 				If $u = 0 Then ; if the string is the same
-					MsgBox(0, "", $sArray & " -- taking away everything") ; tell us we are taking away everything
 					$rp = StringReplace($readA, $sArray, -1) ; replace everything in the edit window with the array value
 					GUICtrlSetData($pEditWindow, $rp) ; set the data
 					$uFcounter -= 1 ; increment the counter
