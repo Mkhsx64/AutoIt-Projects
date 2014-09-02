@@ -36,10 +36,10 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 ; child gui vars
 Local $abChild, $fCount = 0
 
-AdlibRegister("chkSel")
+AdlibRegister("chkSel") ; check if there has been any user selections
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
-HotKeySet("{F3}", "findChild") ; if the user hits the F3 key, then run the findChild function
+HotKeySet("{F3}", "Find") ; if the user hits the F3 key, then run the Find function
 
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
 
@@ -66,10 +66,10 @@ While 1
 					timeDate() ; call the timeDate function when the time/date option is selected
 				Case $eFind
 					$fCount = 0 ; reset the find counter
-					Find($fCount) ; call the find function when the find option is selected and pass it 0
+					Find() ; call the find function when the find option is selected
 				Case $eReplace
 					$fCount += 1 ; increment the find counter
-					Find($fCount) ; call the find function when the replace option is selected and pass it 1
+					Find() ; call the find function when the replace option is selected
 				Case $fSave
 					Save() ; call the save function when the save menu option is selected
 				Case $fSaveAs
@@ -256,8 +256,8 @@ Func pageSetup()
 	_WinAPI_PageSetupDlg($tPAGESETUPDLG) ; show the window
 EndFunc   ;==>pageSetup
 
-Func Find($count)
-	If $count = 0 Then
+Func Find()
+	If $fCount = 0 Then
 		_GUICtrlEdit_Find($pEditWindow) ; bring up the find dialog
 	Else
 		_GUICtrlEdit_Find($pEditWindow, True) ; bring up the find and replace dialog
