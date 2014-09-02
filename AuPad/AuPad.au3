@@ -31,7 +31,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 
 ; child gui vars
 Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
-		$cfEditWindow, $abChild
+		$cfEditWindow, $abChild, $mCheck
 
 AdlibRegister("chkSel")
 
@@ -235,7 +235,8 @@ EndFunc   ;==>chkSel
 
 Func delSelected()
 	Local $getS, $stringR, $readW, $stringI, $getCount, _
-			$stringS, $strIstr, $strSplEx
+			$stringS, $strIstr, $strSplEx, $strTl, _
+			$strTlEx
 	$getS = _GUICtrlEdit_GetSel($pEditWindow) ; get the selected start and end position in the edit window
 	$getCount = $getS[1] - $getS[0] ; get the count of the selected text
 	If $getCount < 0 Then ; if there is no selection
@@ -297,7 +298,7 @@ Func Copy()
 EndFunc   ;==>Copy
 
 Func Paste()
-	Local $g, $p
+	Local $g, $p, $r
 	$g = ClipGet() ; get the string from the clipboard
 	If @error Then Return ; if @error is set get out
 	$r = GUICtrlRead($pEditWindow) ; read the edit control
@@ -346,7 +347,7 @@ Func Open()
 EndFunc   ;==>Open
 
 Func Save()
-	Local $r, $sd, $cn
+	Local $r, $sd, $cn, $i
 	$r = GUICtrlRead($pEditWindow) ; read the edit control
 	If $saveCounter = 0 Then ; if we haven't saved before
 		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", ".txt") ; tell us where and what to call your file
@@ -368,7 +369,7 @@ Func Save()
 			Return ; get out
 		EndIf
 		$fw = FileWrite($fs, $r) ; write everything into the file we specified
-		$fc = FileClose($fn[1]) ; then close the file we specified
+		FileClose($fn[1]) ; then close the file we specified
 		$cn = StringSplit($fn[1], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
@@ -380,7 +381,7 @@ Func Save()
 		Return ; get out
 	EndIf
 	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
-	$fc = FileClose($fn[$oIndex]) ; close the file we specified
+	FileClose($fn[$oIndex]) ; close the file we specified
 EndFunc   ;==>Save
 
 Func Quit()
