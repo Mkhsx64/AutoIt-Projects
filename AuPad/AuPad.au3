@@ -36,6 +36,16 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 ; child gui vars
 Local $abChild, $fCount = 0
 
+; notes
+#cs
+Need to make a solution of finding a string in text. Need to find the string typed
+in the window when it is selected, lets say for the find next, so when I call the find
+I need to store the string that was selected. Then, I need to loop through all the
+occurences and set the select on each one as I trim the string off the other string,
+creating a string that is constantly being cut down to find the next string using
+a for loop.
+#ce
+
 AdlibRegister("chkSel") ; check if there has been any user selections
 AdlibRegister("chkTxt") ; check if ther has been any user input
 
