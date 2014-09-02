@@ -69,7 +69,7 @@ While 1
 					$fCount = 0 ; reset the find counter
 					Find() ; call the find function when the find option is selected
 				Case $eReplace
-					$fCount += 1 ; increment the find counter
+					$fCount = 1 ; increment the find counter
 					Find() ; call the find function when the replace option is selected
 				Case $fSave
 					Save() ; call the save function when the save menu option is selected
@@ -118,12 +118,19 @@ While 1
 				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
 			EndIf
 			Open() ; call the open function if it is the active window
-		Case _IsPressed("11", $hDLL) And _IsPressed("41", $hDLL) ; CTRL + A is pressed
+		Case _IsPressed("11", $hDLL) And _IsPressed("41", $hDLL) ; if CTRL + A is pressed
 			$pActiveW = WinActivate($pWnd) ; check what the active window is
 			If $pActiveW = 0 Then ; if it is not the active window
 				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
 			EndIf
 			_GUICtrlEdit_SetSel($pEditWindow, 0, -1) ; set the selected text to everything in the edit control
+		Case _IsPressed("11", $hDLL) And _IsPressed("48", $hDLL) ; if CTRL + H is pressed
+			$pActiveW = WinActive($pWnd) ; check what the active window is
+			If $pActiveW = 0 Then ; if it is not the active window
+				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
+			EndIf
+			$fCount = 1 ; set the find counter
+			Find() ; call the find function
 	EndSelect
 WEnd
 
