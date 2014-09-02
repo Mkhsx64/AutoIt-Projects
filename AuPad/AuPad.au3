@@ -102,7 +102,7 @@ While 1
 		Case $abChild
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
-					GUIDelete() ; if the exit event is sent call the GUIDelete Function
+					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
 			EndSwitch
 	EndSwitch
 	Select
