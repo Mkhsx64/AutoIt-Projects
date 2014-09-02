@@ -82,7 +82,7 @@ While 1
 				Case $eDelete
 					_GUICtrlEdit_ReplaceSel($pEditWindow, "") ; whatever is selected delete it when this menu option is selected
 				Case $fPrint
-					Print()
+					Print() ; call the print function when the print menu option is selected
 				Case $forWW
 					If $WWcounter = 1 Then ; if the counter is at 1
 						GUICtrlSetState($forWW, $GUI_UNCHECKED) ; set the state of the menu item to be unchecked
