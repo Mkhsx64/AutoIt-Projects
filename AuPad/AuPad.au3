@@ -79,7 +79,7 @@ While 1
 				Case $fOpen
 					Open() ; call the open function when the open menu option is selected
 				Case $eDelete
-					_GUICtrlEdit_ReplaceSel($pEditWindow, "")
+					_GUICtrlEdit_ReplaceSel($pEditWindow, "") ; whatever is selected delete it when this menu option is selected
 				Case $fPrint
 					Print()
 				Case $forWW
