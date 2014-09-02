@@ -229,23 +229,23 @@ EndFunc   ;==>chkSel
 
 Func chkTxt()
 	Local $gtext, $gstate
-	$gtext = _GUICtrlEdit_GetText($pEditWindow)
-	If $gtext = "" Then
-		$gstate = GUICtrlGetState($eFind)
-		If $gstate = 128 Then
-			Return
+	$gtext = _GUICtrlEdit_GetText($pEditWindow) ; get the text from the edit control
+	If $gtext = "" Then ; if the text in the window is nothing
+		$gstate = GUICtrlGetState($eFind) ; get the state of the find menu item
+		If $gstate = 128 Then ; if the state is already greyed
+			Return ; get out
 		EndIf
-		GUICtrlSetState($eFind, 128)
-		GUICtrlSetState($eCopy, 128)
-		GUICtrlSetState($eCut, 128)
-		GUICtrlSetState($eFN, 128)
-		GUICtrlSetState($eGT, 128)
+		GUICtrlSetState($eFind, 128) ; grey the find menu option
+		GUICtrlSetState($eCopy, 128) ; grey the copy menu option
+		GUICtrlSetState($eCut, 128) ; grey the cut menu option
+		GUICtrlSetState($eFN, 128) ; grey the find next menu option
+		GUICtrlSetState($eGT, 128) ; grey the go to menu option
 	Else
-		GUICtrlSetState($eFind, 64)
-		GUICtrlSetState($eCopy, 64)
-		GUICtrlSetState($eCut, 64)
-		GUICtrlSetState($eFN, 64)
-		GUICtrlSetState($eGT, 64)
+		GUICtrlSetState($eFind, 64) ; un-grey the find menu option
+		GUICtrlSetState($eCopy, 64) ; un-grey the copy menu option
+		GUICtrlSetState($eCut, 64) ; un-grey the cut menu option
+		GUICtrlSetState($eFN, 64) ; un-grey the find next menu option
+		GUICtrlSetState($eGT, 64) ; un-grey the go to menu option
 	EndIf
 EndFunc
 
