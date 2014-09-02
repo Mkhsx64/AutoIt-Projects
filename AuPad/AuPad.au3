@@ -8,7 +8,6 @@
 #Au3Stripper_Parameters=/so
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
-
 #include <WinAPIDlg.au3>
 #include <Constants.au3>
 #include <GUIConstants.au3>
@@ -20,12 +19,13 @@
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
 
+Opt("MustDeclareVars", 1)
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
-		$fPrint, $fExit, $pEditWindow, $uArray[1000], $uCounter = 0, _
-		$eUndo, $emgcyArray[5], $emgcyCounter = 0, $pActiveW, $WWcounter = 0, _
-		$ofData[6], $uFcounter = 5, $oFCounter = 0, $eCut, $eCopy, $ePaste, _
-		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, $emgcyFcounter = 0, _
+		$fPrint, $fExit, $pEditWindow, _
+		$eUndo, $pActiveW, $WWcounter = 0, _
+		$eCut, $eCopy, $ePaste, _
+		$eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, _
 		$eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $hDLL, $oIndex = 0, _
 		$forWW, $forFont, $vStatus, $hVHelp, $hAA
 
@@ -33,7 +33,6 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
 		$cfEditWindow, $abChild
 
-;AdlibRegister("undoCounter", 700) ; run the undoCounter function every 650 ms to build the undo array determined by user input
 AdlibRegister("chkSel")
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
