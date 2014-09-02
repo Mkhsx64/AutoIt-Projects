@@ -34,10 +34,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$hAA
 
 ; child gui vars
-Local $cFwnd = 9999, $cfCancel = 9999, _
-		$cfFindNextB = 9999, $tCheck, _
-		$bCheck, $cfEditWindow, _
-		$abChild, $mCheck
+Local $abChild
 
 AdlibRegister("chkSel")
 
@@ -98,13 +95,6 @@ While 1
 					_GUICtrlEdit_SetSel($pEditWindow, 0, -1) ; call the setSel edit function if the user selects the select all option
 				Case $hAA
 					aChild() ; call the about aupad child window if the menu option has been selected
-			EndSwitch
-		Case $cFwnd ; check the find child window
-			Switch $msg[0] ; if the msg is in the 1D array
-				Case $GUI_EVENT_CLOSE
-					GUIDelete($cFwnd) ; if the exit event is sent call the GUIDelete function
-				Case $cfCancel
-					GUIDelete($cFwnd) ; if the cancel button is clicked call the GUIDelete function
 			EndSwitch
 		Case $abChild
 			Switch $msg[0]
