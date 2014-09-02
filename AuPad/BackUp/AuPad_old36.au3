@@ -9,13 +9,12 @@
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
 
-#include <WinAPIDlg.au3>
+
 #include <Constants.au3>
 #include <GUIConstants.au3>
 #include <Array.au3>
 #include <GUIEdit.au3>
 #include <misc.au3>
-#include <File.au3>
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow, $uArray[1000], $uCounter = 0, _
@@ -29,7 +28,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, _
 Local $cFwnd = 9999, $cfCancel = 9999, $cfFindNextB = 9999, $tCheck, $bCheck, _
 		$cfEditWindow, $abChild
 
-;AdlibRegister("undoCounter", 700) ; run the undoCounter function every 650 ms to build the undo array determined by user input
+AdlibRegister("undoCounter", 700) ; run the undoCounter function every 650 ms to build the undo array determined by user input
 AdlibRegister("chkSel")
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
@@ -51,7 +50,7 @@ While 1
 				Case $fExit
 					Quit() ; if exit option selected in file menu then call the quit function
 				Case $eUndo
-					_GUICtrlEdit_Undo($pEditWindow)
+					Undo() ; call the Undo function when the undo option is selected
 				Case $eCopy
 					Copy() ; call the Copy function when the copy option is selected
 				Case $ePaste
@@ -110,6 +109,12 @@ While 1
 				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
 			EndIf
 			Open() ; call the open function if it is the active window
+		Case _IsPressed("11", $hDLL) And _IsPressed("5A", $hDLL) ; if CTRL + Z is pressed
+			$pActiveW = WinActive($pWnd) ; check what the active window is
+			If $pActiveW = 0 Then ; if it is not the active window
+				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
+			EndIf
+			Undo() ; call the undo function if it is the active window
 		Case _IsPressed("11", $hDLL) And _IsPressed("41", $hDLL) ; CTRL + A is pressed
 			$pActiveW = WinActivate($pWnd) ; check what the active window is
 			If $pActiveW = 0 Then ; if it is not the active window
@@ -159,6 +164,197 @@ Func GUI()
 	GUISetState() ; show the window
 EndFunc   ;==>GUI
 
+Func undoCounter()
+	Local $cData = "", $rData = "", $sis, $ia, $i, $rdCounter = 0, _
+			$sCompare
+	If $uCounter = 0 And $emgcyCounter = 1 And $emgcyFcounter = 1 Then ; if we've already been through the entire undo array
+		_ArrayDelete($emgcyArray, "0-5") ; delete the emergency array
+		$emgcyCounter = 0 ; reset the emergency counter
+		$emgcyFcounter = 0 ; reset the emergency array functionality counter
+	EndIf
+	$cData = GUICtrlRead($pEditWindow) ; read the entire edit control in the parent window
+	If $uCounter = 999 Then ; if we reached the end of the array
+		$emgcyArray[0] = $uArray[$uCounter - 5] ; fill the emergency array
+		$emgcyArray[1] = $uArray[$uCounter - 4] ; fill the emergency array
+		$emgcyArray[2] = $uArray[$uCounter - 3] ; fill the emergency array
+		$emgcyArray[3] = $uArray[$uCounter - 2] ; fill the emergency array
+		$emgcyArray[4] = $uArray[$uCounter - 1] ; fill the emergency array
+		_ArrayDelete($uArray, "0-999") ; delete the primary array
+		$uCounter = 0 ; set the counter
+		$emgcyCounter += 1 ; increment the emergency counter
+		Return ; get out
+	EndIf
+	If $uCounter = 0 Then ; if the counter is just starting
+		$sis = StringMid($uArray[$uCounter], 1) ; get the characters of the undo array
+	Else ; if the counter has already been ran through
+		$sis = StringMid($uArray[$uCounter - 1], 1) ; set it to the characters in the undo array function one back
+	EndIf
+	$rData = StringSplit($cData, $sis) ; replace the string already their with the string in the edit window
+	If $rData[0] = 0 Then ; if their is nothing in the window
+		Return ; get out
+	ElseIf $rData[1] = "" Then ; or if the first data is a blank string
+		Return ; get out
+	EndIf
+	For $i In $rData ; for every piece of data in the $rData array
+		$rdCounter += 1 ; increment the rdata counter
+	Next
+	If $uCounter = 0 Then ; if the undo counter is at 0
+		$sCompare = StringCompare($rData[$rdCounter - 1], $uArray[$uCounter]) ; compare $rdata one back to the current undo array value
+	Else
+		$sCompare = StringCompare($rData[$rdCounter - 1], $uArray[$uCounter - 1]) ; compare $rdata one back to the undo array value one back
+	EndIf
+	If $sCompare <> 0 Then ; if the string is not the same
+		$uArray[$uCounter] = $rData[$rdCounter - 1] ; set the data into the array
+		$uCounter += 1 ; increment the counter by one
+		If $oFCounter = 4 Then ; if the outer function counter equals 4 (last array value)
+			$oFCounter = 0 ; set the outer function counter equal to 0 (first array value)
+			$ofData[$oFCounter] = $rData[$rdCounter - 1] ; set the outside variable to the data for the undo function
+		Else ; if it does not equal 4
+			$ofData[$oFCounter] = $rData[$rdCounter - 1] ; set the outside variable to the data for the undo function
+		EndIf
+	EndIf
+EndFunc   ;==>undoCounter
+
+Func Undo()
+	Local $r, $c
+	$r = GUICtrlRead($pEditWindow) ; read the current text in the edit window
+	If $oFCounter = 4 Then ; if the outer function data counter is equal to 4
+		$oFCounter = 0 ; reset the outer function data counter
+		Return ; get out
+	EndIf
+	$c = StringCompare($r, $ofData[$oFCounter]) ; compare the current string to the outer function data from the back-end undoCounter function
+	$oFCounter += 1 ; increment the outer function data counter
+	If $c = 0 Then Return ; if the string is the same then get out
+	If $uFcounter = 0 Then ; if the undo function counter is equal to 0
+		$uFcounter = 5 ; reset the undo function counter
+		Return ; get out
+	EndIf
+	If $uCounter = 0 Then ; if we are on the first value because we haven't put anything into the counter yet
+		Return ; get out
+	EndIf
+	undoWork($r, $uFcounter) ; call the undoWork function and pass it the data in the window and the undo function counter
+EndFunc   ;==>Undo
+
+Func undoWork($readA, $count)
+	Local $u, $rp, $sArray
+	Switch $count ; look for the undo function counter value
+		Case 5 ; if it is the first time running
+			If $emgcyCounter = 1 And $uCounter = 999 Then ; if the emergency counter is set and the undo counter is at the end
+				$sArray = $emgcyArray[4] ; put the emergency array first value into the set array
+			Else ; otherwise
+				$sArray = $uArray[$uCounter - 1] ; set the undo array value into the set array
+			EndIf
+			$u = StringCompare($readA, $sArray) ; compare the edit string with the last undo array value
+			If $u < 0 Then ; if the current string in the edit window is smaller then the last undo array value
+				$rp = StringReplace($readA, $readA & "", $sArray, -1) ; take away the string
+				GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
+				$uFcounter -= 1 ; increment the undo function counter
+			ElseIf $u > 0 Then ; if the current string in the edit window is bigger than the last undo array value
+				$rp = StringReplace($readA, $sArray, "", -1) ; replace the string in the window
+				GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
+				$uFcounter -= 1 ; increment the undo function counter
+			EndIf
+			If $u = 0 Then ; if the string is the same
+				$rp = StringReplace($readA, $sArray, -1) ; replace everything in the edit window with the array value
+				GUICtrlSetData($pEditWindow, $rp) ; set the data
+				$uFcounter -= 1 ; increment the counter
+			EndIf
+		Case 4
+			If $uCounter - 2 > -1 Then ; $uCounter - 2 does not equal -1
+				If $emgcyCounter = 1 And $uCounter = 999 Then ; if the emergency counter is set and the undo counter is at the end
+					$sArray = $emgcyArray[3] ; put the emergency array first value into the set array
+				Else ; otherwise
+					$sArray = $uArray[$uCounter - 2] ; set the undo array value into the set array
+				EndIf
+				$u = StringCompare($readA, $sArray) ; compare the edit string with the last undo array value
+				If $u < 0 Then ; if the current string in the edit window is smaller then the last undo array value
+					$rp = StringReplace($readA, $readA & "", $sArray, -1) ; take away the string
+					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
+					$uFcounter -= 1 ; increment the undo function counter
+				ElseIf $u > 0 Then ; if the current string in the edit window is bigger than the last undo array value
+					$rp = StringReplace($readA, $sArray, "", -1) ; replace the string in the window
+					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
+					$uFcounter -= 1 ; increment the undo function counter
+				EndIf
+				If $u = 0 Then ; if the string is the same
+					$rp = StringReplace($readA, $sArray, -1) ; replace everything in the edit window with the array value
+					GUICtrlSetData($pEditWindow, $rp) ; set the data
+					$uFcounter -= 1 ; increment the counter
+				EndIf
+			EndIf
+		Case 3
+			If $uCounter - 3 > -1 Then ; if $uCounter - 3 does not equal -1
+				If $emgcyCounter = 1 And $uCounter = 999 Then ; if the emergency counter is set and the undo counter is at the end
+					$sArray = $emgcyArray[2] ; set the emergency array into the set array
+				Else ; otherwise
+					$sArray = $uArray[$uCounter - 3] ; set the undo array value into the set array
+				EndIf
+				$u = StringCompare($readA, $sArray) ; compare the edit string with the last undo array value
+				If $u < 0 Then ; if the current string in the edit window is smaller then the last undo array value
+					$rp = StringReplace($readA, $readA & "", $sArray, -1) ; take away the string
+					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
+					$uFcounter -= 1 ; increment the undo function counter
+				ElseIf $u > 0 Then ; if the current string in the edit window is bigger than the last undo array value
+					$rp = StringReplace($readA, $sArray, "", -1) ; replace the string in the window
+					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
+					$uFcounter -= 1 ; increment the undo function counter
+				EndIf
+				If $u = 0 Then ; if the string is the same
+					$rp = StringReplace($readA, $sArray, -1) ; replace everything in the edit window with the array value
+					GUICtrlSetData($pEditWindow, $rp) ; set the data
+					$uFcounter -= 1 ; increment the counter
+				EndIf
+			EndIf
+		Case 2
+			If $uCounter - 4 > -1 Then ; if $uCounter - 4 does not equal -1
+				If $emgcyCounter = 1 And $uCounter = 999 Then ; if the emergency counter is set and the undo counter is at the end
+					$sArray = $emgcyArray[1] ; set the emergency array into the set array
+				Else ; otherwise
+					$sArray = $uArray[$uCounter - 4] ; set the undo array value into the set array
+				EndIf
+				$u = StringCompare($readA, $sArray) ; compare the edit string with the last undo array value
+				If $u < 0 Then ; if the current string in the edit window is smaller then the last undo array value
+					$rp = StringReplace($readA, $readA & "", $sArray, -1) ; take away the string
+					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
+					$uFcounter -= 1 ; increment the undo function counter
+				ElseIf $u > 0 Then ; if the current string in the edit window is bigger than the last undo array value
+					$rp = StringReplace($readA, $sArray, "", -1) ; replace the string in the window
+					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
+					$uFcounter -= 1 ; increment the undo function counter
+				EndIf
+				If $u = 0 Then ; if the string is the same
+					$rp = StringReplace($readA, $sArray, -1) ; replace everything in the edit window with the array value
+					GUICtrlSetData($pEditWindow, $rp) ; set the data
+					$uFcounter -= 1 ; increment the counter
+				EndIf
+			EndIf
+		Case 1
+			If $uCounter - 5 > -1 Then ; if $uCounter - 5 does not equal -1
+				If $emgcyCounter = 1 And $uCounter = 999 Then ; if the emergency array and the undo counter is at the end
+					$sArray = $emgcyArray[0] ; set the emergency array into the set array
+					$emgcyFcounter += 1
+				Else
+					$sArray = $uArray[$uCounter - 5] ; set the undo array value into the set array
+				EndIf
+				$u = StringCompare($readA, $sArray) ; compare the edit string with the last undo array value
+				If $u < 0 Then ; if the current string in the edit window is smaller then the last undo array value
+					$rp = StringReplace($readA, $readA & "", $sArray, -1) ; take away the string
+					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
+					$uFcounter -= 1 ; increment the undo function counter
+				ElseIf $u > 0 Then ; if the current string in the edit window is bigger than the last undo array value
+					$rp = StringReplace($readA, $sArray, "", -1) ; replace the string in the window
+					GUICtrlSetData($pEditWindow, $rp) ; set the string to the new replaced string
+					$uFcounter -= 1 ; increment the undo function counter
+				EndIf
+				If $u = 0 Then ; if the string is the same
+					$rp = StringReplace($readA, $sArray, -1) ; replace everything in the edit window with the array value
+					GUICtrlSetData($pEditWindow, $rp) ; set the data
+					$uFcounter -= 1 ; increment the counter
+				EndIf
+			EndIf
+	EndSwitch
+EndFunc   ;==>undoWork
+
 Func setNew()
 	Local $titleNow, $title
 	$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
@@ -189,13 +385,13 @@ Func aChild()
 	$authLabel = GUICtrlCreateLabel("Author:", 55, 25) ; set the author label
 	GUICtrlSetFont(-1, 9, 600) ; set the font
 	$nameLabel = GUICtrlCreateLabel("MikahS", 58, 45) ; set name
-	GUICtrlSetFont(-1, 8, 500) ; set the font
+	GUICtrlSetFont(-1, 8, 500)  ; set the font
 	GUICtrlCreateLabel("Just a simple notepad program", 10, 80) ; set the label description 1
 	GUICtrlSetFont(-1, 7, 500) ; set the font
 	GUICtrlCreateLabel("Made completely with AutoIt", 15, 100) ; set the label description 2
 	GUICtrlSetFont(-1, 7, 500) ; set the font
 	GUISetState() ; show the window
-EndFunc   ;==>aChild
+EndFunc
 
 Func setWW($check)
 	Local $rw
