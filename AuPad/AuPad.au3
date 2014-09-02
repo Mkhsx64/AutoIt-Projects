@@ -37,6 +37,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 Local $abChild, $fCount = 0
 
 AdlibRegister("chkSel") ; check if there has been any user selections
+AdlibRegister("chkTxt") ; check if ther has been any user input
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
 HotKeySet("{F3}", "Find") ; if the user hits the F3 key, then run the Find function
@@ -225,6 +226,28 @@ Func chkSel()
 		EndIf
 	EndIf
 EndFunc   ;==>chkSel
+
+Func chkTxt()
+	Local $gtext, $gstate
+	$gtext = _GUICtrlEdit_GetText($pEditWindow)
+	If $gtext = "" Then
+		$gstate = GUICtrlGetState($eFind)
+		If $gstate = 128 Then
+			Return
+		EndIf
+		GUICtrlSetState($eFind, 128)
+		GUICtrlSetState($eCopy, 128)
+		GUICtrlSetState($eCut, 128)
+		GUICtrlSetState($eFN, 128)
+		GUICtrlSetState($eGT, 128)
+	Else
+		GUICtrlSetState($eFind, 64)
+		GUICtrlSetState($eCopy, 64)
+		GUICtrlSetState($eCut, 64)
+		GUICtrlSetState($eFN, 64)
+		GUICtrlSetState($eGT, 64)
+	EndIf
+EndFunc
 
 Func Print()
 	Local $tPRINTPAGERANGE, $tPRINTDLGEX
