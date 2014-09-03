@@ -31,20 +31,19 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$eTD, $saveCounter = 0, $fe, $fs, _
 		$fn[20], $fo, $fw, $hDLL, _
 		$forWW, $forFont, $vStatus, $hVHelp, _
-		$hAA, $selBuffer, $strB, $fnArray, _
-		$fnCount
+		$hAA, $selBuffer, $strB
 
 ; child gui vars
 Local $abChild, $fCount = 0
 
 ; notes
 #cs
-	Need to make a solution of finding a string in text. Need to find the string typed
-	in the window when it is selected, lets say for the find next, so when I call the find
-	I need to store the string that was selected. Then, I need to loop through all the
-	occurences and set the select on each one as I trim the string off the other string,
-	creating a string that is constantly being cut down to find the next string using
-	a for loop.
+Need to make a solution of finding a string in text. Need to find the string typed
+in the window when it is selected, lets say for the find next, so when I call the find
+I need to store the string that was selected. Then, I need to loop through all the
+occurences and set the select on each one as I trim the string off the other string,
+creating a string that is constantly being cut down to find the next string using
+a for loop.
 #ce
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
@@ -257,28 +256,17 @@ Func chkSel()
 EndFunc   ;==>chkSel
 
 Func findNext()
-	Local $rWin, $sRep, $fnIndex, $counter = 0
+	Local $rWin, $sRep, $fnIndex, $strB
 	If $selBuffer = "" Then Return
 	If $fnIndex < 0 Then Return
 	$rWin = GUICtrlRead($pEditWindow)
 	If $strB = "" Then
-		$sRep = StringReplace($rWin, $selBuffer, "")
-		$fnIndex = @extended
-		If $fnIndex = 0 Then
-			MsgBox(0, "error", "Nothing found")
-			Return
-		EndIf
-		$strB = $rWin
-;~ 		$stLen =
-		$fnArray = _GUICtrlEdit_SetSel($pEditWindow,
-	Else
-		If $fnIndex = 0 Then
-			MsgBox(0, "error", "Nothing found")
-			Return
-		EndIf
-
+	$sRep = StringReplace($rWin, $selBuffer, "")
+	$fnIndex = @extended
+	If $fnIndex = 0 Then Return MsgBox(0, "error", "Nothing found")
+	$strB = $rWin
 	EndIf
-EndFunc   ;==>findNext
+EndFunc
 
 Func chkTxt()
 	Local $gtext, $gstate
@@ -300,7 +288,7 @@ Func chkTxt()
 		GUICtrlSetState($eFN, 64) ; un-grey the find next menu option
 		GUICtrlSetState($eGT, 64) ; un-grey the go to menu option
 	EndIf
-EndFunc   ;==>chkTxt
+EndFunc
 
 Func Print()
 	Local $tPRINTPAGERANGE, $tPRINTDLGEX
