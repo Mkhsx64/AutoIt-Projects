@@ -31,7 +31,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$eTD, $saveCounter = 0, $fe, $fs, _
 		$fn[20], $fo, $fw, $hDLL, _
 		$forWW, $forFont, $vStatus, $hVHelp, _
-		$hAA
+		$hAA, $selBuffer
 
 ; child gui vars
 Local $abChild, $fCount = 0
@@ -236,11 +236,14 @@ Func setWW($check)
 EndFunc   ;==>setWW
 
 Func chkSel()
-	Local $gs, $gc, $getState
+	Local $gs, $gc, $getState, $readWin, $strMid
 	$gs = _GUICtrlEdit_GetSel($pEditWindow) ; get the selected text
 	$gc = $gs[1] - $gs[0] ; get how many characters have been selected
 	If $gc > 0 Then ; if the selection is not blank
 		GUICtrlSetState($eDelete, 64) ; otherwise, set the state
+		$readWin = GUICtrlRead($pEditWindow)
+		$strMid = StringMid($readWin, $gs[0], $gs[1])
+		$selBuffer = $strMid
 	Else
 		$getState = GUICtrlGetState($eDelete) ; get the state of the control
 		If $getState = 128 Then ; if it is already greyed out
