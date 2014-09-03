@@ -46,11 +46,11 @@ creating a string that is constantly being cut down to find the next string usin
 a for loop.
 #ce
 
-AdlibRegister("chkSel") ; check if there has been any user selections
-AdlibRegister("chkTxt") ; check if ther has been any user input
+AdlibRegister("chkSel", 1000) ; check if there has been any user selections
+AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
-HotKeySet("{F3}", "Find") ; if the user hits the F3 key, then run the Find function
+HotKeySet("{F3}", "findNext") ; if the user hits the F3 key, then run the Find function
 
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
 
@@ -149,6 +149,7 @@ While 1
 			$fCount = 1 ; set the find counter
 			Find() ; call the find function
 	EndSelect
+	Sleep(10) ; added as the functions running every second are causing the window to twitch
 WEnd
 
 
@@ -242,7 +243,7 @@ Func chkSel()
 	If $gc > 0 Then ; if the selection is not blank
 		GUICtrlSetState($eDelete, 64) ; otherwise, set the state
 		$readWin = GUICtrlRead($pEditWindow)
-		$strMid = StringMid($readWin, $gs[0], $gs[1])
+		$strMid = StringMid($readWin, $gs[0] + 1, $gs[1] + 1)
 		$selBuffer = $strMid
 	Else
 		$getState = GUICtrlGetState($eDelete) ; get the state of the control
@@ -253,6 +254,10 @@ Func chkSel()
 		EndIf
 	EndIf
 EndFunc   ;==>chkSel
+
+Func findNext()
+	MsgBox(0, "", $selBuffer)
+EndFunc
 
 Func chkTxt()
 	Local $gtext, $gstate
