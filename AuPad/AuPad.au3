@@ -134,6 +134,13 @@ While 1
 				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
 			EndIf
 			_GUICtrlEdit_SetSel($pEditWindow, 0, -1) ; set the selected text to everything in the edit control
+		Case _IsPressed("11", $hDLL) And _IsPressed("46", $hDLL) ; if CTRL + F is pressed
+			$pActiveW = WinActive($pWnd) ; check what the active window is
+			If $pActiveW = 0 Then ; if it is not the active window
+				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
+			EndIf
+			$fCount = 0 ; set the find counter
+			Find() ; call the find function
 		Case _IsPressed("11", $hDLL) And _IsPressed("48", $hDLL) ; if CTRL + H is pressed
 			$pActiveW = WinActive($pWnd) ; check what the active window is
 			If $pActiveW = 0 Then ; if it is not the active window
