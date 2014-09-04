@@ -252,29 +252,29 @@ Func chkSel()
 	EndIf
 EndFunc   ;==>chkSel
 
-;~ Func findNext()
-;~ 	Local $rWin, $sRep, $fnIndex, $counter = 0
-;~ 	If $selBuffer = "" Then Return
-;~ 	If $fnIndex < 0 Then Return
-;~ 	$rWin = GUICtrlRead($pEditWindow)
-;~ 	If $strB = "" Then
-;~ 		$sRep = StringReplace($rWin, $selBuffer, "")
-;~ 		$fnIndex = @extended
-;~ 		If $fnIndex = 0 Then
-;~ 			MsgBox(0, "error", "Nothing found")
-;~ 			Return
-;~ 		EndIf
-;~ 		$strB = $rWin
-;~ 		$stLen =
-;~ 		$fnArray = _GUICtrlEdit_SetSel($pEditWindow,
-;~ 	Else
-;~ 		If $fnIndex = 0 Then
-;~ 			MsgBox(0, "error", "Nothing found")
-;~ 			Return
-;~ 		EndIf
+	Func findNext()
+	Local $rWin, $sRep, $fnIndex, $counter = 0
+	If $selBuffer = "" Then Return
+	If $fnIndex < 0 Then Return
+	$rWin = GUICtrlRead($pEditWindow)
+	If $strB = "" Then
+	$sRep = StringReplace($rWin, $selBuffer, "")
+	$fnIndex = @extended
+	If $fnIndex = 0 Then
+	MsgBox(0, "error", "Nothing found")
+	Return
+	EndIf
+	$strB = $rWin
+	$stLen =
+	$fnArray = _GUICtrlEdit_SetSel($pEditWindow,
+	Else
+	If $fnIndex = 0 Then
+	MsgBox(0, "error", "Nothing found")
+	Return
+	EndIf
 
-;~ 	EndIf
-;~ EndFunc   ;==>findNext
+	EndIf
+	EndFunc   ;==>findNext
 
 Func chkTxt()
 	Local $gtext, $gstate
@@ -455,7 +455,7 @@ Func Quit()
 			$saveCounter = 0 ; reset the save counter
 			Save() ; call the save function
 		EndIf
-	ElseIf $title[1] <> "Untitled" And $st = 0 Then ; if the title is not Untitled and there is data in the window
+		ElseIf $title[1] <> "Untitled" And $st = 0 Then ; if the title is not Untitled and there is data in the window
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
 		$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
 		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
