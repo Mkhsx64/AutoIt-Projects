@@ -51,7 +51,7 @@ AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
-HotKeySet("{F3}", "findNext") ; if the user hits the F3 key, then run the Find function
+;~ HotKeySet("{F3}", "findNext") ; if the user hits the F3 key, then run the Find function
 
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
 
@@ -255,7 +255,7 @@ Func chkSel()
 		EndIf
 	EndIf
 EndFunc   ;==>chkSel
-
+#cs
 Func findNext()
 	Local $rWin, $sRep, $fnIndex, $counter = 0
 	If $selBuffer = "" Then Return
@@ -269,7 +269,7 @@ Func findNext()
 			Return
 		EndIf
 		$strB = $rWin
-;~ 		$stLen =
+		$stLen =
 		$fnArray = _GUICtrlEdit_SetSel($pEditWindow,
 	Else
 		If $fnIndex = 0 Then
@@ -279,7 +279,7 @@ Func findNext()
 
 	EndIf
 EndFunc   ;==>findNext
-
+#ce
 Func chkTxt()
 	Local $gtext, $gstate
 	$gtext = _GUICtrlEdit_GetText($pEditWindow) ; get the text from the edit control
@@ -399,7 +399,7 @@ Func Open()
 	$stripString = StringReplace($strSplit[$oIndex], ".txt", "") ; replace the file name extension with nothing
 	WinSetTitle($pWnd, $read, $stripString & " - AuPad") ; set the title of the window
 	GUICtrlSetData($pEditWindow, $fileRead, $read) ; set the read data into the window
-	$fn[$oIndex] = $strSplit[$oIndex] ; set the file name save variable to the name of the opened file
+	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
 	FileClose($fileOpen) ; close the file
 EndFunc   ;==>Open
 
@@ -407,12 +407,12 @@ Func Save()
 	Local $r, $sd, $cn, $i
 	$r = GUICtrlRead($pEditWindow) ; read the edit control
 	If $saveCounter = 0 Then ; if we haven't saved before
-		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", ".txt") ; tell us where and what to call your file
+		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", 16, ".txt", $pWnd) ; tell us where and what to call your file
 		$fn = StringSplit($fs, "\") ; split the saved directory and name
 		$i = $fn[0]
 		If $fn[$i] = ".txt" Or $fn[$i] = "" Then ; if the value in the filesavedialog is not valid
 			MsgBox(0, "error", "did not give a name to your file") ; tell us
-			$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", ".txt") ; try to tell us where and what to call your file
+			$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", 16, ".txt", $pWnd) ; try to tell us where and what to call your file
 			$fn = StringSplit($fs, "\") ; split the saved directory and name
 			$i = $fn[0]
 			If $fn[$i] = ".txt" Or $fn[$i] = "" Then ; if you didn't set it again
@@ -420,14 +420,16 @@ Func Save()
 				Return ; get out
 			EndIf
 		EndIf
-		$fo = FileOpen($fn[1], 2 + 8) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
+		MsgBox(0, "", $fn[$i])
+		MsgBox(0, "", $fs)
+		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
 		If $fo = -1 Then ; if it didn't work
 			MsgBox(0, "error", "Could not create file : " & $saveCounter) ; tell us
 			Return ; get out
 		EndIf
 		$fw = FileWrite($fs, $r) ; write everything into the file we specified
-		FileClose($fn[1]) ; then close the file we specified
-		$cn = StringSplit($fn[1], ".") ; split the file name
+		FileClose($fn[$i]) ; then close the file we specified
+		$cn = StringSplit($fn[$i], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
 		Return ; get out
