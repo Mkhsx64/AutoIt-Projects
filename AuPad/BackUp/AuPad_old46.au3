@@ -447,22 +447,6 @@ Func Quit()
 	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
 		DllClose($hDLL) ; close the DLL before we exit
 		Exit ; get out
-	ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
-		$fOp = FileOpen($fn[$oIndex])
-		MsgBox(0, "", $fn[$oIndex])
-		$fRd = FileRead($fOp)
-		If $rd = $fRd Then
-			$saveCounter += 1
-			Save()
-			FileClose($fOp)
-			Exit
-		EndIf
-		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
-		$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
-		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
-		If $mBox = 6 Then ; if we said yes
-			Save() ; run the save function
-		EndIf
 	ElseIf $st > 0 Then ; if there is something in the window, and it is called Untitled
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
 		$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
@@ -470,6 +454,21 @@ Func Quit()
 		If $mBox = 6 Then ; if we said yes
 			$saveCounter = 0 ; reset the save counter
 			Save() ; call the save function
+		EndIf
+		ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
+		$fOp = FileOpen($fn[$oIndex])
+		MsgBox(0, "", $fn[$oIndex])
+		$fRd = FileRead($fOp)
+		If $rd = $fRd Then
+			Save()
+			FileClose($fOp)
+			Return
+		EndIf
+		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
+		$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
+		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
+		If $mBox = 6 Then ; if we said yes
+			Save() ; run the save function
 		EndIf
 	EndIf
 	DllClose($hDLL) ; close the DLL before we exit
