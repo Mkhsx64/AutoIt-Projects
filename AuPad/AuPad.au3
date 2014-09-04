@@ -149,6 +149,12 @@ While 1
 			EndIf
 			$fCount = 1 ; set the find counter
 			Find() ; call the find function
+		Case _IsPressed("11", $hDLL) And _IsPressed("50", $hDLL) ; if CTRL + P is pressed
+			$pActiveW = WinActive($pWnd) ; check what the active window is
+			If $pActiveW = 0 Then ; if it is not the active window
+				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
+			EndIf
+			Print() ; call the print function
 	EndSelect
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
 WEnd
