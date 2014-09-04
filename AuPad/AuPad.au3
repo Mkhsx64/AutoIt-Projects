@@ -448,14 +448,14 @@ Func Quit()
 		DllClose($hDLL) ; close the DLL before we exit
 		Exit ; get out
 	ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
-		$fOp = FileOpen($fn[$oIndex])
-		MsgBox(0, "", $fn[$oIndex])
-		$fRd = FileRead($fOp)
-		If $rd = $fRd Then
-			$saveCounter += 1
-			Save()
-			FileClose($fOp)
-			Exit
+		$fOp = FileOpen($fn[$oIndex]) ; open the already opened file
+		$fRd = FileRead($fOp) ; read the file
+		If $rd = $fRd Then ; if what is in the edit control is the same as the read in file
+			$saveCounter += 1 ; increment the save counter
+			Save() ; call the save function
+			FileClose($fOp) ; close the file
+			DllClose($hDLL) ; close the DLL before we exit
+			Exit ; exit the script
 		EndIf
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
 		$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
