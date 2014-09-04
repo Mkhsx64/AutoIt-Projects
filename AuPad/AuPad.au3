@@ -34,7 +34,9 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fn[20], $fo, $fw, $hDLL, _
 		$forWW, $forFont, $vStatus, $hVHelp, _
 		$hAA, $selBuffer, $strB, $fnArray, _
-		$fnCount
+		$fnCount = 0, $selBufferEx, _
+		$fullStrRepl, $strFnd, $strEnd, _
+		$strLen
 
 ; child gui vars
 Local $abChild, $fCount = 0
@@ -43,7 +45,7 @@ AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
-;~ HotKeySet("{F3}", "findNext") ; if the user hits the F3 key, then run the Find function
+HotKeySet("{F3}", "findNext") ; if the user hits the F3 key, then run the Find function
 
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
 
@@ -254,29 +256,47 @@ Func chkSel()
 	EndIf
 EndFunc   ;==>chkSel
 
-;~ Func findNext()
-;~ 	Local $rWin, $sRep, $fnIndex, $counter = 0
-;~ 	If $selBuffer = "" Then Return
-;~ 	If $fnIndex < 0 Then Return
-;~ 	$rWin = GUICtrlRead($pEditWindow)
-;~ 	If $strB = "" Then
-;~ 		$sRep = StringReplace($rWin, $selBuffer, "")
-;~ 		$fnIndex = @extended
-;~ 		If $fnIndex = 0 Then
-;~ 			MsgBox(0, "error", "Nothing found")
-;~ 			Return
-;~ 		EndIf
-;~ 		$strB = $rWin
-;~ 		$stLen =
-;~ 		$fnArray = _GUICtrlEdit_SetSel($pEditWindow,
-;~ 	Else
-;~ 		If $fnIndex = 0 Then
-;~ 			MsgBox(0, "error", "Nothing found")
-;~ 			Return
-;~ 		EndIf
-
-;~ 	EndIf
-;~ EndFunc   ;==>findNext
+Func findNext()
+	Local $rWin, $sRep, $counter = 0, $strrStrBuf, $strrStrBufEx
+	If $selBuffer = "" Then Return
+	If $fnCount < 0 Then Return
+	$strrStrBuf = StringStripWS($selBuffer, 8)
+	$strrStrBufEx = StringStripWS($selBufferEx, 8)
+	If $strrStrBuf <> $strrStrBufEx Then
+		$fullStrRepl = ""
+		$fnCount = 0
+		$strFnd = ""
+		$strLen = 0
+		$strEnd = 0
+	EndIf
+	$rWin = GUICtrlRead($pEditWindow)
+	If $fnCount = 0 Then
+		$sRep = StringReplace($rWin, $selBuffer, "")
+		$fnCount = @extended
+		$fullStrRepl = StringReplace($rWin, $selBuffer, "", 1)
+		If @extended = 0 Then
+			MsgBox(0, "Find Next", "Could not find: " & $selBuffer)
+			Return
+		EndIf
+		$selBufferEx = $selBuffer
+		$strFnd = StringInStr($fullStrRepl, $selBuffer, 1, 1)
+		$strLen = StringLen($selBuffer)
+		$strEnd = $strFnd + $strLen
+		_GUICtrlEdit_SetSel($pEditWindow, $strFnd + 2, $strEnd)
+		$fnCount += 1
+	Else
+		$fullStrRepl = StringReplace($fullStrRepl, $selBuffer, "", 1)
+		MsgBox(0, "", $fullStrRepl)
+		If @extended = 0 Then
+			MsgBox(0, "Find Next", "Could not find: " & $selBuffer)
+			Return
+		EndIf
+		$strFnd = StringInStr($fullStrRepl, $selBuffer, 0, 1)
+		$strEnd = $strFnd + $strLen
+		_GUICtrlEdit_SetSel($pEditWindow, $strFnd + 2, $strEnd)
+		$fnCount += 1
+	EndIf
+EndFunc   ;==>findNext
 
 Func chkTxt()
 	Local $gtext, $gstate
