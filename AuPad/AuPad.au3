@@ -467,3 +467,6 @@ Func Quit()
 	Exit ; get out
 EndFunc   ;==>Quit
 
+; notes
+;~ Need to put in a way to read what is alredy in the specified file that is opened so that
+;~ I don't need to ask them if they want to save when they have probably barely edited it
