@@ -258,7 +258,7 @@ EndFunc   ;==>chkSel
 
 Func findNext()
 	Local $rWin, $sRep, $counter = 0, $strrStrBuf, $strrStrBufEx, _
-			$i
+		$i
 	If $selBuffer = "" Then Return
 	If $fnCount < 0 Then Return
 	$strrStrBuf = StringStripWS($selBuffer, 8)
