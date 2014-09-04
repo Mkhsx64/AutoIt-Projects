@@ -256,29 +256,29 @@ Func chkSel()
 	EndIf
 EndFunc   ;==>chkSel
 #cs
-	Func findNext()
+Func findNext()
 	Local $rWin, $sRep, $fnIndex, $counter = 0
 	If $selBuffer = "" Then Return
 	If $fnIndex < 0 Then Return
 	$rWin = GUICtrlRead($pEditWindow)
 	If $strB = "" Then
-	$sRep = StringReplace($rWin, $selBuffer, "")
-	$fnIndex = @extended
-	If $fnIndex = 0 Then
-	MsgBox(0, "error", "Nothing found")
-	Return
-	EndIf
-	$strB = $rWin
-	$stLen =
-	$fnArray = _GUICtrlEdit_SetSel($pEditWindow,
+		$sRep = StringReplace($rWin, $selBuffer, "")
+		$fnIndex = @extended
+		If $fnIndex = 0 Then
+			MsgBox(0, "error", "Nothing found")
+			Return
+		EndIf
+		$strB = $rWin
+		$stLen =
+		$fnArray = _GUICtrlEdit_SetSel($pEditWindow,
 	Else
-	If $fnIndex = 0 Then
-	MsgBox(0, "error", "Nothing found")
-	Return
-	EndIf
+		If $fnIndex = 0 Then
+			MsgBox(0, "error", "Nothing found")
+			Return
+		EndIf
 
 	EndIf
-	EndFunc   ;==>findNext
+EndFunc   ;==>findNext
 #ce
 Func chkTxt()
 	Local $gtext, $gstate
@@ -445,7 +445,7 @@ EndFunc   ;==>Save
 
 Func Quit()
 	Local $wgt, $rd, $stringis, $title, $st, $active, $mBox, _
-			$winTitle, $spltTitle
+	$winTitle
 	$rd = GUICtrlRead($pEditWindow) ; read the edit control
 	$st = StringLen($rd) ; find the length of the string read from the edit control
 	$wgt = WinGetTitle($pWnd, "") ; get the title of the window
@@ -454,17 +454,14 @@ Func Quit()
 		DllClose($hDLL) ; close the DLL before we exit
 		Exit ; get out
 	ElseIf $st > 0 Then ; if there is something in the window, and it is called Untitled
-		$winTitle = WinGetTitle("[ACTIVE]")
-		$spltTitle = StringSplit($winTitle, " - ")
-		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
+		$winTitleWinGetTitle
+		$mBox = MsgBox(4, "AuPad", "there has been changes to " &  & ", would you like to save?") ; ask us
 		If $mBox = 6 Then ; if we said yes
 			$saveCounter = 0 ; reset the save counter
 			Save() ; call the save function
 		EndIf
-		ElseIf $title[1] <> "Untitled" And $st = 0 Then ; if the title is not Untitled and there is data in the window
-		$winTitle = WinGetTitle("[ACTIVE]")
-		$spltTitle = StringSplit($winTitle, " - ")
-		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
+	ElseIf $title[1] <> "Untitled" And $st = 0 Then ; if the title is not Untitled and there is data in the window
+		$mBox = MsgBox(4, "AuPad", "there isn't stuff, but it's your file, want to save?") ; ask us
 		If $mBox = 6 Then ; if we said yes
 			Save() ; run the save function
 		EndIf
