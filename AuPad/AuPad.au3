@@ -346,7 +346,7 @@ Func Copy()
 	If $gt[0] = 0 And $gt[1] = 1 Then ; if there is no selected text in the edit control
 		Return ; get out
 	Else
-		$st = StringMid(GUICtrlRead($pEditWindow), $gt[0], $gt[1]) ; get the characters between the start and end characters from the selected text in theedit control
+		$st = StringMid(GUICtrlRead($pEditWindow), $gt[0] + 1, $gt[1] - $gt[0]) ; get the characters between the start and end characters from the selected text in theedit control
 	EndIf
 	$ct = ClipPut($st) ; put the selected text into the clipboard
 	If $ct = 0 Then ; check if it worked
@@ -420,8 +420,6 @@ Func Save()
 				Return ; get out
 			EndIf
 		EndIf
-		MsgBox(0, "", $fn[$i])
-		MsgBox(0, "", $fs)
 		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
 		If $fo = -1 Then ; if it didn't work
 			MsgBox(0, "error", "Could not create file : " & $saveCounter) ; tell us
@@ -454,16 +452,16 @@ Func Quit()
 		DllClose($hDLL) ; close the DLL before we exit
 		Exit ; get out
 	ElseIf $st > 0 Then ; if there is something in the window, and it is called Untitled
-		$winTitle = WinGetTitle("[ACTIVE]")
-		$spltTitle = StringSplit($winTitle, " - ")
+		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
+		$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
 		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
 		If $mBox = 6 Then ; if we said yes
 			$saveCounter = 0 ; reset the save counter
 			Save() ; call the save function
 		EndIf
 		ElseIf $title[1] <> "Untitled" And $st = 0 Then ; if the title is not Untitled and there is data in the window
-		$winTitle = WinGetTitle("[ACTIVE]")
-		$spltTitle = StringSplit($winTitle, " - ")
+		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
+		$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
 		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
 		If $mBox = 6 Then ; if we said yes
 			Save() ; run the save function
