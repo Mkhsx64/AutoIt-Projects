@@ -39,7 +39,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$strLen, $forStrRepl
 
 ; child gui vars
-Local $abChild, $fCount = 0, $fGUI
+Local $abChild, $fCount = 0, $fGUI, $fnEdit
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -103,8 +103,10 @@ While 1
 					_GUICtrlEdit_SetSel($pEditWindow, 0, -1) ; call the setSel edit function if the user selects the select all option
 				Case $hAA
 					aChild() ; call the about aupad child window if the menu option has been selected
+				Case $forFont
+					fontGUI()
 			EndSwitch
-		Case $abChild
+			Case $abChild
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
@@ -387,8 +389,7 @@ EndFunc   ;==>timeDate
 
 Func fontGUI()
 	$fGUI = GUICreate("Font", 400, 300, -1, -1, -1, -1, $pWnd)
-
-	$fnEdit = GUICtrlCreateEdit("",
+	$fnEdit = GUICtrlCreateInput("", 25, 25, 140)
 	GUISetState()
 EndFunc   ;==>fontGUI
 
