@@ -390,7 +390,7 @@ Func fontGUI()
 
 	$fnEdit = GUICtrlCreateEdit("",
 	GUISetState()
-EndFunc   ;==>fontGUI
+EndFunc
 
 Func Open()
 	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
