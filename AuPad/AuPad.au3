@@ -39,7 +39,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$strLen, $forStrRepl
 
 ; child gui vars
-Local $abChild, $fCount = 0
+Local $abChild, $fCount = 0, $fGUI
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -108,6 +108,11 @@ While 1
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
+			EndSwitch
+		Case $fGUI
+			Switch $msg[0]
+				Case $GUI_EVENT_CLOSE
+					GUIDelete($fGUI)
 			EndSwitch
 	EndSwitch
 	Select
@@ -276,7 +281,7 @@ Func findNext()
 		$sRep = StringReplace($rWin, $selBuffer, "")
 		$fnCount = @extended
 		$strLen = StringLen($selBuffer)
-		For $i = 1 To $strLen Step 1
+		For $i = 0 To $strLen Step 1
 			$forStrRepl &= " "
 		Next
 		$fullStrRepl = StringReplace($rWin, $selBuffer, $forStrRepl, 1)
@@ -286,13 +291,13 @@ Func findNext()
 		EndIf
 		$selBufferEx = $selBuffer
 		$strFnd = StringInStr($fullStrRepl, $selBuffer, 1, 1)
-		$strEnd = ($strFnd + 1) + $strLen
+		$strEnd = $strFnd + $strLen
 		MsgBox(0, "", $strEnd)
-		_GUICtrlEdit_SetSel($pEditWindow, $strFnd - 1, $strEnd - 3)
+		_GUICtrlEdit_SetSel($pEditWindow, $strFnd - 1, $strEnd)
 		$fnCount += 1
 	Else
 		$forStrRepl = ""
-		For $i = 1 To $strLen Step 1
+		For $i = 0 To $strLen Step 1
 			$forStrRepl &= " "
 		Next
 		$fullStrRepl = StringReplace($fullStrRepl, $selBuffer, $forStrRepl, 1)
@@ -303,7 +308,7 @@ Func findNext()
 		EndIf
 		$strFnd = StringInStr($fullStrRepl, $selBuffer, 0, 1)
 		$strEnd = $strFnd + $strLen
-		_GUICtrlEdit_SetSel($pEditWindow, $strFnd - 1, $strEnd - 3)
+		_GUICtrlEdit_SetSel($pEditWindow, $strFnd - 1, $strEnd)
 		$fnCount += 1
 	EndIf
 EndFunc   ;==>findNext
@@ -379,6 +384,11 @@ Func timeDate()
 		$p = GUICtrlSetData($pEditWindow, $r & @HOUR & ":" & @MIN & " AM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
 	EndIf
 EndFunc   ;==>timeDate
+
+Func fontGUI()
+	$fGUI = GUICreate("Font", 400, 300, -1, -1, -1, -1, $pWnd)
+	GUISetState()
+EndFunc
 
 Func Open()
 	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
