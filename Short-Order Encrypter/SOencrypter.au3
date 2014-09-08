@@ -429,7 +429,6 @@ Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 EndFunc   ;==>fileCrypt
 
 Func Quit()
-	GUIDelete($hGUI)
 	Exit
 EndFunc   ;==>Quit
 
