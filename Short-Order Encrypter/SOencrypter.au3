@@ -278,33 +278,31 @@ EndFunc   ;==>cpyToClipboard
 
 Func getFile($erd)
 	Local $fPath, $fArray, $fName, $i, $mBox
-	$fPath = FileOpenDialog("Find that File!", @WorkingDir, "All (*.*)", 1, "")
-	If @error = 1 Then
-		MsgBox(0, "ERROR", "Bad selection or no selection.")
-		Return
-	ElseIf @error = 2 Then
-		MsgBox(0, "ERROR", "Bad filter.")
-		Return
+	$fPath = FileOpenDialog("Find that File!", @WorkingDir, "All (*.*)", 1, "") ; get the file path of the file you want to crypt
+	If @error = 1 Then ; if @error is set to 1
+		MsgBox(0, "ERROR", "Bad selection or no selection.") ; tell us
+		Return ; get out
+	ElseIf @error = 2 Then ; if @error is set to 2
+		MsgBox(0, "ERROR", "Bad filter.") ; tell us
+		Return ; get out
 	EndIf
-	$fcPath = $fPath
-	$fArray = StringSplit($fPath, "\")
-	If @error = 1 Then
-		MsgBox(0, "ERROR", "No path selected")
-		Return
+	$fcPath = $fPath ; set the file path to a global variable
+	$fArray = StringSplit($fPath, "\") ; split the string by \
+	If @error = 1 Then ; if @error is set to 1
+		MsgBox(0, "ERROR", "No path selected") ; tell us
+		Return ; return
 	EndIf
-	$i = $fArray[0]
-	$fName = $fArray[$i]
-	If $erd = "E" Then
+	$i = $fArray[0] ; set the # of items in the split string to $i
+	$fName = $fArray[$i] ; set the file name to the last value in the array
+	If $erd = "E" Then ; if encrypt or decrypt equals
 		$mBox = MsgBox(4, "Encrypt File", "Would you like to Encrypt: " & $fName & "?")
-		If $mBox = 7 Then
-			Return
+		If $mBox = 7 Then Return
 		ElseIf $mBox = 6 Then
 			iPswdBox($erd)
 		EndIf
 	Else
 		$mBox = MsgBox(4, "Decrypt File", "Would you like to Decrypt: " & $fName & "?")
-		If $mBox = 7 Then
-			Return
+		If $mBox = 7 Then Return
 		ElseIf $mBox = 6 Then
 			iPswdBox($erd)
 		EndIf
