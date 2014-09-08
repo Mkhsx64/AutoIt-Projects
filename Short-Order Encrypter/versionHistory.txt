@@ -1,0 +1,10 @@
+----==== 1.0.0.0 ====----
+
+-initial file and message decrypt and encrypt
+-all encryptiona and decryption types
+
+----==== 1.0.0.5 ====----
+
+-changed global declaration of variables to one local statement
+-commented all code for clarity
+-took out call to GUIDelete function in the Quit function
