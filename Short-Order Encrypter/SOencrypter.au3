@@ -354,76 +354,70 @@ Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 			$gotName = $getNameA[$iN] ; set the array index
 			$sis = StringInStr($gotName, ".") ; find if the . is in the string
 			If $sis = 0 Then Return MsgBox(0, "ERROR", "Bad name; Must use file saving format *.*") ; if $sis equals 0 then tell us and get out
-			$fEcrypt = _Crypt_EncryptFile($Path, $sPath, $Pass, $fFlag[$cFlag])
-			If $fEcrypt = False Then
-				Select
-					Case @error >= 10 And @error < 400
-						MsgBox(0, "ERROR", "Failed to create key")
-						Return
-					Case @error >= 400
-						MsgBox(0, "ERROR", "Failed to encrypt final piece")
-						Return
-					Case @error >= 500
-						MsgBox(0, "ERROR", "Failed to encrypt piece")
-						Return
-					Case @error = 2
-						MsgBox(0, "ERROR", "Couldn't get source file")
-						Return
-					Case @error = 3
-						MsgBox(0, "ERROR", "Couldn't save to destination file")
-						Return
+			$fEcrypt = _Crypt_EncryptFile($Path, $sPath, $Pass, $fFlag[$cFlag]) ; encrypt the file
+			If $fEcrypt = False Then ; if the encryption returned false
+				Select ; lets see whats in @error
+					Case @error >= 10 And @error < 400 ; if @error is greater than or equal to 10 and less than 400
+						MsgBox(0, "ERROR", "Failed to create key") ; tell us
+						Return ; get out
+					Case @error >= 400 ; if @error is greater than 400
+						MsgBox(0, "ERROR", "Failed to encrypt final piece") ; tell us
+						Return ; get out
+					Case @error >= 500 ; if @error is greater than or equal to 500 then
+						MsgBox(0, "ERROR", "Failed to encrypt piece") ; tell us
+						Return ; get out
+					Case @error = 2 ; if @error equals 2
+						MsgBox(0, "ERROR", "Couldn't get source file") ; tell us
+						Return ; get out
+					Case @error = 3 ; if @error equals 3
+						MsgBox(0, "ERROR", "Couldn't save to destination file") ; tell us
+						Return ; get out
 				EndSelect
 			EndIf
-			GUICtrlSetState($aChkBx[$cValue], 4)
-			GUIDelete($fChildi)
-			$cValue = ""
-			MsgBox(0, "Success!", "Successfully Encrypted")
+			GUICtrlSetState($aChkBx[$cValue], 4) ; set the state of the checkbox selected
+			GUIDelete($fChildi) ; delete the pswdbox
+			$cValue = "" ; reset the checkbox value
+			MsgBox(0, "Success!", "Successfully Encrypted") ; tell us
 		Case "D" ; for value of "D"
-			$sPath = FileSaveDialog("Save Decrypted File", @WorkingDir, "All(*.*)", 2)
-			$aError = @error
-			If $aError = 1 Then
-				MsgBox(0, "ERROR", "No file name to save")
-				Return
-			ElseIf $aError = 2 Then
-				MsgBox(0, "ERROR", "Bad file filter")
-				Return
+			$sPath = FileSaveDialog("Save Decrypted File", @WorkingDir, "All(*.*)", 2) ; get the path they would like to save the file to
+			$aError = @error ; set the @error value into a variable
+			If $aError = 1 Then ; if @error was set to 1
+				MsgBox(0, "ERROR", "No file name to save") ; tell us
+				Return ; get out
+			ElseIf $aError = 2 Then ; if @error was set to 2
+				MsgBox(0, "ERROR", "Bad file filter") ; tell us
+				Return ; get out
 			EndIf
-			$getNameA = StringSplit($sPath, "\")
-			If @error = 1 Then
-				MsgBox(0, "ERROR", "No path selected")
-				Return
-			EndIf
-			$iN = $getNameA[0]
-			$gotName = $getNameA[$iN]
-			$sis = StringInStr($gotName, ".")
-			If $sis = 0 Then
-				MsgBox(0, "ERROR", "Bad name; Must use file saving format *.*")
-				Return
-			EndIf
-			$fDcrypt = _Crypt_DecryptFile($Path, $sPath, $Pass, $fFlag[$cFlag])
-			If $fDcrypt = False Then
-				Select
-					Case @error >= 10 And @error < 400
-						MsgBox(0, "ERROR", "Failed to create key")
-						Return
-					Case @error >= 400
-						MsgBox(0, "ERROR", "Failed to decrypt final piece")
-						Return
-					Case @error >= 500
-						MsgBox(0, "ERROR", "Failed to encrypt piece")
-						Return
-					Case @error = 2
-						MsgBox(0, "ERROR", "Couldn't get source file")
-						Return
-					Case @error = 3
-						MsgBox(0, "ERROR", "Couldn't save to destination file")
-						Return
+			$getNameA = StringSplit($sPath, "\") ; split the string by \
+			If @error = 1 Then Return MsgBox(0, "ERROR", "No path selected") ; if @error equals 1 then tell us and get out
+			$iN = $getNameA[0] ; set the $iN variable to the last index
+			$gotName = $getNameA[$iN] ; set the array index
+			$sis = StringInStr($gotName, ".") ; find if the . is in the string
+			If $sis = 0 Then Return MsgBox(0, "ERROR", "Bad name; Must use file saving format *.*") ; if $sis equals 0 then tell us and get out
+			$fDcrypt = _Crypt_DecryptFile($Path, $sPath, $Pass, $fFlag[$cFlag]) ; decrypt the file
+			If $fDcrypt = False Then ; if the decryption returned false
+				Select ; lets see what is in @error
+					Case @error >= 10 And @error < 400 ; if @error is greater than or equal to 4 and less than 400
+						MsgBox(0, "ERROR", "Failed to create key") ; tell us
+						Return ; get out
+					Case @error >= 400 ; if @error is greater than or equal to 400
+						MsgBox(0, "ERROR", "Failed to decrypt final piece") ; tell us
+						Return ; get out
+					Case @error >= 500 ; if @error is greater than or equal to 500
+						MsgBox(0, "ERROR", "Failed to encrypt piece") ; tell us
+						Return ; get out
+					Case @error = 2 ; if @error equals 2
+						MsgBox(0, "ERROR", "Couldn't get source file") ; tell us
+						Return ; get out
+					Case @error = 3 ; if @error equal 3
+						MsgBox(0, "ERROR", "Couldn't save to destination file") ; tell us
+						Return ; get out
 				EndSelect
 			EndIf
-			GUICtrlSetState($aChkBx[$cValue], 4)
-			GUIDelete($fChildi)
-			$cValue = ""
-			MsgBox(0, "Success!", "Successfully Decrypted")
+			GUICtrlSetState($aChkBx[$cValue], 4) ; set the state of the checkbox selected
+			GUIDelete($fChildi) ; delete the pswdbox
+			$cValue = "" ; reset the checkbox value
+			MsgBox(0, "Success!", "Successfully Decrypted") ; tell us
 	EndSwitch
 EndFunc   ;==>fileCrypt
 
