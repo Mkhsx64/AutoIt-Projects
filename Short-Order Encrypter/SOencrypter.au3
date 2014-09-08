@@ -245,7 +245,7 @@ Func dCrypt($iMess, $iPass, $iflag)
 EndFunc   ;==>dCrypt
 
 Func showCode($code, $eType, $DorE)
-	Local $aFlag[8]
+	Local $aFlag[8]              ; array of crypt text values
 	$aFlag[0] = "Text"
 	$aFlag[1] = "3DES"
 	$aFlag[2] = "AES (128bit)"
@@ -255,27 +255,24 @@ Func showCode($code, $eType, $DorE)
 	$aFlag[6] = "RC2"
 	$aFlag[7] = "RC4"
 	If $DorE <> "D" Then ; check to see if we need to decrypt or encrypt
-		GUIDelete($iChild)
-		$iChild2 = GUICreate("Secret Message - shhh!", 400, 200, -1, -1, -1, -1, $hGUI)
+		GUIDelete($iChild) ; delete the input child GUI
+		$iChild2 = GUICreate("Secret Message - shhh!", 400, 200, -1, -1, -1, -1, $hGUI) ; create the show message GUI
 	Else
-		GUIDelete($dChild)
-		$iChild2 = GUICreate("Here is your message - you spy you", 400, 200, -1, -1, -1, -1, $hGUI)
+		GUIDelete($dChild) ; delete the decrypt child GUI
+		$iChild2 = GUICreate("Here is your message - you spy you", 400, 200, -1, -1, -1, -1, $hGUI) ; create the decrypt show message GUI
 	EndIf
-	$iEdit = GUICtrlCreateEdit($code, 9, 10, 380, 150)
-	$cButton = GUICtrlCreateButton("Copy to Clipboard", 100, 170)
-	$eButton = GUICtrlCreateButton("Close Window", 210, 170)
-	ControlClick($iChild2, $code, $iEdit)
-	GUISetState()
+	$iEdit = GUICtrlCreateEdit($code, 9, 10, 380, 150) ; create the edit with the message
+	$cButton = GUICtrlCreateButton("Copy to Clipboard", 100, 170) ; create the copy to clipboard button
+	$eButton = GUICtrlCreateButton("Close Window", 210, 170) ; create the close window button
+	ControlClick($iChild2, $code, $iEdit) ; click to take off focus
+	GUISetState() ; show the child GUI
 EndFunc   ;==>showCode
 
 Func cpyToClipboard()
 	Local $cInfo, $clip
-	$cInfo = GUICtrlRead($iEdit)
-	$clip = ClipPut($cInfo)
-	If $clip = 0 Then
-		MsgBox(0, "ERROR", "Could not copy code to clipboard.")
-		Return
-	EndIf
+	$cInfo = GUICtrlRead($iEdit) ; read the secret message edit
+	$clip = ClipPut($cInfo) ; put the message into the clipboard
+	If $clip = 0 Then Return MsgBox(0, "ERROR", "Could not copy code to clipboard.") ; tell us and get out
 	MsgBox(0, "Clipboard", "Successfully set code to the clipboard.")
 EndFunc   ;==>cpyToClipboard
 
