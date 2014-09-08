@@ -114,68 +114,68 @@ Func GUI()
 	GUICtrlCreateLabel("decode an encrypted message (file).", 59, 82) ; label
 	$iButton = GUICtrlCreateButton("Input", 50, 160, 70, 30) ; create the input button
 	$dButton = GUICtrlCreateButton("Decode", 160, 160, 70, 30) ; create the decode button
-	$aChkBx[0] = GUICtrlCreateCheckbox("Text", 15, 105) ;
-	$aChkBx[1] = GUICtrlCreateCheckbox("3DES", 67, 105)
-	$aChkBx[2] = GUICtrlCreateCheckbox("AES (128bit)", 122, 105)
-	$aChkBx[3] = GUICtrlCreateCheckbox("AES (192bit)", 208, 105)
-	$aChkBx[4] = GUICtrlCreateCheckbox("AES (256bit)", 32, 130)
-	$aChkBx[5] = GUICtrlCreateCheckbox("DES", 121, 130)
-	$aChkBx[6] = GUICtrlCreateCheckbox("RC2", 172, 130)
-	$aChkBx[7] = GUICtrlCreateCheckbox("RC4", 224, 130)
-	GUISetState(@SW_SHOW)
+	$aChkBx[0] = GUICtrlCreateCheckbox("Text", 15, 105) ; create the text checkbox
+	$aChkBx[1] = GUICtrlCreateCheckbox("3DES", 67, 105) ; create the 3DES checkbox
+	$aChkBx[2] = GUICtrlCreateCheckbox("AES (128bit)", 122, 105) ; create the AES (128bit) checkbox
+	$aChkBx[3] = GUICtrlCreateCheckbox("AES (192bit)", 208, 105) ; create the AES (192bit) checkbox
+	$aChkBx[4] = GUICtrlCreateCheckbox("AES (256bit)", 32, 130) ; create the AES (256it) checkbox
+	$aChkBx[5] = GUICtrlCreateCheckbox("DES", 121, 130) ; create the DES checkbox
+	$aChkBx[6] = GUICtrlCreateCheckbox("RC2", 172, 130) ; create the RC2 checkbox
+	$aChkBx[7] = GUICtrlCreateCheckbox("RC4", 224, 130) ; create the RC4 checkbox
+	GUISetState(@SW_SHOW) ; show the parent GUI
 EndFunc   ;==>GUI
 
 Func getCheckbox()
 	Local $i, $readArray, $cCounter = 0
-	For $i = 0 To UBound($aChkBx) - 1 Step 1
-		$readArray = GUICtrlRead($aChkBx[$i])
-		If $readArray = 1 Then
-			$cCounter += 1
-			$cValue &= $i
+	For $i = 0 To UBound($aChkBx) - 1 Step 1 ; start at 0 and go through all the checkboxes
+		$readArray = GUICtrlRead($aChkBx[$i]) ; read each checkbox
+		If $readArray = 1 Then ; if the value returned to the $readArray var is 1
+			$cCounter += 1 ; increment the checkbox local counter
+			$cValue &= $i ; add the number we are at to the checkbox value variable
 		EndIf
 	Next
-	If $cCounter > 1 Then
-		MsgBox(0, "Encryption Type", "Could not specify encryption type due to multiple selections. Please make sure you have only selected one type of encryption")
-		$cValue = ""
-		Return
-	ElseIf $cCounter = 0 Then
-		MsgBox(0, "Encryption Type", "You must select an encryption type in the Short-Order Encrypter window")
-		$cValue = ""
-		Return
+	If $cCounter > 1 Then ; if there has been multiple selections
+		MsgBox(0, "Encryption Type", "Could not specify encryption type due to multiple selections. Please make sure you have only selected one type of encryption") ; tell us
+		$cValue = "" ; reset the checkbox value
+		Return ; get out
+	ElseIf $cCounter = 0 Then ; or if they have not made any selection
+		MsgBox(0, "Encryption Type", "You must select an encryption type in the Short-Order Encrypter window") ; tell us
+		$cValue = "" ; reset the checkbox value
+		Return ; get out
 	EndIf
 EndFunc   ;==>getCheckbox
 
 Func inputChild()
-	If $cValue = "" Then
-		Return
+	If $cValue = "" Then ; if there is nothing in the checkbox value variable
+		Return ; get out
 	EndIf
-	$iChild = GUICreate("Input Message", 386, 120, -1, -1, -1, -1, $hGUI)
-	GUICtrlCreateLabel("Message", 5, 10)
-	GUICtrlCreateLabel("Password", 200, 10)
-	$iMsgBox = GUICtrlCreateInput("", 5, 25, 180, 60)
-	$iPswdBox = GUICtrlCreateInput("", 200, 25, 180, 60)
-	$iSubmit = GUICtrlCreateButton("Encrypt", 170, 90)
-	$iFileGetB = GUICtrlCreateButton("Get File", 335, 90)
-	GUISetState()
+	$iChild = GUICreate("Input Message", 386, 120, -1, -1, -1, -1, $hGUI) ; create the child input GUI
+	GUICtrlCreateLabel("Message", 5, 10) ; create the message label
+	GUICtrlCreateLabel("Password", 200, 10) ; create the password label
+	$iMsgBox = GUICtrlCreateInput("", 5, 25, 180, 60) ; create the msg input
+	$iPswdBox = GUICtrlCreateInput("", 200, 25, 180, 60) ; create the pswd input
+	$iSubmit = GUICtrlCreateButton("Encrypt", 170, 90) ; create the encrypt button
+	$iFileGetB = GUICtrlCreateButton("Get File", 335, 90) ; create the get file button
+	GUISetState() ; show the child GUI
 EndFunc   ;==>inputChild
 
 Func decryptChild()
-	If $cValue = "" Then
-		Return
+	If $cValue = "" Then ; if there is nothing in the checkbox value variable
+		Return ; get out
 	EndIf
-	$dChild = GUICreate("Input Message", 386, 120, -1, -1, -1, -1, $hGUI)
-	GUICtrlCreateLabel("Message", 5, 10)
-	GUICtrlCreateLabel("Password", 200, 10)
-	$dMsgBox = GUICtrlCreateInput("", 5, 25, 180, 60)
-	$dPswdBox = GUICtrlCreateInput("", 200, 25, 180, 60)
-	$dSubmit = GUICtrlCreateButton("Decrypt", 172, 90)
-	$dFileGetB = GUICtrlCreateButton("Get File", 335, 90)
-	GUISetState()
+	$dChild = GUICreate("Input Message", 386, 120, -1, -1, -1, -1, $hGUI) ; create the decrypt child GUI
+	GUICtrlCreateLabel("Message", 5, 10) ; create the message label
+	GUICtrlCreateLabel("Password", 200, 10) ; create the password label
+	$dMsgBox = GUICtrlCreateInput("", 5, 25, 180, 60) ; create the msg input
+	$dPswdBox = GUICtrlCreateInput("", 200, 25, 180, 60) ; create the pswd input
+	$dSubmit = GUICtrlCreateButton("Decrypt", 172, 90) ; create the decrypt button
+	$dFileGetB = GUICtrlCreateButton("Get File", 335, 90) ; create the get file button
+	GUISetState() ; show the decrypt child GUI
 EndFunc   ;==>decryptChild
 
 Func Crypt($iMess, $iPass, $iflag)
 	Local $mFlag[8], $eCrypt, $E
-	$mFlag[0] = "TEXT"
+	$mFlag[0] = "TEXT"         ; array of crypt values
 	$mFlag[1] = $CALG_3DES
 	$mFlag[2] = $CALG_AES_128
 	$mFlag[3] = $CALG_AES_192
@@ -183,21 +183,21 @@ Func Crypt($iMess, $iPass, $iflag)
 	$mFlag[5] = $CALG_DES
 	$mFlag[6] = $CALG_RC2
 	$mFlag[7] = $CALG_RC4
-	If $iMess = "" Then
-		MsgBox(0, "ERROR", "Did not enter in a message to Encrypt.")
-		Return
-	ElseIf $iPass = "" Then
-		MsgBox(0, "ERROR", "Did not enter in a password or Encryption.")
-		Return
+	If $iMess = "" Then ; if there was no message
+		MsgBox(0, "ERROR", "Did not enter in a message to Encrypt.") ; tell us
+		Return ; get out
+	ElseIf $iPass = "" Then ; if there was no password
+		MsgBox(0, "ERROR", "Did not enter in a password or Encryption.") ; tell us
+		Return ; get out
 	EndIf
-	If $iflag <> 0 Then
-		$eCrypt = _Crypt_EncryptData($iMess, $iPass, $mFlag[$iflag])
+	If $iflag <> 0 Then ; if the checkbox value does not equal 0 or "Text"
+		$eCrypt = _Crypt_EncryptData($iMess, $iPass, $mFlag[$iflag]) ; encrypt the message
 	Else
-		showCode($iMess, $mFlag[$iflag], $E)
-		Return
+		showCode($iMess, $mFlag[$iflag], $E) ; otherwise run the showcode function to show the text
+		Return ; get out
 	EndIf
-	If @error Then
-		MsgBox(0, "ERROR", "Could not Encrypt the data, exiting...")
+	If $eCrypt = -1 Then ; if there was an error
+		MsgBox(0, "ERROR", "Could not Encrypt the data.") ; tell us
 		Return
 	EndIf
 	showCode($eCrypt, $mFlag[$iflag], $E)
