@@ -8,3 +8,6 @@
 -changed global declaration of variables to one local statement
 -commented all code for clarity
 -took out call to GUIDelete function in the Quit function
+-added check for the encryptData function that will return what has failed, and not just a single msgbox
+-added a check for the decryptData function to check if it could not create the key
+-changed the getFile function to use FileOpenDialog instead of FileSaveDialog when opening a file
