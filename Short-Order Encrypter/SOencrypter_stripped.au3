@@ -282,13 +282,7 @@ Func __Crypt_ContextSet($hCryptContext)
 $__g_aCryptInternalData[2] = $hCryptContext
 EndFunc
 Opt("MustDeclareVars", 1)
-Local $hGUI, $msg = 0, $hInput, $iButton, $hDecode, $dButton
-Local $aChkBx[8], $cValue, $iChild = 9999, $iMsg, $iPswd, $iMsgBox
-Local $iPswdBox, $iSubmit = 9999, $iChild2 = 9999, $cButton = 9999
-Local $eButton = 9999, $iEdit, $dChild = 9999, $dMsgBox, $dPswdBox
-Local $dSubmit = 9999, $dMsg, $dPswd, $iFileGetB, $dFileGetB
-Local $fChildi = 9999, $iFilePass, $iFilePassBox, $iPassSubmit
-Local $fcPath, $ED = ""
+Local $hGUI, $msg = 0, $hInput, $iButton, $hDecode, $dButton, $aChkBx[8], $cValue, $iChild = 9999, $iMsg, $iPswd, $iMsgBox, $iPswdBox, $iSubmit = 9999, $iChild2 = 9999, $cButton = 9999, $eButton = 9999, $iEdit, $dChild = 9999, $dMsgBox, $dPswdBox, $dSubmit = 9999, $dMsg, $dPswd, $iFileGetB, $dFileGetB, $fChildi = 9999, $iFilePass, $iFilePassBox, $iPassSubmit, $fcPath, $ED = ""
 GUI()
 While 1
 $msg = GUIGetMsg(1)
@@ -443,8 +437,15 @@ Else
 showCode($iMess, $mFlag[$iflag], $E)
 Return
 EndIf
-If @error Then
-MsgBox(0, "ERROR", "Could not Encrypt the data, exiting...")
+If $eCrypt = -1 Then
+MsgBox(0, "ERROR", "Could not Encrypt the data.")
+Select
+Case @error >= 100
+MsgBox(0, "error", "Cannot create key.")
+Case @error = 20
+MsgBox(0, "error", "Failed to determine buffer.")
+Case @error = 30
+EndSelect
 Return
 EndIf
 showCode($eCrypt, $mFlag[$iflag], $E)
@@ -474,7 +475,10 @@ showCode($iMess, $mFlag[$iflag], $D)
 Return
 EndIf
 If @error Then
-MsgBox(0, "ERROR", "Could not Decrypt the data, exiting...")
+MsgBox(0, "ERROR", "Could not Decrypt the data.")
+If @error >= 100 Then
+MsgBox(0, "error", "Could not create key.")
+EndIf
 Return
 EndIf
 showCode($bts, $mFlag[$iflag], $D)
@@ -506,15 +510,12 @@ Func cpyToClipboard()
 Local $cInfo, $clip
 $cInfo = GUICtrlRead($iEdit)
 $clip = ClipPut($cInfo)
-If $clip = 0 Then
-MsgBox(0, "ERROR", "Could not copy code to clipboard.")
-Return
-EndIf
+If $clip = 0 Then Return MsgBox(0, "ERROR", "Could not copy code to clipboard.")
 MsgBox(0, "Clipboard", "Successfully set code to the clipboard.")
 EndFunc
 Func getFile($erd)
 Local $fPath, $fArray, $fName, $i, $mBox
-$fPath = FileSaveDialog("Find that File!", @WorkingDir, "All (*.*)", 1, "")
+$fPath = FileOpenDialog("Find that File!", @WorkingDir, "All (*.*)", 1, "")
 If @error = 1 Then
 MsgBox(0, "ERROR", "Bad selection or no selection.")
 Return
@@ -559,8 +560,7 @@ $iPassSubmit = GUICtrlCreateButton("Run", 80, 70)
 GUISetState()
 EndFunc
 Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
-Local $fFlag[8], $sPath, $fEcrypt, $fDcrypt, $aError
-Local $getNameA, $gotName, $iN, $sis
+Local $fFlag[8], $sPath, $fEcrypt, $fDcrypt, $aError, $getNameA, $gotName, $iN, $sis
 $fFlag[0] = "TEXT"
 $fFlag[1] = $CALG_3DES
 $fFlag[2] = $CALG_AES_128
@@ -585,17 +585,11 @@ MsgBox(0, "ERROR", "Bad file filter")
 Return
 EndIf
 $getNameA = StringSplit($sPath, "\")
-If @error = 1 Then
-MsgBox(0, "ERROR", "No path selected")
-Return
-EndIf
+If @error = 1 Then Return MsgBox(0, "ERROR", "No path selected")
 $iN = $getNameA[0]
 $gotName = $getNameA[$iN]
 $sis = StringInStr($gotName, ".")
-If $sis = 0 Then
-MsgBox(0, "ERROR", "Bad name; Must use file saving format *.*")
-Return
-EndIf
+If $sis = 0 Then Return MsgBox(0, "ERROR", "Bad name; Must use file saving format *.*")
 $fEcrypt = _Crypt_EncryptFile($Path, $sPath, $Pass, $fFlag[$cFlag])
 If $fEcrypt = False Then
 Select
@@ -631,17 +625,11 @@ MsgBox(0, "ERROR", "Bad file filter")
 Return
 EndIf
 $getNameA = StringSplit($sPath, "\")
-If @error = 1 Then
-MsgBox(0, "ERROR", "No path selected")
-Return
-EndIf
+If @error = 1 Then Return MsgBox(0, "ERROR", "No path selected")
 $iN = $getNameA[0]
 $gotName = $getNameA[$iN]
 $sis = StringInStr($gotName, ".")
-If $sis = 0 Then
-MsgBox(0, "ERROR", "Bad name; Must use file saving format *.*")
-Return
-EndIf
+If $sis = 0 Then Return MsgBox(0, "ERROR", "Bad name; Must use file saving format *.*")
 $fDcrypt = _Crypt_DecryptFile($Path, $sPath, $Pass, $fFlag[$cFlag])
 If $fDcrypt = False Then
 Select
@@ -669,6 +657,5 @@ MsgBox(0, "Success!", "Successfully Decrypted")
 EndSwitch
 EndFunc
 Func Quit()
-GUIDelete($hGUI)
 Exit
 EndFunc

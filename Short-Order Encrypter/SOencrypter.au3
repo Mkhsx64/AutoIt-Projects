@@ -296,13 +296,15 @@ Func getFile($erd)
 	$fName = $fArray[$i] ; set the file name to the last value in the array
 	If $erd = "E" Then ; if encrypt or decrypt equals
 		$mBox = MsgBox(4, "Encrypt File", "Would you like to Encrypt: " & $fName & "?") ; ask if we want to encrypt the file
-		If $mBox = 7 Then Return ; if no then get out
+		If $mBox = 7 Then ; if they said no
+			Return ; if no then get out
 		ElseIf $mBox = 6 Then ; if yes
 			iPswdBox($erd) ; call the ipswdbox and pass the "E" param
 		EndIf
 	Else
 		$mBox = MsgBox(4, "Decrypt File", "Would you like to Decrypt: " & $fName & "?") ; ask if we want to decrypt the file
-		If $mBox = 7 Then Return ; if no then get out
+		If $mBox = 7 Then ; if they said no
+			Return ; if no then get out
 		ElseIf $mBox = 6 Then ; if yes
 			iPswdBox($erd) ; call the ipswdbox and pass the "D" param
 		EndIf
