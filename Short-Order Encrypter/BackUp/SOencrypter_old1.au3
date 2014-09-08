@@ -25,12 +25,12 @@ Opt("MustDeclareVars", 1) ; lets be strict for clarities sake
 
 ; vars
 Local $hGUI, $msg = 0, $hInput, $iButton, $hDecode, $dButton, _
-		$aChkBx[8], $cValue, $iChild = 9999, $iMsg, $iPswd, $iMsgBox, _
-		$iPswdBox, $iSubmit = 9999, $iChild2 = 9999, $cButton = 9999, _
-		$eButton = 9999, $iEdit, $dChild = 9999, $dMsgBox, $dPswdBox, _
-		$dSubmit = 9999, $dMsg, $dPswd, $iFileGetB, $dFileGetB, _
-		$fChildi = 9999, $iFilePass, $iFilePassBox, $iPassSubmit, _
-		$fcPath, $ED = ""
+ $aChkBx[8], $cValue, $iChild = 9999, $iMsg, $iPswd, $iMsgBox, _
+ $iPswdBox, $iSubmit = 9999, $iChild2 = 9999, $cButton = 9999, _
+ $eButton = 9999, $iEdit, $dChild = 9999, $dMsgBox, $dPswdBox, _
+ $dSubmit = 9999, $dMsg, $dPswd, $iFileGetB, $dFileGetB, _
+ $fChildi = 9999, $iFilePass, $iFilePassBox, $iPassSubmit, _
+ $fcPath, $ED = ""
 
 ; Main line
 
