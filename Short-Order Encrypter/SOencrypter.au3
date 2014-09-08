@@ -273,12 +273,12 @@ Func cpyToClipboard()
 	$cInfo = GUICtrlRead($iEdit) ; read the secret message edit
 	$clip = ClipPut($cInfo) ; put the message into the clipboard
 	If $clip = 0 Then Return MsgBox(0, "ERROR", "Could not copy code to clipboard.") ; tell us and get out
-	MsgBox(0, "Clipboard", "Successfully set code to the clipboard.")
+	MsgBox(0, "Clipboard", "Successfully set code to the clipboard.") ; tell us
 EndFunc   ;==>cpyToClipboard
 
 Func getFile($erd)
 	Local $fPath, $fArray, $fName, $i, $mBox
-	$fPath = FileSaveDialog("Find that File!", @WorkingDir, "All (*.*)", 1, "")
+	$fPath = FileOpenDialog("Find that File!", @WorkingDir, "All (*.*)", 1, "")
 	If @error = 1 Then
 		MsgBox(0, "ERROR", "Bad selection or no selection.")
 		Return
