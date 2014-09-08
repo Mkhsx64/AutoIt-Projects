@@ -295,37 +295,37 @@ Func getFile($erd)
 	$i = $fArray[0] ; set the # of items in the split string to $i
 	$fName = $fArray[$i] ; set the file name to the last value in the array
 	If $erd = "E" Then ; if encrypt or decrypt equals
-		$mBox = MsgBox(4, "Encrypt File", "Would you like to Encrypt: " & $fName & "?")
-		If $mBox = 7 Then Return
-		ElseIf $mBox = 6 Then
-			iPswdBox($erd)
+		$mBox = MsgBox(4, "Encrypt File", "Would you like to Encrypt: " & $fName & "?") ; ask if we want to encrypt the file
+		If $mBox = 7 Then Return ; if no then get out
+		ElseIf $mBox = 6 Then ; if yes
+			iPswdBox($erd) ; call the ipswdbox and pass the "E" param
 		EndIf
 	Else
-		$mBox = MsgBox(4, "Decrypt File", "Would you like to Decrypt: " & $fName & "?")
-		If $mBox = 7 Then Return
-		ElseIf $mBox = 6 Then
-			iPswdBox($erd)
+		$mBox = MsgBox(4, "Decrypt File", "Would you like to Decrypt: " & $fName & "?") ; ask if we want to decrypt the file
+		If $mBox = 7 Then Return ; if no then get out
+		ElseIf $mBox = 6 Then ; if yes
+			iPswdBox($erd) ; call the ipswdbox and pass the "D" param
 		EndIf
 	EndIf
 EndFunc   ;==>getFile
 
 Func iPswdBox($eord)
-	$ED = $eord
-	If $ED = "E" Then
-		GUIDelete($iChild)
+	$ED = $eord ; set the function param to the $ED variable
+	If $ED = "E" Then ; if it is "E"
+		GUIDelete($iChild) ; delete the encrypt child GUI
 	Else
-		GUIDelete($dChild)
+		GUIDelete($dChild) ; delet the decrypt child GUI
 	EndIf
-	$fChildi = GUICreate("I need a password", 200, 100, -1, -1, -1, -1, $hGUI)
-	$iFilePassBox = GUICtrlCreateInput("", 5, 5, 190, 60)
-	$iPassSubmit = GUICtrlCreateButton("Run", 80, 70)
-	GUISetState()
+	$fChildi = GUICreate("I need a password", 200, 100, -1, -1, -1, -1, $hGUI) ; create the child window
+	$iFilePassBox = GUICtrlCreateInput("", 5, 5, 190, 60) ; create the password input
+	$iPassSubmit = GUICtrlCreateButton("Run", 80, 70) ; create the run button
+	GUISetState() ; show the child GUI
 EndFunc   ;==>iPswdBox
 
 Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 	Local $fFlag[8], $sPath, $fEcrypt, $fDcrypt, $aError, _
 			$getNameA, $gotName, $iN, $sis
-	$fFlag[0] = "TEXT"
+	$fFlag[0] = "TEXT"                ; array of crypt values
 	$fFlag[1] = $CALG_3DES
 	$fFlag[2] = $CALG_AES_128
 	$fFlag[3] = $CALG_AES_192
@@ -333,33 +333,27 @@ Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 	$fFlag[5] = $CALG_DES
 	$fFlag[6] = $CALG_RC2
 	$fFlag[7] = $CALG_RC4
-	If $cFlag = 0 Then
-		MsgBox(0, "Text Selected", "You have selected text, which is not available for file Encryption or Decryption. Exiting...")
-		Return
+	If $cFlag = 0 Then ; if the checkbox value is 0 or "TEXT"
+		MsgBox(0, "Text Selected", "You have selected text, which is not available for file Encryption or Decryption. Exiting...") ; tell us
+		Return ; get out
 	EndIf
-	Switch $encORdec
-		Case "E"
-			$sPath = FileSaveDialog("Save Encrypted File", @WorkingDir, "All(*.*)", 2)
-			$aError = @error
-			If $aError = 1 Then
-				MsgBox(0, "ERROR", "No file name to save")
-				Return
-			ElseIf $aError = 2 Then
-				MsgBox(0, "ERROR", "Bad file filter")
-				Return
+	Switch $encORdec ; for the variable $encORdec find..
+		Case "E" ; for value of "E"
+			$sPath = FileSaveDialog("Save Encrypted File", @WorkingDir, "All(*.*)", 2) ; get the path they would like to save the file to
+			$aError = @error ; set the @error value into a variable
+			If $aError = 1 Then ; if @error was set to 1
+				MsgBox(0, "ERROR", "No file name to save") ; tell us
+				Return ; get out
+			ElseIf $aError = 2 Then ; if @error is set to 2
+				MsgBox(0, "ERROR", "Bad file filter") ; tell us
+				Return ; get out
 			EndIf
-			$getNameA = StringSplit($sPath, "\")
-			If @error = 1 Then
-				MsgBox(0, "ERROR", "No path selected")
-				Return
-			EndIf
-			$iN = $getNameA[0]
-			$gotName = $getNameA[$iN]
-			$sis = StringInStr($gotName, ".")
-			If $sis = 0 Then
-				MsgBox(0, "ERROR", "Bad name; Must use file saving format *.*")
-				Return
-			EndIf
+			$getNameA = StringSplit($sPath, "\") ; split the string by \
+			If @error = 1 Then Return MsgBox(0, "ERROR", "No path selected") ; if @error equals 1 tell us and get out
+			$iN = $getNameA[0] ; set the $iN variable to the last index
+			$gotName = $getNameA[$iN] ; set the array index
+			$sis = StringInStr($gotName, ".") ; find if the . is in the string
+			If $sis = 0 Then Return MsgBox(0, "ERROR", "Bad name; Must use file saving format *.*") ; if $sis equals 0 then tell us and get out
 			$fEcrypt = _Crypt_EncryptFile($Path, $sPath, $Pass, $fFlag[$cFlag])
 			If $fEcrypt = False Then
 				Select
@@ -384,7 +378,7 @@ Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 			GUIDelete($fChildi)
 			$cValue = ""
 			MsgBox(0, "Success!", "Successfully Encrypted")
-		Case "D"
+		Case "D" ; for value of "D"
 			$sPath = FileSaveDialog("Save Decrypted File", @WorkingDir, "All(*.*)", 2)
 			$aError = @error
 			If $aError = 1 Then
@@ -434,7 +428,7 @@ Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 EndFunc   ;==>fileCrypt
 
 Func Quit()
-	Exit
+	Exit ; get out
 EndFunc   ;==>Quit
 
 
