@@ -319,7 +319,7 @@ EndFunc   ;==>iPswdBox
 
 Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 	Local $fFlag[8], $sPath, $fEcrypt, $fDcrypt, $aError, _
-			$getNameA, $gotName, $iN, $sis
+ $getNameA, $gotName, $iN, $sis
 	$fFlag[0] = "TEXT"
 	$fFlag[1] = $CALG_3DES
 	$fFlag[2] = $CALG_AES_128
