@@ -198,14 +198,21 @@ Func Crypt($iMess, $iPass, $iflag)
 	EndIf
 	If $eCrypt = -1 Then ; if there was an error
 		MsgBox(0, "ERROR", "Could not Encrypt the data.") ; tell us
-		Return
+		Select ; create a select statement for @error
+			Case @error >= 100 ; if @error is greater than or equal to 100
+				MsgBox(0, "error", "Cannot create key.") ; tell us
+			Case @error = 20 ; if @error is at 20
+				MsgBox(0, "error", "Failed to determine buffer.") ; tell us
+			Case @error = 30 ; if @error is at 30
+		EndSelect
+		Return ; get out
 	EndIf
-	showCode($eCrypt, $mFlag[$iflag], $E)
+	showCode($eCrypt, $mFlag[$iflag], $E) ; run the showCode function to show us what we got
 EndFunc   ;==>Crypt
 
 Func dCrypt($iMess, $iPass, $iflag)
 	Local $mFlag[8], $dCt, $D = "D", $bts
-	$mFlag[0] = "TEXT"
+	$mFlag[0] = "TEXT"           ; array of crypt values
 	$mFlag[1] = $CALG_3DES
 	$mFlag[2] = $CALG_AES_128
 	$mFlag[3] = $CALG_AES_192
@@ -213,25 +220,28 @@ Func dCrypt($iMess, $iPass, $iflag)
 	$mFlag[5] = $CALG_DES
 	$mFlag[6] = $CALG_RC2
 	$mFlag[7] = $CALG_RC4
-	If $iMess = "" Then
-		MsgBox(0, "ERROR", "Did not enter in a message to Decrypt.")
-		Return
-	ElseIf $iPass = "" Then
-		MsgBox(0, "ERROR", "Did not enter in a password.")
-		Return
+	If $iMess = "" Then ; if there is nothing in the message input
+		MsgBox(0, "ERROR", "Did not enter in a message to Decrypt.") ; tell us
+		Return ; get out
+	ElseIf $iPass = "" Then ; or if theres nothing in the password input
+		MsgBox(0, "ERROR", "Did not enter in a password.") ; tell us
+		Return ; get out
 	EndIf
-	If $iflag <> 0 Then
-		$dCt = _Crypt_DecryptData($iMess, $iPass, $mFlag[$iflag])
-		$bts = BinaryToString($dCt)
+	If $iflag <> 0 Then ; if the flag is not 0 or "Text"
+		$dCt = _Crypt_DecryptData($iMess, $iPass, $mFlag[$iflag]) ; decrypt the data
+		$bts = BinaryToString($dCt) ; convert the decrypted data to string from binary
 	Else
-		showCode($iMess, $mFlag[$iflag], $D)
-		Return
+		showCode($iMess, $mFlag[$iflag], $D) ; otherwise run the showcode function to show the text
+		Return ; get out
 	EndIf
-	If @error Then
-		MsgBox(0, "ERROR", "Could not Decrypt the data, exiting...")
-		Return
+	If @error Then ; if @error has been set
+		MsgBox(0, "ERROR", "Could not Decrypt the data.") ; tell us
+		If @error >= 100 Then ; if we couldn't create the key
+			MsgBox(0, "error", "Could not create key.") ; tell us
+		EndIf
+		Return ; get out
 	EndIf
-	showCode($bts, $mFlag[$iflag], $D)
+	showCode($bts, $mFlag[$iflag], $D) ; call the showCode function to show us what we got
 EndFunc   ;==>dCrypt
 
 Func showCode($code, $eType, $DorE)
