@@ -415,9 +415,9 @@ Func fontGUI()
 		$fontBox = _ChooseFont() ; call the _ChooseFont function without any params
 	EndIf
 	If $fontBox[1] <> 0 Then
-		GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName) ; set the new font
+	GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName) ; set the new font
 	Else
-		GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, 0, $sFontName)
+	GUICTrlSetFont($pEditWindow, $iFontSize, $iFontWeight, 0, $sFontName)
 	EndIf
 EndFunc   ;==>fontGUI
 
