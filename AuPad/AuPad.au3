@@ -42,7 +42,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$hAA, $selBuffer, $strB, $fnArray, _
 		$fnCount = 0, $selBufferEx, _
 		$fullStrRepl, $strFnd, $strEnd, _
-		$strLen, $forStrRepl
+		$strLen, $forStrRepl, $hp, _
+		$mmssgg
 
 ; child gui vars
 Local $abChild, $fCount = 0, $fGUI, $fnEdit
@@ -55,6 +56,7 @@ HotKeySet("{F3}", "findNext") ; if the user hits the F3 key, then run the Find f
 HotKeySet("{F2}", "Help")
 
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
+$hp = _PrintDLLStart($mmssgg) ; open the print dll
 
 GUI() ; create the window
 
@@ -347,7 +349,12 @@ Func chkTxt()
 EndFunc   ;==>chkTxt
 
 Func Print()
-	; --- ;
+	If $hp = 0 Then ; if we couldn't open the dll
+		MsgBox(0, "", "Error from dllstart = " & $mmssgg & @CRLF) ; tell us
+		Return ; get out
+	EndIf
+	_PrintSetPrinter($hp) ; set the printer
+	_PrintDLLClose($hp) ; close the dll
 EndFunc   ;==>Print
 
 Func pageSetup()
