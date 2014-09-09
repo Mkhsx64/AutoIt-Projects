@@ -109,7 +109,7 @@ While 1
 				Case $HelpM
 					Help()
 			EndSwitch
-		Case $abChild
+			Case $abChild
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
@@ -465,7 +465,7 @@ EndFunc   ;==>Save
 
 Func Help()
 
-EndFunc   ;==>Help
+EndFunc
 
 Func Quit()
 	Local $wgt, $rd, $stringis, $title, $st, $active, $mBox, _
