@@ -114,7 +114,7 @@ While 1
 		Case $fGUI
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
-					GUIDelete($fGUI)
+					GUIDelete($fGUI); if the exit event is sent call the GUIDelete function
 			EndSwitch
 	EndSwitch
 	Select
