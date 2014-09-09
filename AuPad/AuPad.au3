@@ -208,7 +208,7 @@ Func GUI()
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
-	$hVHelp = GUICtrlCreateMenuItem("View Help", $HelpM, 0) ; create the second level view help menu item
+	$hVHelp = GUICtrlCreateMenuItem("View Help" & @TAB & "F2", $HelpM, 0) ; create the second level view help menu item
 	GUICtrlCreateMenuItem("", $HelpM, 1) ; create line
 	$hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 2) ; create the second level about aupad menu item
 	setNew() ; set the window to have a new file
