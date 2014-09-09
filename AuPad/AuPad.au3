@@ -9,6 +9,12 @@
 #Au3Stripper_Parameters=/so
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
+;==========================================================
+;------Aupad-----------------------------------------------
+;------Author: MikahS--------------------------------------
+;----------------------------------------------------------
+;==========================================================
+
 #include <WinAPIDlg.au3>
 #include <Constants.au3>
 #include <GUIConstants.au3>
@@ -46,7 +52,7 @@ AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
 HotKeySet("{F3}", "findNext") ; if the user hits the F3 key, then run the Find function
-;HotKeySet("{F1}"), "Help")
+HotKeySet("{F2}", "Help")
 
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
 
@@ -106,7 +112,7 @@ While 1
 					aChild() ; call the about aupad child window if the menu option has been selected
 				Case $forFont
 					fontGUI()
-				Case $HelpM
+				Case $hVHelp
 					Help()
 			EndSwitch
 		Case $abChild
@@ -464,7 +470,9 @@ Func Save()
 EndFunc   ;==>Save
 
 Func Help()
-
+	Local $ShellObj = ObjCreate("Shell.Application")
+	$ShellObj.ToggleDesktop()
+	Send("{F1}")
 EndFunc   ;==>Help
 
 Func Quit()
