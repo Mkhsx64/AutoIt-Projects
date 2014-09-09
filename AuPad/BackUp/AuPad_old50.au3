@@ -43,7 +43,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fnCount = 0, $selBufferEx, _
 		$fullStrRepl, $strFnd, $strEnd, _
 		$strLen, $forStrRepl, $hp, _
-		$mmssgg, $fontBox
+		$mmssgg
 
 ; child gui vars
 Local $abChild, $fCount = 0
@@ -400,22 +400,20 @@ Func timeDate()
 EndFunc   ;==>timeDate
 
 Func fontGUI()
-	Local $sFontName, $iFontSize, $iColorRef, $iFontWeight, _
-			$bItalic, $bUnderline, $bStrikethru, $fColor
-	If UBound($fontBox) <> 0 Then ; if the array of font values has been made
-		$sFontName = $fontBox[2] ; set the font name
-		$iFontSize = $fontBox[3] ; set the font size
-		$iColorRef = $fontBox[5] ; set the font color
-		$iFontWeight = $fontBox[4] ; set the font weight
-		$bItalic = BitAND($fontBox[1], 2) ; set the attribute
-		$bUnderline = BitAND($fontBox[1], 4) ; set the attribute
-		$bStrikethru = BitAND($fontBox[1], 8) ; set the attribute
-		$fontBox = _ChooseFont($sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru) ; call _ChooseFont with specified values
-	Else
-		$fontBox = _ChooseFont() ; call the _ChooseFont function without any params
-	EndIf
-	GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName) ; set the new font
-	$fColor = GUICtrlSetColor($pEditWindow, $iColorRef) ; set the new color
+	Local $fontBox, $sFontName, $iFontSize, $iColorRef, $iFontWeight, _
+		$bItalic, $bUnderline, $bStrikethru
+	If UBound($fontBox) <> 0 Then
+		$sFontName = $fontBox[2]
+		$iFontSize = $fontBox[3]
+		$iColorRef = $fontBox[5]
+		$iFontWeight = $fontBox[4]
+		$bItalic = BitAND($fontBox[1], 2)
+		$bUnderline = BitAND($fontBox[1], 4)
+		$bStrikethru = BitAND($fontBox[1], 8)
+		$fontBox = _ChooseFont($sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru)
+		Else
+	$fontBox = _ChooseFont()
+		EndIf
 EndFunc   ;==>fontGUI
 
 Func Open()
