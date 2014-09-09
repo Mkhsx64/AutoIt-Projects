@@ -46,7 +46,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$mmssgg
 
 ; child gui vars
-Local $abChild, $fCount = 0, $fGUI, $fnEdit
+Local $abChild, $fCount = 0
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -56,7 +56,7 @@ HotKeySet("{F3}", "findNext") ; if the user hits the F3 key, then run the Find f
 HotKeySet("{F2}", "Help")
 
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
-$hp = _PrintDLLStart($mmssgg) ; open the print dll
+
 
 GUI() ; create the window
 
@@ -121,11 +121,6 @@ While 1
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
-			EndSwitch
-		Case $fGUI
-			Switch $msg[0]
-				Case $GUI_EVENT_CLOSE
-					GUIDelete($fGUI); if the exit event is sent call the GUIDelete function
 			EndSwitch
 	EndSwitch
 	Select
@@ -349,6 +344,7 @@ Func chkTxt()
 EndFunc   ;==>chkTxt
 
 Func Print()
+	$hp = _PrintDLLStart($mmssgg) ; open the print dll
 	If $hp = 0 Then ; if we couldn't open the dll
 		MsgBox(0, "", "Error from dllstart = " & $mmssgg & @CRLF) ; tell us
 		Return ; get out
@@ -404,9 +400,8 @@ Func timeDate()
 EndFunc   ;==>timeDate
 
 Func fontGUI()
-	$fGUI = GUICreate("Font", 400, 300, -1, -1, -1, -1, $pWnd)
-	$fnEdit = GUICtrlCreateInput("", 25, 25, 140)
-	GUISetState()
+	Local $fontBox
+	$fontBox = _ChooseFont()
 EndFunc   ;==>fontGUI
 
 Func Open()
