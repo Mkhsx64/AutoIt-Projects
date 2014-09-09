@@ -470,9 +470,31 @@ Func Save()
 EndFunc   ;==>Save
 
 Func Help()
-	Local $ShellObj = ObjCreate("Shell.Application")
-	$ShellObj.ToggleDesktop()
+	Local $actWin, $winList, $i, $gSt
+	MsgBox(0, "", "start")
+	$winList = WinList()
+	Local $alreadyMin[UBound($winList)]
+	For $i = 0 To UBound($winList) - 1 Step 1
+		$gSt = WinGetState($winList[$i][0])
+		If $gSt <> 16 Then
+			WinSetState($winList[$i][0], "", @SW_MINIMIZE)
+		EndIf
+		If $gSt = 16 Then $alreadyMin[$i] = $winList[$i][0]
+	Next
+	sleep(1000)
 	Send("{F1}")
+	For $i = 0 To UBound($winList) - 1 Step 1
+		If $winList[$i][0] = $alreadyMin[$i] Then
+			$winList[$i][0] = ""
+		EndIf
+	Next
+	For $i = 0 To UBound($winList) - 1 Step 1
+		If $winList[$i][0] = "" Then
+			ContinueLoop
+		EndIf
+		$gSt = WinGetState($winList[$i][0])
+		If $gSt = 16 Then WinSetState($winList[$i][0], "", @SW_RESTORE)
+	Next
 EndFunc   ;==>Help
 
 Func Quit()
