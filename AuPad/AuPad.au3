@@ -27,8 +27,6 @@
 #include <APIDlgConstants.au3>
 #include <printMGv2.au3> ; printing support from martin's print UDF
 
-Opt("MustDeclareVars", 1) ; added for clarity purposes
-
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fSave, $fSaveAs, $fPageSetup, _
 		$fPrint, $fExit, $pEditWindow, _
@@ -56,7 +54,6 @@ HotKeySet("{F3}", "findNext") ; if the user hits the F3 key, then run the Find f
 HotKeySet("{F2}", "Help")
 
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
-
 
 GUI() ; create the window
 
@@ -344,12 +341,14 @@ Func chkTxt()
 EndFunc   ;==>chkTxt
 
 Func Print()
+	Local $selected
 	$hp = _PrintDLLStart($mmssgg) ; open the print dll
 	If $hp = 0 Then ; if we couldn't open the dll
 		MsgBox(0, "", "Error from dllstart = " & $mmssgg & @CRLF) ; tell us
 		Return ; get out
 	EndIf
-	_PrintSetPrinter($hp) ; set the printer
+	$selected = _PrintSetPrinter($hp) ; set the printer
+	MsgBox(0, "", $selected)
 	_PrintDLLClose($hp) ; close the dll
 EndFunc   ;==>Print
 
