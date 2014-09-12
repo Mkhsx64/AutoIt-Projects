@@ -341,14 +341,13 @@ Func chkTxt()
 EndFunc   ;==>chkTxt
 
 Func Print()
-	Local $selected
-	$hp = _PrintDLLStart($mmssgg) ; open the print dll
+	Local $selected, $printDLL = "printmg.dll"
+	$hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
 	If $hp = 0 Then ; if we couldn't open the dll
 		MsgBox(0, "", "Error from dllstart = " & $mmssgg & @CRLF) ; tell us
 		Return ; get out
 	EndIf
 	$selected = _PrintSetPrinter($hp) ; set the printer
-	MsgBox(0, "", $selected)
 	_PrintDLLClose($hp) ; close the dll
 EndFunc   ;==>Print
 
