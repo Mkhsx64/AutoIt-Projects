@@ -113,9 +113,9 @@ While 1
 				Case $hAA
 					aChild() ; call the about aupad child window if the menu option has been selected
 				Case $forFont
-					fontGUI()
+					fontGUI() ; if we select the font menu option call the fontGUI function
 				Case $hVHelp
-					Help()
+					Help() ; if we selected the help menu option call the help function
 			EndSwitch
 		Case $abChild
 			Switch $msg[0]
