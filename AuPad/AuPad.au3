@@ -26,6 +26,7 @@
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
 #include <printMGv2.au3> ; printing support from martin's print UDF
+#include <Au3SyntaxHighlight.au3> ; for AutoIt syntax highlighting
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fSave, $fSaveAs, $fPageSetup, _
