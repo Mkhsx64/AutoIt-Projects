@@ -4,7 +4,7 @@
 #AutoIt3Wrapper_Outfile=
 #AutoIt3Wrapper_Res_Comment=
 #AutoIt3Wrapper_Res_Description=Notepad written in AutoIt
-#AutoIt3Wrapper_Res_Fileversion=0.0.1
+#AutoIt3Wrapper_Res_Fileversion=0.1.0
 #AutoIt3Wrapper_Run_Au3Stripper=y
 #Au3Stripper_Parameters=/so
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
@@ -53,7 +53,7 @@ AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
 HotKeySet("{F3}", "findNext") ; if the user hits the F3 key, then run the Find function
-HotKeySet("{F2}", "Help")
+HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help function
 
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
 
@@ -200,7 +200,6 @@ Func GUI()
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
 	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
-	$forAu3syn = GUICtrlCreateMenuItem("Au3 Syntax", $FormatM, 2) ; creates the second level au3 syntax menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
