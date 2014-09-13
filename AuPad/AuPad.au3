@@ -199,6 +199,7 @@ Func GUI()
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
 	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
+	$forAu3syn = GUICtrlCreateMenuItem("Au3 Syntax", $FormatM, 2) ; creates the second level au3 syntax menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
