@@ -15,6 +15,8 @@
 ;----------------------------------------------------------
 ;==========================================================
 
+; change all guictrledit controls to guictrlrichedit controls
+
 #include <WinAPIDlg.au3>
 #include <Constants.au3>
 #include <GUIConstants.au3>
@@ -343,7 +345,8 @@ Func chkTxt()
 EndFunc   ;==>chkTxt
 
 Func Au3SH()
-	; --- ;
+	Local $eText
+	$eText = GUICtrlRead($pEditWindow)
 EndFunc
 
 Func Print()
