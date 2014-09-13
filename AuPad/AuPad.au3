@@ -213,9 +213,7 @@ Func setNew()
 	Local $titleNow, $title
 	$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
 	$title = WinSetTitle($pWnd, $titleNow, "Untitled - AuPad") ; set the title to untitled since this is a new file
-	If $title = "" Then ; if the title equals nothing
-		MsgBox(0, "error", "Could not set window title...", 10) ; tell us
-	EndIf
+	If $title = "" Then MsgBox(0, "error", "Could not set window title...", 10) ; if the title equals nothing tell us
 EndFunc   ;==>setNew
 
 Func aChild()
