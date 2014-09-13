@@ -166,7 +166,7 @@ While 1
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
 WEnd
 
-
+; functions
 
 Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
