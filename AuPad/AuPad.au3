@@ -342,6 +342,10 @@ Func chkTxt()
 	EndIf
 EndFunc   ;==>chkTxt
 
+Func Au3SH()
+	; --- ;
+EndFunc
+
 Func Print()
 	Local $selected, $printDLL = "printmg.dll"
 	$hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
