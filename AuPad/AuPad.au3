@@ -42,7 +42,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fnCount = 0, $selBufferEx, _
 		$fullStrRepl, $strFnd, $strEnd, _
 		$strLen, $forStrRepl, $hp, _
-		$mmssgg, $fontBox
+		$mmssgg, $fontBox, $forAu3syn
 
 ; child gui vars
 Local $abChild, $fCount = 0
@@ -114,8 +114,10 @@ While 1
 					fontGUI() ; if we select the font menu option call the fontGUI function
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
+				Case $forAu3syn
+					Au3SH() ; if we selected the au3 syntax menu option call the au3SH function
 			EndSwitch
-		Case $abChild
+			Case $abChild
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
