@@ -46,7 +46,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$mmssgg
 
 ; child gui vars
-Local $abChild, $fCount = 0, $sFontName, _
+Local $abChild, $fCount = 0$sFontName, _
 		$iFontSize, $iColorRef, $iFontWeight, _
 		$bItalic, $bUnderline, $bStrikethru, _
 		$fColor
@@ -116,7 +116,7 @@ While 1
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
 			EndSwitch
-		Case $abChild
+			Case $abChild
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
@@ -291,23 +291,7 @@ Func Print()
 		Return ; get out
 	EndIf
 	$selected = _PrintSetPrinter($hp) ; set the printer
-	_PrintPageOrientation($hp, 1);landscape
-	_PrintSetDocTitle($hp, WinGetTitle("AuPad"))
-	_PrintStartPrint($hp)
-	$pght = _PrintGetpageheight($hp) - _PrintGetYOffset($hp)
-	$pgwd = _PrintGetpageWidth($hp) - _PrintGetXOffset($hp)
-	$axisx = Round($pgwd * 0.8)
-	$axisy = Round($pght * 0.8)
-	If UBound($fontBox) = 0 Then
-		_PrintSetFont($hp, "Arial", 10, 0, "")
-	Else
-		_PrintSetFont($hp, $sFontName, $iFontSize, 0, $fontBox[1])
-	EndIf
-	$winText = GUICtrlRead($pEditWindow)
-	$tw = _PrintGetTextWidth($hp, $winText)
-	$th = _PrintGetTextHeight($hp, $winText)
-	_PrintText($hp, $winText, 0, _PrintGetYOffset($hp))
-	_PrintEndPrint($hp)
+	MsgBox(0, "", _PrintGetPrinter($hp))
 	_PrintDLLClose($hp) ; close the dll
 EndFunc   ;==>Print
 
@@ -352,6 +336,8 @@ Func timeDate()
 EndFunc   ;==>timeDate
 
 Func fontGUI()
+	Local $sFontName, $iFontSize, $iColorRef, $iFontWeight, _
+			$bItalic, $bUnderline, $bStrikethru, $fColor
 	If UBound($fontBox) <> 0 Then ; if the array of font values has been made
 		$sFontName = $fontBox[2] ; set the font name
 		$iFontSize = $fontBox[3] ; set the font size

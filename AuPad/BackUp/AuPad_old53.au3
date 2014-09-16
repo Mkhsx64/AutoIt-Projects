@@ -46,7 +46,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$mmssgg
 
 ; child gui vars
-Local $abChild, $fCount = 0, $sFontName, _
+Local $abChild, $fCount = 0$sFontName, _
 		$iFontSize, $iColorRef, $iFontWeight, _
 		$bItalic, $bUnderline, $bStrikethru, _
 		$fColor
@@ -291,23 +291,8 @@ Func Print()
 		Return ; get out
 	EndIf
 	$selected = _PrintSetPrinter($hp) ; set the printer
-	_PrintPageOrientation($hp, 1);landscape
-	_PrintSetDocTitle($hp, WinGetTitle("AuPad"))
-	_PrintStartPrint($hp)
-	$pght = _PrintGetpageheight($hp) - _PrintGetYOffset($hp)
-	$pgwd = _PrintGetpageWidth($hp) - _PrintGetXOffset($hp)
-	$axisx = Round($pgwd * 0.8)
-	$axisy = Round($pght * 0.8)
-	If UBound($fontBox) = 0 Then
-		_PrintSetFont($hp, "Arial", 10, 0, "")
-	Else
-		_PrintSetFont($hp, $sFontName, $iFontSize, 0, $fontBox[1])
-	EndIf
-	$winText = GUICtrlRead($pEditWindow)
-	$tw = _PrintGetTextWidth($hp, $winText)
-	$th = _PrintGetTextHeight($hp, $winText)
-	_PrintText($hp, $winText, 0, _PrintGetYOffset($hp))
-	_PrintEndPrint($hp)
+	_PrintPageOrientation($hp,0);landscape
+_PrintSetDocTitle($hp,"This is a test page for PDFcreator No. 01")
 	_PrintDLLClose($hp) ; close the dll
 EndFunc   ;==>Print
 
