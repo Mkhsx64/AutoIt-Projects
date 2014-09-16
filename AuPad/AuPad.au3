@@ -372,9 +372,7 @@ Func Copy()
 		$st = StringMid(GUICtrlRead($pEditWindow), $gt[0] + 1, $gt[1] - $gt[0]) ; get the characters between the start and end characters from the selected text in theedit control
 	EndIf
 	$ct = ClipPut($st) ; put the selected text into the clipboard
-	If $ct = 0 Then ; check if it worked
-		MsgBox(0, "error", "Could not copy selected text") ; tell us if it didn't
-	EndIf
+	If $ct = 0 Then MsgBox(0, "error", "Could not copy selected text") ; check if it worked tell us if it didn't
 EndFunc   ;==>Copy
 
 Func Paste()
