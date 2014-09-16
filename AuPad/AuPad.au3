@@ -34,8 +34,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fPrint, $fExit, $pEditWindow, _
 		$eUndo, $pActiveW, $WWcounter = 0, _
 		$eCut, $eCopy, $ePaste, _
-		$eDelete, $eFind, $eFN, $eReplace, _
-		$eGT, $eSA, $oIndex = 0, _
+		$eDelete, $eFind, $eReplace, _
+		$eSA, $oIndex = 0, _
 		$eTD, $saveCounter = 0, $fe, $fs, _
 		$fn[20], $fo, $fw, $hDLL, _
 		$forWW, $forFont, $vStatus, $hVHelp, _
@@ -52,7 +52,6 @@ AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
-HotKeySet("{F3}", "findNext") ; if the user hits the F3 key, then run the Find function
 HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help function
 
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
@@ -188,12 +187,10 @@ Func GUI()
 	$eDelete = GUICtrlCreateMenuItem("Delete" & @TAB & "Del", $EditM, 5) ; create the second level delete menu item
 	GUICtrlCreateMenuItem("", $EditM, 6) ; create line
 	$eFind = GUICtrlCreateMenuItem("Find..." & @TAB & "Ctrl + F", $EditM, 7) ; create the second level find menu item
-	$eFN = GUICtrlCreateMenuItem("Find Next" & @TAB & "F3", $EditM, 8) ; create the second level find next menu item
 	$eReplace = GUICtrlCreateMenuItem("Replace..." & @TAB & "Ctrl + H", $EditM, 9) ; create the second level replace menu item
-	$eGT = GUICtrlCreateMenuItem("Go To..." & @TAB & "Ctrl + G", $EditM, 10) ; create the second level go to menu item
-	GUICtrlCreateMenuItem("", $EditM, 11) ; create line
-	$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 12) ; create the second level select all menu item
-	$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 13) ; create the second level time/date menu item
+	GUICtrlCreateMenuItem("", $EditM, 10) ; create line
+	$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 11) ; create the second level select all menu item
+	$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 12) ; create the second level time/date menu item
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
 	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
@@ -263,58 +260,6 @@ Func chkSel()
 	EndIf
 EndFunc   ;==>chkSel
 
-Func findNext()
-	Local $rWin, $sRep, $counter = 0, $strrStrBuf, $strrStrBufEx, _
-			$i
-	If $selBuffer = "" Then Return
-	If $fnCount < 0 Then Return
-	$strrStrBuf = StringStripWS($selBuffer, 8)
-	$strrStrBufEx = StringStripWS($selBufferEx, 8)
-	If $strrStrBuf <> $strrStrBufEx Then
-		$fullStrRepl = ""
-		$fnCount = 0
-		$strFnd = ""
-		$strLen = 0
-		$strEnd = 0
-		$forStrRepl = ""
-	EndIf
-	$rWin = GUICtrlRead($pEditWindow)
-	If $fnCount = 0 Then
-		$sRep = StringReplace($rWin, $selBuffer, "")
-		$fnCount = @extended
-		$strLen = StringLen($selBuffer)
-		For $i = 0 To $strLen Step 1
-			$forStrRepl &= " "
-		Next
-		$fullStrRepl = StringReplace($rWin, $selBuffer, $forStrRepl, 1)
-		If @extended = 0 Then
-			MsgBox(0, "Find Next", "Could not find: " & $selBuffer)
-			Return
-		EndIf
-		$selBufferEx = $selBuffer
-		$strFnd = StringInStr($fullStrRepl, $selBuffer, 1, 1)
-		$strEnd = $strFnd + $strLen
-		MsgBox(0, "", $strEnd)
-		_GUICtrlEdit_SetSel($pEditWindow, $strFnd - 1, $strEnd)
-		$fnCount += 1
-	Else
-		$forStrRepl = ""
-		For $i = 0 To $strLen Step 1
-			$forStrRepl &= " "
-		Next
-		$fullStrRepl = StringReplace($fullStrRepl, $selBuffer, $forStrRepl, 1)
-		MsgBox(0, "", $fullStrRepl)
-		If @extended = 0 Then
-			MsgBox(0, "Find Next", "Could not find: " & $selBuffer)
-			Return
-		EndIf
-		$strFnd = StringInStr($fullStrRepl, $selBuffer, 0, 1)
-		$strEnd = $strFnd + $strLen
-		_GUICtrlEdit_SetSel($pEditWindow, $strFnd - 1, $strEnd)
-		$fnCount += 1
-	EndIf
-EndFunc   ;==>findNext
-
 Func chkTxt()
 	Local $gtext, $gstate
 	$gtext = _GUICtrlEdit_GetText($pEditWindow) ; get the text from the edit control
@@ -326,14 +271,10 @@ Func chkTxt()
 		GUICtrlSetState($eFind, 128) ; grey the find menu option
 		GUICtrlSetState($eCopy, 128) ; grey the copy menu option
 		GUICtrlSetState($eCut, 128) ; grey the cut menu option
-		GUICtrlSetState($eFN, 128) ; grey the find next menu option
-		GUICtrlSetState($eGT, 128) ; grey the go to menu option
 	Else
 		GUICtrlSetState($eFind, 64) ; un-grey the find menu option
 		GUICtrlSetState($eCopy, 64) ; un-grey the copy menu option
 		GUICtrlSetState($eCut, 64) ; un-grey the cut menu option
-		GUICtrlSetState($eFN, 64) ; un-grey the find next menu option
-		GUICtrlSetState($eGT, 64) ; un-grey the go to menu option
 	EndIf
 EndFunc   ;==>chkTxt
 
