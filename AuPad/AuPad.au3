@@ -291,23 +291,19 @@ Func Print()
 		Return ; get out
 	EndIf
 	$selected = _PrintSetPrinter($hp) ; set the printer
-	_PrintPageOrientation($hp, 1);landscape
-	_PrintSetDocTitle($hp, WinGetTitle("AuPad"))
-	_PrintStartPrint($hp)
-	$pght = _PrintGetpageheight($hp) - _PrintGetYOffset($hp)
-	$pgwd = _PrintGetpageWidth($hp) - _PrintGetXOffset($hp)
-	$axisx = Round($pgwd * 0.8)
-	$axisy = Round($pght * 0.8)
-	If UBound($fontBox) = 0 Then
-		_PrintSetFont($hp, "Arial", 10, 0, "")
+	_PrintPageOrientation($hp, 1);portrait
+	_PrintSetDocTitle($hp, WinGetTitle("AuPad")) ; set the doc title
+	_PrintStartPrint($hp) ; start the printer
+	If UBound($fontBox) = 0 Then ; if $fontbox has not been made an array or there are no values
+		_PrintSetFont($hp, "Arial", 10, 0, "") ; set the default font
 	Else
-		_PrintSetFont($hp, $sFontName, $iFontSize, 0, $fontBox[1])
+		_PrintSetFont($hp, $sFontName, $iFontSize, 0, $fontBox[1]) ; set the font we have choosen
 	EndIf
-	$winText = GUICtrlRead($pEditWindow)
-	$tw = _PrintGetTextWidth($hp, $winText)
-	$th = _PrintGetTextHeight($hp, $winText)
-	_PrintText($hp, $winText, 0, _PrintGetYOffset($hp))
-	_PrintEndPrint($hp)
+	$winText = GUICtrlRead($pEditWindow) ; read the edit control
+	$tw = _PrintGetTextWidth($hp, $winText) ; get the width of the text
+	$th = _PrintGetTextHeight($hp, $winText) ; get the height of the text
+	_PrintText($hp, $winText, 0, _PrintGetYOffset($hp)) ; set the text to be printed
+	_PrintEndPrint($hp) ; end the print job
 	_PrintDLLClose($hp) ; close the dll
 EndFunc   ;==>Print
 
