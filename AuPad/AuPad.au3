@@ -1,10 +1,19 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+<<<<<<< HEAD
 ;#AutoIt3Wrapper_UseX64=N ; must run as x86 for printing functionality
 ;#AutoIt3Wrapper_Icon=
 ;#AutoIt3Wrapper_Outfile=
 ;#AutoIt3Wrapper_Res_Comment=
 ;#AutoIt3Wrapper_Res_Description=Notepad written in AutoIt
 ;#AutoIt3Wrapper_Res_Fileversion=0.0.1
+=======
+#AutoIt3Wrapper_UseX64=N ; must run as x86 for printing functionality
+#AutoIt3Wrapper_Icon=
+#AutoIt3Wrapper_Outfile=
+#AutoIt3Wrapper_Res_Comment=
+#AutoIt3Wrapper_Res_Description=Notepad written in AutoIt
+#AutoIt3Wrapper_Res_Fileversion=0.1.0
+>>>>>>> origin/master
 #AutoIt3Wrapper_Run_Au3Stripper=y
 #Au3Stripper_Parameters=/so
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
@@ -14,6 +23,8 @@
 ;------Author: MikahS--------------------------------------
 ;----------------------------------------------------------
 ;==========================================================
+
+; change all guictrledit controls to guictrlrichedit controls
 
 #include <WinAPIDlg.au3>
 #include <Constants.au3>
@@ -51,7 +62,7 @@ AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
 HotKeySet("{F3}", "findNext") ; if the user hits the F3 key, then run the Find function
-HotKeySet("{F2}", "Help")
+HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help function
 
 $hDLL = DllOpen("user32.dll") ; open the user32.dll file
 
@@ -114,7 +125,7 @@ While 1
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
 			EndSwitch
-		Case $abChild
+			Case $abChild
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
@@ -163,7 +174,7 @@ While 1
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
 WEnd
 
-
+; functions
 
 Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
@@ -213,9 +224,7 @@ Func setNew()
 	Local $titleNow, $title
 	$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
 	$title = WinSetTitle($pWnd, $titleNow, "Untitled - AuPad") ; set the title to untitled since this is a new file
-	If $title = "" Then ; if the title equals nothing
-		MsgBox(0, "error", "Could not set window title...", 10) ; tell us
-	EndIf
+	If $title = "" Then MsgBox(0, "error", "Could not set window title...", 10) ; if the title equals nothing tell us
 EndFunc   ;==>setNew
 
 Func aChild()
@@ -372,9 +381,7 @@ Func Copy()
 		$st = StringMid(GUICtrlRead($pEditWindow), $gt[0] + 1, $gt[1] - $gt[0]) ; get the characters between the start and end characters from the selected text in theedit control
 	EndIf
 	$ct = ClipPut($st) ; put the selected text into the clipboard
-	If $ct = 0 Then ; check if it worked
-		MsgBox(0, "error", "Could not copy selected text") ; tell us if it didn't
-	EndIf
+	If $ct = 0 Then MsgBox(0, "error", "Could not copy selected text") ; check if it worked tell us if it didn't
 EndFunc   ;==>Copy
 
 Func Paste()
@@ -412,10 +419,11 @@ Func fontGUI()
 	Else
 		$fontBox = _ChooseFont() ; call the _ChooseFont function without any params
 	EndIf
+	If UBound($fontBox) = 0 Then Return ; if they closed the font box and made no selections get out
 	If $fontBox[1] <> 0 Then
 		GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName) ; set the new font
 	Else
-		GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, 0, $sFontName)
+		GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, Default, $sFontName) ; if their has been no selections in the font gui
 	EndIf
 EndFunc   ;==>fontGUI
 
