@@ -22,7 +22,7 @@
 #include <GUIConstants.au3>
 #include <Array.au3>
 #include <GUIEdit.au3>
-#include <misc.au3>
+#include <Misc.au3>
 #include <File.au3>
 #include <WinAPIDlg.au3>
 #include <WinAPIFiles.au3>
@@ -37,7 +37,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$eDelete, $eFind, $eReplace, _
 		$eSA, $oIndex = 0, _
 		$eTD, $saveCounter = 0, $fe, $fs, _
-		$fn[20], $fo, $fw, $hDLL, _
+		$fn[20], $fo, $fw, _
 		$forWW, $forFont, $vStatus, $hVHelp, _
 		$hAA, $selBuffer, $strB, $fnArray, _
 		$fnCount = 0, $selBufferEx, _
@@ -57,9 +57,10 @@ AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
 HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help function
 
-$hDLL = DllOpen("user32.dll") ; open the user32.dll file
-
 GUI() ; create the window
+
+Local $aAccelKeys[7][7] = [["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew]]
+GUISetAccelerators($aAccelKeys, $pWnd)
 
 While 1
 	$msg = GUIGetMsg(1) ; make a 2D array for GUI events
@@ -122,46 +123,6 @@ While 1
 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
 			EndSwitch
 	EndSwitch
-	Select
-		Case _IsPressed("11", $hDLL) And _IsPressed("53", $hDLL) ; if CTRL + S is pressed
-			$pActiveW = WinActive($pWnd) ; check what the active window is
-			If $pActiveW = 0 Then ; if it is not the active window
-				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
-			EndIf
-			Save() ; call the save function if it is the active window
-		Case _IsPressed("11", $hDLL) And _IsPressed("4F", $hDLL) ; if CTRL + O is pressed
-			$pActiveW = WinActive($pWnd) ; check what the active window is
-			If $pActiveW = 0 Then ; if it is not the active window
-				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
-			EndIf
-			Open() ; call the open function if it is the active window
-		Case _IsPressed("11", $hDLL) And _IsPressed("41", $hDLL) ; if CTRL + A is pressed
-			$pActiveW = WinActivate($pWnd) ; check what the active window is
-			If $pActiveW = 0 Then ; if it is not the active window
-				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
-			EndIf
-			_GUICtrlEdit_SetSel($pEditWindow, 0, -1) ; set the selected text to everything in the edit control
-		Case _IsPressed("11", $hDLL) And _IsPressed("46", $hDLL) ; if CTRL + F is pressed
-			$pActiveW = WinActive($pWnd) ; check what the active window is
-			If $pActiveW = 0 Then ; if it is not the active window
-				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
-			EndIf
-			$fCount = 0 ; set the find counter
-			Find() ; call the find function
-		Case _IsPressed("11", $hDLL) And _IsPressed("48", $hDLL) ; if CTRL + H is pressed
-			$pActiveW = WinActive($pWnd) ; check what the active window is
-			If $pActiveW = 0 Then ; if it is not the active window
-				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
-			EndIf
-			$fCount = 1 ; set the find counter
-			Find() ; call the find function
-		Case _IsPressed("11", $hDLL) And _IsPressed("50", $hDLL) ; if CTRL + P is pressed
-			$pActiveW = WinActive($pWnd) ; check what the active window is
-			If $pActiveW = 0 Then ; if it is not the active window
-				ContinueLoop ; get back into our loop because we don't want to mess with anyone's flow
-			EndIf
-			Print() ; call the print function
-	EndSelect
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
 WEnd
 
@@ -209,7 +170,8 @@ Func GUI()
 EndFunc   ;==>GUI
 
 Func setNew()
-	Local $titleNow, $title
+	Local $titleNow, $title, $readWinO
+	;$readWinO = GUICtrlRead($pEditWindow) continued..
 	$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
 	$title = WinSetTitle($pWnd, $titleNow, "Untitled - AuPad") ; set the title to untitled since this is a new file
 	If $title = "" Then MsgBox(0, "error", "Could not set window title...", 10) ; if the title equals nothing tell us
@@ -448,7 +410,6 @@ Func Quit()
 	$wgt = WinGetTitle($pWnd, "") ; get the title of the window
 	$title = StringSplit($wgt, " - ") ; split the window title
 	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
-		DllClose($hDLL) ; close the DLL before we exit
 		Exit ; get out
 	ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
 		$fOp = FileOpen($fn[$oIndex]) ; open the already opened file
@@ -457,7 +418,6 @@ Func Quit()
 			$saveCounter += 1 ; increment the save counter
 			Save() ; call the save function
 			FileClose($fOp) ; close the file
-			DllClose($hDLL) ; close the DLL before we exit
 			Exit ; exit the script
 		EndIf
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
@@ -475,6 +435,5 @@ Func Quit()
 			Save() ; call the save function
 		EndIf
 	EndIf
-	DllClose($hDLL) ; close the DLL before we exit
 	Exit ; get out
 EndFunc   ;==>Quit
