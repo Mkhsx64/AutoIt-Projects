@@ -30,7 +30,7 @@
 #include <printMGv2.au3> ; printing support from martin's print UDF
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
-		$fSave, $fSaveAs, $fPageSetup, _
+		$fSave, $fSaveAs, $fontBox, _
 		$fPrint, $fExit, $pEditWindow, _
 		$eUndo, $pActiveW, $WWcounter = 0, _
 		$eCut, $eCopy, $ePaste, _
@@ -43,7 +43,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fnCount = 0, $selBufferEx, _
 		$fullStrRepl, $strFnd, $strEnd, _
 		$strLen, $forStrRepl, $hp, _
-		$mmssgg, $fontBox
+		$mmssgg
 
 ; child gui vars
 Local $abChild, $fCount = 0
@@ -89,8 +89,6 @@ While 1
 				Case $fSaveAs
 					$saveCounter = 0 ; reset the counter if it is not already 0
 					Save() ; call the save function when the save as menu option is selected and the counter has been reset
-				Case $fPageSetup
-					pageSetup() ; call the page setup function when the page setup menu option is selected
 				Case $fOpen
 					Open() ; call the open function when the open menu option is selected
 				Case $eDelete
@@ -178,10 +176,9 @@ Func GUI()
 	$fSave = GUICtrlCreateMenuItem("Save" & @TAB & "Ctrl + S", $FileM, 2) ; create second level menu item save ^ file
 	$fSaveAs = GUICtrlCreateMenuItem("Save As...", $FileM, 3) ; create second level menu item save as ^ file
 	GUICtrlCreateMenuItem("", $FileM, 4) ; create line
-	$fPageSetup = GUICtrlCreateMenuItem("Page Setup...", $FileM, 5) ; create second level menu item page setup ^ file
-	$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 6) ; create second level menu item print ^ file
-	GUICtrlCreateMenuItem("", $FileM, 7) ; create line
-	$fExit = GUICtrlCreateMenuItem("Exit", $FileM, 8) ; create second level menu item exit ^ file
+	$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 5) ; create second level menu item print ^ file
+	GUICtrlCreateMenuItem("", $FileM, 6) ; create line
+	$fExit = GUICtrlCreateMenuItem("Exit", $FileM, 7) ; create second level menu item exit ^ file
 	$EditM = GUICtrlCreateMenu("Edit") ; create the first level edit menu item
 	$eUndo = GUICtrlCreateMenuItem("Undo" & @TAB & "Ctrl + Z", $EditM, 0) ; create the second level undo menu item
 	GUICtrlCreateMenuItem("", $EditM, 1) ; create line
@@ -350,10 +347,6 @@ Func Print()
 	$selected = _PrintSetPrinter($hp) ; set the printer
 	_PrintDLLClose($hp) ; close the dll
 EndFunc   ;==>Print
-
-Func pageSetup()
-	; --- ;
-EndFunc   ;==>pageSetup
 
 Func Find()
 	If $fCount = 0 Then
