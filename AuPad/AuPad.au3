@@ -271,10 +271,12 @@ Func chkTxt()
 		GUICtrlSetState($eFind, 128) ; grey the find menu option
 		GUICtrlSetState($eCopy, 128) ; grey the copy menu option
 		GUICtrlSetState($eCut, 128) ; grey the cut menu option
+		GUICtrlSetState($eReplace, 128) ; grey the replace menu option
 	Else
 		GUICtrlSetState($eFind, 64) ; un-grey the find menu option
 		GUICtrlSetState($eCopy, 64) ; un-grey the copy menu option
 		GUICtrlSetState($eCut, 64) ; un-grey the cut menu option
+		GUICtrlSetState($eReplace, 64) ; un-grey the replace menu option
 	EndIf
 EndFunc   ;==>chkTxt
 
