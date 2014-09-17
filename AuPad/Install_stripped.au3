@@ -220,7 +220,7 @@ Return SetError(0, 0, $PBMarquee)
 EndFunc
 Local $Result = "", $ProcessID = -1, $sKey = "", $ProgHandle = "", $MonHandle = ""
 Local $dir = @ProgramFilesDir & "\AuPad", $msgbx
-Local $CopyFile[3]
+Local $CopyFile[3], $FCS, $copyUDF
 $CopyFile[0] = "AuPad.exe"
 $CopyFile[1] = "aupad.ico"
 $CopyFile[2] = "PrintMG.dll"
@@ -242,9 +242,14 @@ MsgBox(0, "Install", "Could not complete install. Exiting...")
 Exit
 EndIf
 Next
+$copyUDF = FileCopy(@WorkingDir & "\PrintMGv2.au3", @ProgramFilesDir & "\AutoIt3\Include", 1)
+If $copyUDF = 0 Then
+MsgBox(0, "Error", "Could not put PrintMGv2.au3 into your include folder")
+MsgBox(0, "Install", "Could not complete install. Exiting...")
+EndIf
 $msgbx = MsgBox(4, "Desktop shortcut", "Would you like to create a shortcut on the desktop?")
 If $msgbx = 6 Then
-Local $FCS = FileCreateShortcut(@ProgramFilesDir & "\AuPad\AuPad.exe", @DesktopDir & "\AuPad.lnk", @WindowsDir)
+$FCS = FileCreateShortcut(@ProgramFilesDir & "\AuPad\AuPad.exe", @DesktopDir & "\AuPad.lnk", @WindowsDir)
 EndIf
 MsgBox(0, "Aupad Installation", "Installation Successful!")
 Exit
