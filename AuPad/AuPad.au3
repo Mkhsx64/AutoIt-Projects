@@ -60,7 +60,7 @@ HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help funct
 GUI() ; create the window
 
 Local $aAccelKeys[7][7] = [["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew]]
-GUISetAccelerators($aAccelKeys, $pWnd)
+GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
 While 1
 	$msg = GUIGetMsg(1) ; make a 2D array for GUI events
