@@ -170,18 +170,16 @@ Func GUI()
 EndFunc   ;==>GUI
 
 Func setNew()
-	Local $titleNow, $title, $readWinO, $spltTitle, $mBox
-	$readWinO = GUICtrlRead($pEditWindow) ; get the current text in the edit control
-	If $readWinO <> "" Then ; if there is something in the window, and it is called Untitled
-		$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
-		$spltTitle = StringSplit($titleNow, " - ") ; cut it into two pieces
+	Local $titleNow, $title, $readWinO
+	;$readWinO = GUICtrlRead($pEditWindow) continued..$st > 0 Then ; if there is something in the window, and it is called Untitled
+	$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
+	$spltTitle = StringSplit($titleNow, " - ") ; cut it into two pieces
+	$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
 		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
 		If $mBox = 6 Then ; if we said yes
 			$saveCounter = 0 ; reset the save counter
 			Save() ; call the save function
 		EndIf
-		_GUICtrlEdit_SetText($pEditWindow, "") ; reset the text in the edit control
-	EndIf
 	$title = WinSetTitle($pWnd, $titleNow, "Untitled - AuPad") ; set the title to untitled since this is a new file
 	If $title = "" Then MsgBox(0, "error", "Could not set window title...", 10) ; if the title equals nothing tell us
 EndFunc   ;==>setNew
