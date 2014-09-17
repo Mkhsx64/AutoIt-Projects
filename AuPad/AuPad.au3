@@ -15,8 +15,6 @@
 ;----------------------------------------------------------
 ;==========================================================
 
-; change all guictrledit controls to guictrlrichedit controls
-
 #include <WinAPIDlg.au3>
 #include <Constants.au3>
 #include <GUIConstants.au3>
