@@ -24,12 +24,11 @@ EndIf
 Local $Result = "", $ProcessID = -1, $sKey = "", $ProgHandle = "", $MonHandle = ""
 Local $dir = @ProgramFilesDir & "\AuPad", $msgbx
 
-Local $CopyFile[4]
+Local $CopyFile[3]
 
 $CopyFile[0] = "AuPad.exe"
 $CopyFile[1] = "aupad.ico"
 $CopyFile[2] = "PrintMG.dll"
-$CopyFile[3] = "Uninstall.exe"
 
 ; Create program folder if it does not exit
 $ProgressHandle = ProgressGUI("Creating Aupad Program Folder")
