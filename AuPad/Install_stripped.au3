@@ -233,21 +233,19 @@ If $Result = -1 Then
 MsgBox(0, "error", "Unable To Create ArchAngel Program Folder")
 EndIf
 For $I = 0 To UBound($CopyFile) - 1
-$ProgressHandle = ProgressGUI("Copying " & $CopyFile[$i])
-$Result = FileCopy(@WorkingDir & "\" & $CopyFile[$i], $dir & "\" & $CopyFile[$i], 1)
+$ProgressHandle = ProgressGUI("Copying " & $CopyFile[$I])
+$Result = FileCopy(@WorkingDir & "\" & $CopyFile[$I], $dir & "\" & $CopyFile[$I], 1)
 Sleep(2000)
 GUIDelete($ProgressHandle)
 If $Result = 0 Then
-MsgBox(0, "Error", "Unable To Copy " & $dir & "\" & $CopyFile[$i])
+MsgBox(0, "Error", "Unable To Copy " & $dir & "\" & $CopyFile[$I])
 MsgBox(0, "Install", "Could not complete install. Exiting...")
 Exit
 EndIf
 Next
 $msgbx = MsgBox(4, "Desktop shortcut", "Would you like to create a shortcut on the desktop?")
 If $msgbx = 6 Then
-EndIf
-$msgbx = MsgBox(4, "Start menu shortcut", "Would you like to create a shortcut in the start menu?")
-If $msgbx = 6 Then
+Local $FCS = FileCreateShortcut(@ProgramFilesDir & "\AuPad\AuPad.exe", @DesktopDir & "\AuPad.lnk", @WindowsDir)
 EndIf
 MsgBox(0, "Aupad Installation", "Installation Successful!")
 Exit
