@@ -22,13 +22,14 @@ EndIf
 #include <ProgressGUI.au3>
 
 Local $Result = "", $ProcessID = -1, $sKey = "", $ProgHandle = "", $MonHandle = ""
-Local $dir = @ProgramFilesDir & "\AuPad", $FilesToCopy = 3
+Local $dir = @ProgramFilesDir & "\AuPad", $msgbx
 
-Local $CopyFile[3]
+Local $CopyFile[4]
 
 $CopyFile[0] = "AuPad.exe"
 $CopyFile[1] = "aupad.ico"
 $CopyFile[2] = "PrintMG.dll"
+$CopyFile[3] = "Uninstall.exe"
 
 ; Create program folder if it does not exit
 $ProgressHandle = ProgressGUI("Creating Aupad Program Folder")
@@ -47,8 +48,20 @@ For $I = 0 To UBound($CopyFile) - 1
 	GUIDelete($ProgressHandle)
 	If $Result = 0 Then
 		MsgBox(0, "Error", "Unable To Copy " & $dir & "\" & $CopyFile[$i])
+		MsgBox(0, "Install", "Could not complete install. Exiting...")
+		Exit
 	EndIf
 Next
+
+$msgbx = MsgBox(4, "Desktop shortcut", "Would you like to create a shortcut on the desktop?")
+If $msgbx = 6 Then
+
+EndIf
+
+$msgbx = MsgBox(4, "Start menu shortcut", "Would you like to create a shortcut in the start menu?")
+If $msgbx = 6 Then
+
+EndIf
 
 MsgBox(0, "Aupad Installation", "Installation Successful!")
 Exit

@@ -219,11 +219,12 @@ GUISetState()
 Return SetError(0, 0, $PBMarquee)
 EndFunc
 Local $Result = "", $ProcessID = -1, $sKey = "", $ProgHandle = "", $MonHandle = ""
-Local $dir = @ProgramFilesDir & "\AuPad", $FilesToCopy = 3
-Local $CopyFile[3]
+Local $dir = @ProgramFilesDir & "\AuPad", $msgbx
+Local $CopyFile[4]
 $CopyFile[0] = "AuPad.exe"
 $CopyFile[1] = "aupad.ico"
 $CopyFile[2] = "PrintMG.dll"
+$CopyFile[3] = "Uninstall.exe"
 $ProgressHandle = ProgressGUI("Creating Aupad Program Folder")
 DirCreate($dir)
 $Result = DirGetSize($dir)
@@ -238,7 +239,15 @@ Sleep(2000)
 GUIDelete($ProgressHandle)
 If $Result = 0 Then
 MsgBox(0, "Error", "Unable To Copy " & $dir & "\" & $CopyFile[$i])
+MsgBox(0, "Install", "Could not complete install. Exiting...")
+Exit
 EndIf
 Next
+$msgbx = MsgBox(4, "Desktop shortcut", "Would you like to create a shortcut on the desktop?")
+If $msgbx = 6 Then
+EndIf
+$msgbx = MsgBox(4, "Start menu shortcut", "Would you like to create a shortcut in the start menu?")
+If $msgbx = 6 Then
+EndIf
 MsgBox(0, "Aupad Installation", "Installation Successful!")
 Exit
