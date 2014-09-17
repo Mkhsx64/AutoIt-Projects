@@ -221,9 +221,9 @@ Func chkSel()
 	$gc = $gs[1] - $gs[0] ; get how many characters have been selected
 	If $gc > 0 Then ; if the selection is not blank
 		GUICtrlSetState($eDelete, 64) ; otherwise, set the state
-		$readWin = GUICtrlRead($pEditWindow)
-		$strMid = StringMid($readWin, $gs[0] + 1, $gs[1] + 1)
-		$selBuffer = $strMid
+		$readWin = GUICtrlRead($pEditWindow) ; read the edit control
+		$strMid = StringMid($readWin, $gs[0] + 1, $gs[1] + 1) ; find the selected string
+		$selBuffer = $strMid ; put the string into the buffer
 	Else
 		$getState = GUICtrlGetState($eDelete) ; get the state of the control
 		If $getState = 128 Then ; if it is already greyed out
