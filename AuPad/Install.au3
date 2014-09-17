@@ -1,0 +1,58 @@
+#Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_Icon=aupad.ico
+#AutoIt3Wrapper_Outfile=Install.exe
+#AutoIt3Wrapper_Run_Au3Stripper=y
+#Au3Stripper_Parameters=/so
+#EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
+AutoItSetOption("MustDeclareVars", 1)
+Opt("TrayMenuMode", 0)
+#NoTrayIcon
+#include-once
+
+AutoItWinSetTitle("Aupad Install")
+If _Singleton("Aupad Install", 1) = 0 Then
+	Exit
+EndIf
+
+; AutoIt includes
+#include <Misc.au3>
+#include <WindowsConstants.au3>
+#include <SendMessage.au3>
+#include <Constants.au3>
+#include <ProgressGUI.au3>
+
+Local $Result = "", $ProcessID = -1, $sKey = "", $ProgHandle = "", $MonHandle = ""
+Local $dir = @ProgramFilesDir & "\AuPad", $FilesToCopy = 3
+
+Local $CopyFile[3]
+
+$CopyFile[0] = "AuPad.exe"
+$CopyFile[1] = "aupad.ico"
+$CopyFile[2] = "PrintMG.dll"
+
+; Create program folder if it does not exit
+$ProgressHandle = ProgressGUI("Creating Aupad Program Folder")
+DirCreate($dir)
+$Result = DirGetSize($dir)
+GUIDelete($ProgressHandle)
+If $Result = -1 Then
+	MsgBox(0, "error", "Unable To Create ArchAngel Program Folder")
+EndIf
+
+; Copy files
+For $I = 0 To UBound($CopyFile) - 1
+	$ProgressHandle = ProgressGUI("Copying " & $CopyFile[$i])
+	$Result = FileCopy(@WorkingDir & "\" & $CopyFile[$i], $dir & "\" & $CopyFile[$i], 1)
+	Sleep(2000)
+	GUIDelete($ProgressHandle)
+	If $Result = 0 Then
+		MsgBox(0, "Error", "Unable To Copy " & $dir & "\" & $CopyFile[$i])
+	EndIf
+Next
+
+MsgBox(0, "Aupad Installation", "Installation Successful!")
+Exit
+
+Func Quit()
+	Exit
+EndFunc   ;==>Quit

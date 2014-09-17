@@ -443,6 +443,7 @@ Global Const $__EDITCONSTANT_WS_SYSMENU = 0x00080000
 Global Const $__EDITCONSTANT_WS_MINIMIZEBOX = 0x00020000
 Global Const $__EDITCONSTANT_WM_GETTEXTLENGTH = 0x000E
 Global Const $__EDITCONSTANT_WM_GETTEXT = 0x000D
+Global Const $__EDITCONSTANT_WM_SETTEXT = 0x000C
 Global Const $__EDITCONSTANT_SB_LINEUP = 0
 Global Const $__EDITCONSTANT_SB_LINEDOWN = 1
 Global Const $__EDITCONSTANT_SB_PAGEDOWN = 3
@@ -627,6 +628,10 @@ Func _GUICtrlEdit_SetSel($hWnd, $iStart, $iEnd)
 If Not IsHWnd($hWnd) Then $hWnd = GUICtrlGetHandle($hWnd)
 _SendMessage($hWnd, $EM_SETSEL, $iStart, $iEnd)
 EndFunc
+Func _GUICtrlEdit_SetText($hWnd, $sText)
+If Not IsHWnd($hWnd) Then $hWnd = GUICtrlGetHandle($hWnd)
+_SendMessage($hWnd, $__EDITCONSTANT_WM_SETTEXT, 0, $sText, 0, "wparam", "wstr")
+EndFunc
 Func _GUICtrlEdit_Undo($hWnd)
 If Not IsHWnd($hWnd) Then $hWnd = GUICtrlGetHandle($hWnd)
 Return _SendMessage($hWnd, $EM_UNDO) <> 0
@@ -673,11 +678,6 @@ Local $iWeight = DllStructGetData($tLogFont, "Weight")
 Local $sColor_picked = Hex(String($iColorRef), 6)
 Return StringSplit($iAttributes & "," & $sFaceName & "," & $iSize & "," & $iWeight & "," & $iColorRef & "," & '0x' & $sColor_picked & "," & '0x' & StringMid($sColor_picked, 5, 2) & StringMid($sColor_picked, 3, 2) & StringMid($sColor_picked, 1, 2), ",")
 EndFunc
-Func _IsPressed($sHexKey, $vDLL = 'user32.dll')
-Local $a_R = DllCall($vDLL, "short", "GetAsyncKeyState", "int", '0x' & $sHexKey)
-If @error Then Return SetError(@error, @extended, False)
-Return BitAND($a_R[0], 0x8000) <> 0
-EndFunc
 Func __MISC_GetDC($hWnd)
 Local $aResult = DllCall("User32.dll", "handle", "GetDC", "hwnd", $hWnd)
 If @error Or Not $aResult[0] Then Return SetError(1, _WinAPI_GetLastError(), 0)
@@ -719,15 +719,81 @@ Else
 Return -1
 EndIf
 EndFunc
-Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fPageSetup, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $WWcounter = 0, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eFN, $eReplace, $eGT, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $hDLL, $forWW, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $fontBox
-Local $abChild, $fCount = 0
+Func _PrintStartPrint($hDll,$printCopies=1)
+if $printCopies < 1 then return SetError(-2,0,-2)
+$vDllAns = DllCall($hDll, 'int', 'PrinterBegin','int',$printCopies)
+If @error = 0 Then Return $vDllAns[0]
+SetError(1)
+Return -1
+EndFunc
+Func _PrintEndPrint($hDll)
+$vDllAns = DllCall($hDll, 'int', 'PrinterEnd')
+If @error = 0 Then Return $vDllAns[0]
+SetError(1)
+Return -1
+EndFunc
+Func _PrintSetFont($hDll, $FontName, $FontSize, $FontCol = 0, $Fontstyle = '')
+Local $iStyle = 0
+If $FontCol = -1 Then $FontCol = 0
+If $Fontstyle = -1 Then $Fontstyle = ''
+If $Fontstyle <> '' Then
+If StringInStr($Fontstyle, "bold", 0) Then $iStyle = 1
+If StringInStr($Fontstyle, "italic", 0) Then $iStyle += 2
+If StringInStr($Fontstyle, "underline", 0) Then $iStyle += 4
+If StringInStr($Fontstyle, "strikeout", 0) Then $iStyle += 8
+EndIf
+$vDllAns = DllCall($hDll, 'int', 'SetFont', 'str', $FontName, 'int', $FontSize, 'int', $FontCol, 'int', $iStyle)
+Return $vDllAns[0]
+EndFunc
+Func _PrintPageOrientation($hDll, $iPortrait = 1)
+$vDllAns = DllCall($hDll, 'int', 'Portrait', 'int', $iPortrait)
+If @error = 0 Then Return $vDllAns[0]
+SetError(1)
+Return -1
+ConsoleWrite("ppoend" & @CRLF)
+EndFunc
+Func _PrintText($hDll, $sText, $ix = -1, $iy = -1, $iAngle = 0)
+If $iAngle = 180 Then
+$iAngle = 179
+EndIf
+$vDllAns = DllCall($hDll, 'int', 'printText', 'str', $sText, 'int', $ix, 'int', $iy, 'int', $iAngle)
+If @error = 0 Then Return $vDllAns[0]
+SetError(1)
+Return -1
+EndFunc
+Func _PrintGetYOffset($hDll)
+Local $vDllAns = DllCall($hDll, 'int', 'GetYOffset')
+If @error = 0 Then Return $vDllAns[0]
+SetError(1)
+Return -1
+EndFunc
+Func _PrintGetTextWidth($hDll, $sWText)
+Local $vDllAns = DllCall($hDll, 'int', 'TextWidth', 'str', $sWText)
+If @error = 0 Then Return $vDllAns[0]
+SetError(1)
+Return -1
+EndFunc
+Func _PrintGetTextHeight($hDll, $sHText)
+Local $vDllAns = DllCall($hDll, 'int', 'TextHeight', 'str', $sHText)
+If @error = 0 Then Return $vDllAns[0]
+SetError(1)
+Return -1
+EndFunc
+Func _PrintSetDocTitle($hDll, $sTitle)
+$vDllAns = DllCall($hDll, 'int', 'SetTitle', 'str', $sTitle)
+If @error = 0 Then Return $vDllAns[0]
+SetError(1)
+Return -1
+EndFunc
+Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $WWcounter = 0, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forWW, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg
+Local $abChild, $fCount = 0, $sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru, $fColor
 AdlibRegister("chkSel", 1000)
 AdlibRegister("chkTxt", 1000)
 HotKeySet("{F5}", "timeDate")
-HotKeySet("{F3}", "findNext")
 HotKeySet("{F2}", "Help")
-$hDLL = DllOpen("user32.dll")
 GUI()
+Local $aAccelKeys[7][7] = [["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew]]
+GUISetAccelerators($aAccelKeys, $pWnd)
 While 1
 $msg = GUIGetMsg(1)
 Switch $msg[1]
@@ -758,8 +824,6 @@ Save()
 Case $fSaveAs
 $saveCounter = 0
 Save()
-Case $fPageSetup
-pageSetup()
 Case $fOpen
 Open()
 Case $eDelete
@@ -791,46 +855,6 @@ Case $GUI_EVENT_CLOSE
 GUIDelete($abChild)
 EndSwitch
 EndSwitch
-Select
-Case _IsPressed("11", $hDLL) And _IsPressed("53", $hDLL)
-$pActiveW = WinActive($pWnd)
-If $pActiveW = 0 Then
-ContinueLoop
-EndIf
-Save()
-Case _IsPressed("11", $hDLL) And _IsPressed("4F", $hDLL)
-$pActiveW = WinActive($pWnd)
-If $pActiveW = 0 Then
-ContinueLoop
-EndIf
-Open()
-Case _IsPressed("11", $hDLL) And _IsPressed("41", $hDLL)
-$pActiveW = WinActivate($pWnd)
-If $pActiveW = 0 Then
-ContinueLoop
-EndIf
-_GUICtrlEdit_SetSel($pEditWindow, 0, -1)
-Case _IsPressed("11", $hDLL) And _IsPressed("46", $hDLL)
-$pActiveW = WinActive($pWnd)
-If $pActiveW = 0 Then
-ContinueLoop
-EndIf
-$fCount = 0
-Find()
-Case _IsPressed("11", $hDLL) And _IsPressed("48", $hDLL)
-$pActiveW = WinActive($pWnd)
-If $pActiveW = 0 Then
-ContinueLoop
-EndIf
-$fCount = 1
-Find()
-Case _IsPressed("11", $hDLL) And _IsPressed("50", $hDLL)
-$pActiveW = WinActive($pWnd)
-If $pActiveW = 0 Then
-ContinueLoop
-EndIf
-Print()
-EndSelect
 Sleep(10)
 WEnd
 Func GUI()
@@ -843,10 +867,9 @@ $fOpen = GUICtrlCreateMenuItem("Open..." & @TAB & "Ctrl + O", $FileM, 1)
 $fSave = GUICtrlCreateMenuItem("Save" & @TAB & "Ctrl + S", $FileM, 2)
 $fSaveAs = GUICtrlCreateMenuItem("Save As...", $FileM, 3)
 GUICtrlCreateMenuItem("", $FileM, 4)
-$fPageSetup = GUICtrlCreateMenuItem("Page Setup...", $FileM, 5)
-$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 6)
-GUICtrlCreateMenuItem("", $FileM, 7)
-$fExit = GUICtrlCreateMenuItem("Exit", $FileM, 8)
+$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 5)
+GUICtrlCreateMenuItem("", $FileM, 6)
+$fExit = GUICtrlCreateMenuItem("Exit", $FileM, 7)
 $EditM = GUICtrlCreateMenu("Edit")
 $eUndo = GUICtrlCreateMenuItem("Undo" & @TAB & "Ctrl + Z", $EditM, 0)
 GUICtrlCreateMenuItem("", $EditM, 1)
@@ -856,12 +879,10 @@ $ePaste = GUICtrlCreateMenuItem("Paste" & @TAB & "Ctrl + V", $EditM, 4)
 $eDelete = GUICtrlCreateMenuItem("Delete" & @TAB & "Del", $EditM, 5)
 GUICtrlCreateMenuItem("", $EditM, 6)
 $eFind = GUICtrlCreateMenuItem("Find..." & @TAB & "Ctrl + F", $EditM, 7)
-$eFN = GUICtrlCreateMenuItem("Find Next" & @TAB & "F3", $EditM, 8)
 $eReplace = GUICtrlCreateMenuItem("Replace..." & @TAB & "Ctrl + H", $EditM, 9)
-$eGT = GUICtrlCreateMenuItem("Go To..." & @TAB & "Ctrl + G", $EditM, 10)
-GUICtrlCreateMenuItem("", $EditM, 11)
-$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 12)
-$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 13)
+GUICtrlCreateMenuItem("", $EditM, 10)
+$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 11)
+$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 12)
 $FormatM = GUICtrlCreateMenu("Format")
 $forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0)
 $forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1)
@@ -876,12 +897,20 @@ setNew()
 GUISetState()
 EndFunc
 Func setNew()
-Local $titleNow, $title
+Local $titleNow, $title, $readWinO, $spltTitle, $mBox
+$readWinO = GUICtrlRead($pEditWindow)
+If $readWinO <> "" Then
 $titleNow = WinGetTitle($pWnd)
-$title = WinSetTitle($pWnd, $titleNow, "Untitled - AuPad")
-If $title = "" Then
-MsgBox(0, "error", "Could not set window title...", 10)
+$spltTitle = StringSplit($titleNow, " - ")
+$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?")
+If $mBox = 6 Then
+$saveCounter = 0
+Save()
 EndIf
+_GUICtrlEdit_SetText($pEditWindow, "")
+EndIf
+$title = WinSetTitle($pWnd, $titleNow, "Untitled - AuPad")
+If $title = "" Then MsgBox(0, "error", "Could not set window title...", 10)
 EndFunc
 Func aChild()
 Local $authLabel, $nameLabel
@@ -928,56 +957,6 @@ GUICtrlSetState($eDelete, 128)
 EndIf
 EndIf
 EndFunc
-Func findNext()
-Local $rWin, $sRep, $counter = 0, $strrStrBuf, $strrStrBufEx, $i
-If $selBuffer = "" Then Return
-If $fnCount < 0 Then Return
-$strrStrBuf = StringStripWS($selBuffer, 8)
-$strrStrBufEx = StringStripWS($selBufferEx, 8)
-If $strrStrBuf <> $strrStrBufEx Then
-$fullStrRepl = ""
-$fnCount = 0
-$strFnd = ""
-$strLen = 0
-$strEnd = 0
-$forStrRepl = ""
-EndIf
-$rWin = GUICtrlRead($pEditWindow)
-If $fnCount = 0 Then
-$sRep = StringReplace($rWin, $selBuffer, "")
-$fnCount = @extended
-$strLen = StringLen($selBuffer)
-For $i = 0 To $strLen Step 1
-$forStrRepl &= " "
-Next
-$fullStrRepl = StringReplace($rWin, $selBuffer, $forStrRepl, 1)
-If @extended = 0 Then
-MsgBox(0, "Find Next", "Could not find: " & $selBuffer)
-Return
-EndIf
-$selBufferEx = $selBuffer
-$strFnd = StringInStr($fullStrRepl, $selBuffer, 1, 1)
-$strEnd = $strFnd + $strLen
-MsgBox(0, "", $strEnd)
-_GUICtrlEdit_SetSel($pEditWindow, $strFnd - 1, $strEnd)
-$fnCount += 1
-Else
-$forStrRepl = ""
-For $i = 0 To $strLen Step 1
-$forStrRepl &= " "
-Next
-$fullStrRepl = StringReplace($fullStrRepl, $selBuffer, $forStrRepl, 1)
-MsgBox(0, "", $fullStrRepl)
-If @extended = 0 Then
-MsgBox(0, "Find Next", "Could not find: " & $selBuffer)
-Return
-EndIf
-$strFnd = StringInStr($fullStrRepl, $selBuffer, 0, 1)
-$strEnd = $strFnd + $strLen
-_GUICtrlEdit_SetSel($pEditWindow, $strFnd - 1, $strEnd)
-$fnCount += 1
-EndIf
-EndFunc
 Func chkTxt()
 Local $gtext, $gstate
 $gtext = _GUICtrlEdit_GetText($pEditWindow)
@@ -989,14 +968,12 @@ EndIf
 GUICtrlSetState($eFind, 128)
 GUICtrlSetState($eCopy, 128)
 GUICtrlSetState($eCut, 128)
-GUICtrlSetState($eFN, 128)
-GUICtrlSetState($eGT, 128)
+GUICtrlSetState($eReplace, 128)
 Else
 GUICtrlSetState($eFind, 64)
 GUICtrlSetState($eCopy, 64)
 GUICtrlSetState($eCut, 64)
-GUICtrlSetState($eFN, 64)
-GUICtrlSetState($eGT, 64)
+GUICtrlSetState($eReplace, 64)
 EndIf
 EndFunc
 Func Print()
@@ -1007,9 +984,20 @@ MsgBox(0, "", "Error from dllstart = " & $mmssgg & @CRLF)
 Return
 EndIf
 $selected = _PrintSetPrinter($hp)
+_PrintPageOrientation($hp, 1)
+_PrintSetDocTitle($hp, WinGetTitle("AuPad"))
+_PrintStartPrint($hp)
+If UBound($fontBox) = 0 Then
+_PrintSetFont($hp, "Arial", 10, 0, "")
+Else
+_PrintSetFont($hp, $sFontName, $iFontSize, 0, $fontBox[1])
+EndIf
+$winText = GUICtrlRead($pEditWindow)
+$tw = _PrintGetTextWidth($hp, $winText)
+$th = _PrintGetTextHeight($hp, $winText)
+_PrintText($hp, $winText, 0, _PrintGetYOffset($hp))
+_PrintEndPrint($hp)
 _PrintDLLClose($hp)
-EndFunc
-Func pageSetup()
 EndFunc
 Func Find()
 If $fCount = 0 Then
@@ -1027,9 +1015,7 @@ Else
 $st = StringMid(GUICtrlRead($pEditWindow), $gt[0] + 1, $gt[1] - $gt[0])
 EndIf
 $ct = ClipPut($st)
-If $ct = 0 Then
-MsgBox(0, "error", "Could not copy selected text")
-EndIf
+If $ct = 0 Then MsgBox(0, "error", "Could not copy selected text")
 EndFunc
 Func Paste()
 Local $g, $p, $r
@@ -1050,7 +1036,6 @@ $p = GUICtrlSetData($pEditWindow, $r & @HOUR & ":" & @MIN & " AM " & @MON & "/" 
 EndIf
 EndFunc
 Func fontGUI()
-Local $sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru, $fColor
 If UBound($fontBox) <> 0 Then
 $sFontName = $fontBox[2]
 $iFontSize = $fontBox[3]
@@ -1063,10 +1048,11 @@ $fontBox = _ChooseFont($sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItali
 Else
 $fontBox = _ChooseFont()
 EndIf
+If UBound($fontBox) = 0 Then Return
 If $fontBox[1] <> 0 Then
 GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName)
 Else
-GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, 0, $sFontName)
+GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, Default, $sFontName)
 EndIf
 EndFunc
 Func Open()
@@ -1144,7 +1130,6 @@ $st = StringLen($rd)
 $wgt = WinGetTitle($pWnd, "")
 $title = StringSplit($wgt, " - ")
 If $st = 0 And $title[1] = "Untitled" Then
-DllClose($hDLL)
 Exit
 ElseIf $title[1] <> "Untitled" Then
 $fOp = FileOpen($fn[$oIndex])
@@ -1153,7 +1138,6 @@ If $rd = $fRd Then
 $saveCounter += 1
 Save()
 FileClose($fOp)
-DllClose($hDLL)
 Exit
 EndIf
 $winTitle = WinGetTitle("[ACTIVE]")
@@ -1171,6 +1155,5 @@ $saveCounter = 0
 Save()
 EndIf
 EndIf
-DllClose($hDLL)
 Exit
 EndFunc

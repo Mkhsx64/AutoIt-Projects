@@ -1,10 +1,10 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_UseX64=N ; must run as x86 for printing functionality
-#AutoIt3Wrapper_Icon=
+#AutoIt3Wrapper_Icon=aupad.ico
 #AutoIt3Wrapper_Outfile=
-#AutoIt3Wrapper_Res_Comment=
+#AutoIt3Wrapper_Res_Comment=Version 1.0.0
 #AutoIt3Wrapper_Res_Description=Notepad written in AutoIt
-#AutoIt3Wrapper_Res_Fileversion=0.1.0
+#AutoIt3Wrapper_Res_Fileversion=1.0.0
 #AutoIt3Wrapper_Run_Au3Stripper=y
 #Au3Stripper_Parameters=/so
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
