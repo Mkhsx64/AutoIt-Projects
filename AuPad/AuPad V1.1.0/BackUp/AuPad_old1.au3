@@ -254,45 +254,45 @@ Func chkTxt()
 	EndIf
 EndFunc   ;==>chkTxt
 #cs
-	; http://www.autoitscript.com/forum/topic/149659-alternate-data-streams-viewer/
-	; Thanks to AZJIO's My notepad program -- http://www.autoitscript.com/forum/topic/152017-my-notepad/
-	;======================================================
-	; Proccessing files dropped onto the GUI
-	Func WM_DROPFILES($hWnd, $iMsg, $wParam, $lParam)
+; http://www.autoitscript.com/forum/topic/149659-alternate-data-streams-viewer/
+; Thanks to AZJIO's My notepad program -- http://www.autoitscript.com/forum/topic/152017-my-notepad/
+;======================================================
+; Proccessing files dropped onto the GUI
+Func WM_DROPFILES($hWnd, $iMsg, $wParam, $lParam)
 	#forceref $iMsg, $lParam
 	If $hWnd = $hGUI Then
-	$sDroppedFiles = _DragQueryFile($wParam)
-	If @error Or StringInStr(FileGetAttrib($sDroppedFiles), "D") Then ; Если ошибка или каталог
-	_MessageBeep(48)
-	Return 1
-	EndIf
-	_DragFinish($wParam)
-	Open($sDroppedFiles) ; Если требуется длительная обработка, то сюда не вставлять
-	Return 1
+		$sDroppedFiles = _DragQueryFile($wParam)
+		If @error Or StringInStr(FileGetAttrib($sDroppedFiles), "D") Then ; Если ошибка или каталог
+			_MessageBeep(48)
+			Return 1
+		EndIf
+		_DragFinish($wParam)
+		Open($sDroppedFiles) ; Если требуется длительная обработка, то сюда не вставлять
+		Return 1
 	EndIf
 	_MessageBeep(48) ; Если в другое окно
 	Return 1
-	EndFunc
+EndFunc
 
-	; Functions to handle dropped files
-	Func _DragQueryFile($hDrop, $iIndex = 0)
+; Functions to handle dropped files
+Func _DragQueryFile($hDrop, $iIndex = 0)
 	Local $aCall = DllCall("shell32.dll", "dword", "DragQueryFileW", _
-	"handle", $hDrop, _
-	"dword", $iIndex, _
-	"wstr", "", _
-	"dword", 32767)
+			"handle", $hDrop, _
+			"dword", $iIndex, _
+			"wstr", "", _
+			"dword", 32767)
 	If @error Or Not $aCall[0] Then Return SetError(1, 0, "")
 	Return $aCall[3]
-	EndFunc
+EndFunc
 
-	Func _DragFinish($hDrop)
+Func _DragFinish($hDrop)
 	DllCall("shell32.dll", "none", "DragFinish", "handle", $hDrop)
-	EndFunc
+EndFunc
 
-	Func _MessageBeep($iType)
+Func _MessageBeep($iType)
 	DllCall("user32.dll", "int", "MessageBeep", "dword", $iType)
-	EndFunc
-	;======================================================
+EndFunc
+;======================================================
 #ce
 Func Print()
 	Local $selected, $printDLL = "printmg.dll"
@@ -416,8 +416,8 @@ Func Save()
 		$fn = StringSplit($fs, "\") ; split the saved directory and name
 		$i = $fn[0]
 		If $fn[$i] = ".txt" Or $fn[$i] = "" Then ; if the value in the filesavedialog is not valid
-			MsgBox(0, "error", "No name chosen exiting save function...") ; tell us
-			Return ; get out
+				MsgBox(0, "error", "No name chosen exiting save function...") ; tell us
+				Return ; get out
 		EndIf
 		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
 		If $fo = -1 Then ; if it didn't work
