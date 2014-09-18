@@ -30,6 +30,7 @@ Global Const $EM_GETSEL = 0xB0
 Global Const $EM_REPLACESEL = 0xC2
 Global Const $EM_SCROLL = 0xB5
 Global Const $EM_SCROLLCARET = 0x00B7
+Global Const $EM_SETMODIFY = 0xB9
 Global Const $EM_SETSEL = 0xB1
 Global Const $EM_UNDO = 0xC7
 Global Const $GUI_EVENT_CLOSE = -3
@@ -40,6 +41,7 @@ Global Const $WS_MINIMIZEBOX = 0x00020000
 Global Const $WS_SIZEBOX = 0x00040000
 Global Const $WS_SYSMENU = 0x00080000
 Global Const $WS_VSCROLL = 0x00200000
+Global Const $WM_DROPFILES = 0x0233
 Global Const $MEM_COMMIT = 0x00001000
 Global Const $MEM_RESERVE = 0x00002000
 Global Const $PAGE_READWRITE = 0x00000004
@@ -624,6 +626,10 @@ Else
 Return _SendMessage($hWnd, $EM_SCROLL, $iDirection)
 EndIf
 EndFunc
+Func _GUICtrlEdit_SetModify($hWnd, $bModified)
+If Not IsHWnd($hWnd) Then $hWnd = GUICtrlGetHandle($hWnd)
+_SendMessage($hWnd, $EM_SETMODIFY, $bModified)
+EndFunc
 Func _GUICtrlEdit_SetSel($hWnd, $iStart, $iEnd)
 If Not IsHWnd($hWnd) Then $hWnd = GUICtrlGetHandle($hWnd)
 _SendMessage($hWnd, $EM_SETSEL, $iStart, $iEnd)
@@ -794,6 +800,7 @@ HotKeySet("{F2}", "Help")
 GUI()
 Local $aAccelKeys[7][7] = [["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew]]
 GUISetAccelerators($aAccelKeys, $pWnd)
+GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES")
 While 1
 $msg = GUIGetMsg(1)
 Switch $msg[1]
@@ -976,6 +983,41 @@ GUICtrlSetState($eCut, 64)
 GUICtrlSetState($eReplace, 64)
 EndIf
 EndFunc
+Func WM_DROPFILES($hWnd, $iMsg, $wParam, $lParam)
+#forceref $iMsg, $lParam
+If $hWnd = $pWnd Then
+$sDroppedFiles = _DragQueryFile($wParam)
+If @error Or StringInStr(FileGetAttrib($sDroppedFiles), "D") Then
+_MessageBeep(48)
+Return 1
+EndIf
+_DragFinish($wParam)
+_OpenFile($sDroppedFiles)
+Return 1
+EndIf
+_MessageBeep(48)
+Return 1
+EndFunc
+Func _DragQueryFile($hDrop, $iIndex = 0)
+Local $aCall = DllCall("shell32.dll", "dword", "DragQueryFileW", "handle", $hDrop, "dword", $iIndex, "wstr", "", "dword", 32767)
+If @error Or Not $aCall[0] Then Return SetError(1, 0, "")
+Return $aCall[3]
+EndFunc
+Func _DragFinish($hDrop)
+DllCall("shell32.dll", "none", "DragFinish", "handle", $hDrop)
+EndFunc
+Func _MessageBeep($iType)
+DllCall("user32.dll", "int", "MessageBeep", "dword", $iType)
+EndFunc
+Func _OpenFile($droppedPath)
+$ifCharSet = FileGetEncoding($droppedPath)
+Local $sText = FileRead($droppedPath)
+GUICtrlSetData($pEditWindow, $sText)
+_GUICtrlEdit_SetSel($pEditWindow, 0, 0)
+$sPathCur = $droppedPath
+WinSetTitle($pWnd, '', StringRegExpReplace($droppedPath, '^(?:.*\\)([^\\]+?)(\.[^.]+)?$', '\1\2') & ' - ' & "AuPad")
+_GUICtrlEdit_SetModify($pEditWindow, False)
+EndFunc
 Func Print()
 Local $selected, $printDLL = "printmg.dll"
 $hp = _PrintDLLStart($mmssgg, $printDLL)
@@ -1090,14 +1132,8 @@ $fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", 16, ".txt",
 $fn = StringSplit($fs, "\")
 $i = $fn[0]
 If $fn[$i] = ".txt" Or $fn[$i] = "" Then
-MsgBox(0, "error", "did not give a name to your file")
-$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", 16, ".txt", $pWnd)
-$fn = StringSplit($fs, "\")
-$i = $fn[0]
-If $fn[$i] = ".txt" Or $fn[$i] = "" Then
 MsgBox(0, "error", "No name chosen exiting save function...")
 Return
-EndIf
 EndIf
 $fo = FileOpen($fs, 1)
 If $fo = -1 Then

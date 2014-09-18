@@ -1,3 +1,7 @@
 ---==== 1.0.0 ====---
 
 - All basic notepad features
+
+---==== 1.1.0 ====---
+
+-Took out extra save dialog in the Save() function.

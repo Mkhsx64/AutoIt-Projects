@@ -60,7 +60,7 @@ GUI() ; create the window
 Local $aAccelKeys[7][7] = [["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew]]
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
-GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES") ; register GUI msg for drop files
+;GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES") ; register GUI msg for drop files
 
 While 1
 	$msg = GUIGetMsg(1) ; make a 2D array for GUI events
@@ -131,7 +131,7 @@ WEnd
 Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM
-	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX, $WS_EX_ACCEPTFILES) ; created window with min, max, and resizing
+	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX) ; created window with min, max, and resizing
 	$pEditWindow = GUICtrlCreateEdit("", 0, 0, 600, 495) ; creates the main text window for typing text
 	$FileM = GUICtrlCreateMenu("File") ; create the first level file menu item
 	$fNew = GUICtrlCreateMenuItem("New" & @TAB & "Ctrl + N", $FileM, 0) ; create second level menu item new ^ file
@@ -254,58 +254,45 @@ Func chkTxt()
 	EndIf
 EndFunc   ;==>chkTxt
 
-; http://www.autoitscript.com/forum/topic/149659-alternate-data-streams-viewer/
-; Thanks to AZJIO's My notepad program -- http://www.autoitscript.com/forum/topic/152017-my-notepad/
-;======================================================
-; Proccessing files dropped onto the GUI
-Func WM_DROPFILES($hWnd, $iMsg, $wParam, $lParam)
+	; http://www.autoitscript.com/forum/topic/149659-alternate-data-streams-viewer/
+	; Thanks to AZJIO's My notepad program -- http://www.autoitscript.com/forum/topic/152017-my-notepad/
+	;======================================================
+	; Proccessing files dropped onto the GUI
+	Func WM_DROPFILES($hWnd, $iMsg, $wParam, $lParam)
 	#forceref $iMsg, $lParam
-	If $hWnd = $pWnd Then
-		$sDroppedFiles = _DragQueryFile($wParam)
-		If @error Or StringInStr(FileGetAttrib($sDroppedFiles), "D") Then ; Если ошибка или каталог
-			_MessageBeep(48)
-			Return 1
-		EndIf
-		_DragFinish($wParam)
-		_OpenFile($sDroppedFiles) ; Если требуется длительная обработка, то сюда не вставлять
-		Return 1
+	If $hWnd = $hGUI Then
+	$sDroppedFiles = _DragQueryFile($wParam)
+	If @error Or StringInStr(FileGetAttrib($sDroppedFiles), "D") Then ; Если ошибка или каталог
+	_MessageBeep(48)
+	Return 1
+	EndIf
+	_DragFinish($wParam)
+	Open($sDroppedFiles) ; Если требуется длительная обработка, то сюда не вставлять
+	Return 1
 	EndIf
 	_MessageBeep(48) ; Если в другое окно
 	Return 1
-EndFunc   ;==>WM_DROPFILES
+	EndFunc
 
-; Functions to handle dropped files
-Func _DragQueryFile($hDrop, $iIndex = 0)
+	; Functions to handle dropped files
+	Func _DragQueryFile($hDrop, $iIndex = 0)
 	Local $aCall = DllCall("shell32.dll", "dword", "DragQueryFileW", _
-			"handle", $hDrop, _
-			"dword", $iIndex, _
-			"wstr", "", _
-			"dword", 32767)
-	If @error Or Not $aCall[0] Then Return MsgBox(0, "", "error")
+	"handle", $hDrop, _
+	"dword", $iIndex, _
+	"wstr", "", _
+	"dword", 32767)
+	If @error Or Not $aCall[0] Then Return SetError(1, 0, "")
 	Return $aCall[3]
-EndFunc   ;==>_DragQueryFile
+	EndFunc
 
-Func _DragFinish($hDrop)
+	Func _DragFinish($hDrop)
 	DllCall("shell32.dll", "none", "DragFinish", "handle", $hDrop)
-	If @error Then Return MsgBox(0, "", "error in _DragFinish: " & @error)
-EndFunc   ;==>_DragFinish
+	EndFunc
 
-Func _MessageBeep($iType)
+	Func _MessageBeep($iType)
 	DllCall("user32.dll", "int", "MessageBeep", "dword", $iType)
-	If @error Then Return MsgBox(0, "", "error in _MessageBeep: " & @error)
-EndFunc   ;==>_MessageBeep
-
-Func _OpenFile($droppedPath)
-	$ifCharSet = FileGetEncoding($droppedPath)
-	Local $sText = FileRead($droppedPath)
-	GUICtrlSetData($pEditWindow, $sText)
-	_GUICtrlEdit_SetSel($pEditWindow, 0, 0)
-	$sPathCur = $droppedPath
-	WinSetTitle($pWnd, '', StringRegExpReplace($droppedPath, '^(?:.*\\)([^\\]+?)(\.[^.]+)?$', '\1\2') & ' - ' & "AuPad")
-	_GUICtrlEdit_SetModify($pEditWindow, False)
-	;;_AddRecent($droppedPath)
-EndFunc   ;==>_OpenFile
-;======================================================
+	EndFunc
+	;======================================================
 
 Func Print()
 	Local $selected, $printDLL = "printmg.dll"
@@ -392,7 +379,7 @@ Func fontGUI()
 	EndIf
 EndFunc   ;==>fontGUI
 
-Func Open()
+Func Open($droppedFile = "")
 	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
 			$strinString, $read, $stripString
 	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)", BitOR(1, 2)) ; ask the user what they would like to open
