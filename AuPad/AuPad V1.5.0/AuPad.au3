@@ -329,13 +329,11 @@ Func _OpenFile($droppedPath)
 	Local $sText = FileRead($droppedPath) ; read the file
 	GUICtrlSetData($pEditWindow, $sText) ; put the text in the edit control
 	_GUICtrlEdit_SetSel($pEditWindow, 0, 0) ; take off the selection
-	;;$sPathCur = $droppedPath ; set the current path
 	$iPath = StringSplit($droppedPath, "\") ; split the string by "\"
 	$i = $iPath[0] ; set the last index
 	$fName = StringSplit($iPath[$i], ".") ; split the string by "."
 	WinSetTitle($pWnd, '', $fName[1] & ' - ' & "AuPad") ; set the window title
 	_GUICtrlEdit_SetModify($pEditWindow, False) ; set the modify flag
-	;;_AddRecent($droppedPath)
 EndFunc   ;==>_OpenFile
 ;======================================================
 
