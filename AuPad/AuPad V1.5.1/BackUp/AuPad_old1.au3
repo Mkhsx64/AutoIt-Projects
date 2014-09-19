@@ -303,7 +303,7 @@ Func wordCount()
 	$tSS = StringSplit($tS, " ", 1) ; split by whitespace
 	$count = $tSS[0] ; get the number of words
 	MsgBox(0, "Word Count", $count) ; tell us
-EndFunc   ;==>wordCount
+EndFunc
 ;======================================================
 
 ; http://www.autoitscript.com/forum/topic/149659-alternate-data-streams-viewer/
