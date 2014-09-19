@@ -341,8 +341,8 @@ EndFunc   ;==>Print
 
 Func Tab()
 	Local $rwin
-	$rwin = GUICtrlRead($pEditWindow)
-	GUICtrlSetData($pEditWindow, $rwin & "        ")
+	$rwin = GUICtrlRead($pEditWindow) ; read the text in the window already
+	GUICtrlSetData($pEditWindow, $rwin & "        ") ; add a tab into the window after the text
 EndFunc
 
 Func Find()
