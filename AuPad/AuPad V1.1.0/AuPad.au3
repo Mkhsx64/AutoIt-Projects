@@ -41,7 +41,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fnCount = 0, $selBufferEx, _
 		$fullStrRepl, $strFnd, $strEnd, _
 		$strLen, $forStrRepl, $hp, _
-		$mmssgg
+		$mmssgg, $openBuff
 
 ; child gui vars
 Local $abChild, $fCount = 0, $sFontName, _
@@ -398,7 +398,7 @@ EndFunc   ;==>fontGUI
 
 Func Open()
 	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
-			$strinString, $read, $stripString, $titleNow, $mBox, _
+			$strinString, $stripString, $titleNow, $mBox, _
 			$spltTitle
 	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|All (*.*)", BitOR(1, 2)) ; ask the user what they would like to open
 	$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
@@ -414,8 +414,8 @@ Func Open()
 		Return ; get out
 	EndIf
 	$fileRead = FileRead($fileOpen) ; read the open file
-	$read = GUICtrlRead($pEditWindow) ; get the current text in the window
-	If $read <> "" Then
+	$openBuff = GUICtrlRead($pEditWindow) ; get the current text in the window
+	If $openBuff <> "" And $openBuff <> $fileRead Then ; initiaze the save dialog if their is text in the control and it does not match the file read
 		$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
 		$spltTitle = StringSplit($titleNow, " - ") ; cut it into two pieces
 		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
@@ -426,11 +426,12 @@ Func Open()
 			$saveCounter += 1 ; increment the save counter
 			Save() ; call the save function
 		EndIf
-		_GUICtrlEdit_SetText($pEditWindow, "") ; reset the text in the edit control
 	EndIf
+	_GUICtrlEdit_SetText($pEditWindow, "") ; reset the text in the edit control
 	$stripString = StringReplace($strSplit[$oIndex], "." & $strinString[2], "") ; replace the file name extension with nothing
-	WinSetTitle($pWnd, $read, $stripString & " - AuPad") ; set the title of the window
-	GUICtrlSetData($pEditWindow, $fileRead, $read) ; set the read data into the window
+	WinSetTitle($pWnd, $openBuff, $stripString & " - AuPad") ; set the title of the window
+	GUICtrlSetData($pEditWindow, $fileRead, $openBuff) ; set the read data into the window
+	$saveCounter += 1 ; increment the save counter
 	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
 	FileClose($fileOpen) ; close the file
 EndFunc   ;==>Open
