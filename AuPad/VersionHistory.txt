@@ -11,3 +11,4 @@
 - Added $ws_ex_composite to stop flicker on xp machines.
 - Added default font
 - Set the font in the setWW() function
+- added word count functionality with a accelerator key
