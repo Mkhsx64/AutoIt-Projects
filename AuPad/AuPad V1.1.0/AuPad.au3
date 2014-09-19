@@ -57,6 +57,7 @@ HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help funct
 
 GUI() ; create the window
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico') ; if the script isn't compiled then set the icon
+GUICtrlSetFont( $pEditWindow,10, Default, Default, "Arial") ; set the default font
 
 Local $aAccelKeys[8][8] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew]]
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
@@ -210,11 +211,21 @@ Func setWW($check)
 		$rw = GUICtrlRead($pEditWindow) ; get the data in the window
 		GUICtrlDelete($pEditWindow) ; delete the edit control
 		$pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495, BitOR($ES_AUTOVSCROLL, $ES_WANTRETURN, $WS_VSCROLL)) ; create the edit with the word wrap ability
+		If Not IsArray($fontBox) Then ; if the font has not been set
+			GUICtrlSetFont( $pEditWindow,10, Default, Default, "Arial") ; set the default font
+		Else
+			GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName) ; set the current font
+		EndIf
 		ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490) ; click the window, so that it is focused at the end of the string
 	Else
 		$rw = GUICtrlRead($pEditWindow) ; get the data in the window
 		GUICtrlDelete($pEditWindow) ; delete the edit control
 		$pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495) ; create the edit window without word wrap
+		If Not IsArray($fontBox) Then ; if the font has not been set
+			GUICtrlSetFont( $pEditWindow,10, Default, Default, "Arial") ; set the default font
+		Else
+			GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName) ; set the current font
+		EndIf
 		ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490) ; click the window, so that it is focused at the end of the string
 	EndIf
 EndFunc   ;==>setWW
