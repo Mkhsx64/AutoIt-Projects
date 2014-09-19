@@ -398,7 +398,8 @@ EndFunc   ;==>fontGUI
 
 Func Open()
 	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
-			$strinString, $read, $stripString
+			$strinString, $read, $stripString, $titleNow, $mBox, _
+			$spltTitle
 	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|All (*.*)", BitOR(1, 2)) ; ask the user what they would like to open
 	$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
 	$oIndex = $strSplit[0] ; set the $oIndex to the last value in the split array
@@ -414,9 +415,21 @@ Func Open()
 	EndIf
 	$fileRead = FileRead($fileOpen) ; read the open file
 	$read = GUICtrlRead($pEditWindow) ; get the current text in the window
+	If $read <> "" Then
+		$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
+		$spltTitle = StringSplit($titleNow, " - ") ; cut it into two pieces
+		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
+		If $mBox = 6 And $spltTitle[1] = "Untitled" Then ; if we said yes and the title is untitled
+			$saveCounter = 0 ; reset the save counter
+			Save() ; call the save function
+		ElseIf $mBox = 6 Then ; if it is just yes
+			$saveCounter += 1 ; increment the save counter
+			Save() ; call the save function
+		EndIf
+		_GUICtrlEdit_SetText($pEditWindow, "") ; reset the text in the edit control
+	EndIf
 	$stripString = StringReplace($strSplit[$oIndex], "." & $strinString[2], "") ; replace the file name extension with nothing
 	WinSetTitle($pWnd, $read, $stripString & " - AuPad") ; set the title of the window
-	If $read <> "" Then GUICtrlSetData($pEditWindow, "") ; if there is already data in the control delete it
 	GUICtrlSetData($pEditWindow, $fileRead, $read) ; set the read data into the window
 	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
 	FileClose($fileOpen) ; close the file
