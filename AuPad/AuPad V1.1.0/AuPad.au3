@@ -41,7 +41,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fnCount = 0, $selBufferEx, _
 		$fullStrRepl, $strFnd, $strEnd, _
 		$strLen, $forStrRepl, $hp, _
-		$mmssgg, $openBuff
+		$mmssgg, $openBuff, $eTab
 
 ; child gui vars
 Local $abChild, $fCount = 0, $sFontName, _
@@ -58,7 +58,7 @@ HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help funct
 GUI() ; create the window
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico') ; if the script isn't compiled then set the icon
 
-Local $aAccelKeys[7][7] = [["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew]]
+Local $aAccelKeys[8][8] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew]]
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES") ; register GUI msg for drop files
@@ -88,6 +88,8 @@ While 1
 				Case $eReplace
 					$fCount = 1 ; increment the find counter
 					Find() ; call the find function when the replace option is selected
+				Case $eTab
+					Tab()
 				Case $fSave
 					Save() ; call the save function when the save menu option is selected
 				Case $fSaveAs
@@ -154,8 +156,9 @@ Func GUI()
 	$eFind = GUICtrlCreateMenuItem("Find..." & @TAB & "Ctrl + F", $EditM, 7) ; create the second level find menu item
 	$eReplace = GUICtrlCreateMenuItem("Replace..." & @TAB & "Ctrl + H", $EditM, 9) ; create the second level replace menu item
 	GUICtrlCreateMenuItem("", $EditM, 10) ; create line
-	$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 11) ; create the second level select all menu item
-	$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 12) ; create the second level time/date menu item
+	$eTab = GUICtrlCreateMenuItem("Tab" & @TAB & "Tab", $EditM, 11) ; create the tab second level menu item
+	$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 12) ; create the second level select all menu item
+	$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 13) ; create the second level time/date menu item
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
 	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
@@ -335,6 +338,12 @@ Func Print()
 	_PrintEndPrint($hp) ; end the print job
 	_PrintDLLClose($hp) ; close the dll
 EndFunc   ;==>Print
+
+Func Tab()
+	Local $rwin
+	$rwin = GUICtrlRead($pEditWindow)
+	GUICtrlSetData($pEditWindow, $rwin & "        ")
+EndFunc
 
 Func Find()
 	If $fCount = 0 Then
