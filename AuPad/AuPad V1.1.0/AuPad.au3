@@ -131,7 +131,7 @@ WEnd
 Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM
-	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX, $WS_EX_ACCEPTFILES) ; created window with min, max, and resizing
+	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX, $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
 	$pEditWindow = GUICtrlCreateEdit("", 0, 0, 600, 495) ; creates the main text window for typing text
 	$FileM = GUICtrlCreateMenu("File") ; create the first level file menu item
 	$fNew = GUICtrlCreateMenuItem("New" & @TAB & "Ctrl + N", $FileM, 0) ; create second level menu item new ^ file
@@ -262,15 +262,15 @@ Func WM_DROPFILES($hWnd, $iMsg, $wParam, $lParam)
 	#forceref $iMsg, $lParam
 	If $hWnd = $pWnd Then
 		$sDroppedFiles = _DragQueryFile($wParam)
-		If @error Or StringInStr(FileGetAttrib($sDroppedFiles), "D") Then ; Если ошибка или каталог
+		If @error Or StringInStr(FileGetAttrib($sDroppedFiles), "D") Then
 			_MessageBeep(48)
 			Return 1
 		EndIf
 		_DragFinish($wParam)
-		_OpenFile($sDroppedFiles) ; Если требуется длительная обработка, то сюда не вставлять
+		_OpenFile($sDroppedFiles)
 		Return 1
 	EndIf
-	_MessageBeep(48) ; Если в другое окно
+	_MessageBeep(48)
 	Return 1
 EndFunc   ;==>WM_DROPFILES
 
