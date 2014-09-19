@@ -141,7 +141,7 @@ WEnd
 Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM
-	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX, $WS_EX_COMPOSITED + $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
+	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_COMPOSITED + $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
 	$pEditWindow = GUICtrlCreateEdit("", 0, 0, 600, 495) ; creates the main text window for typing text
 	$FileM = GUICtrlCreateMenu("File") ; create the first level file menu item
 	$fNew = GUICtrlCreateMenuItem("New" & @TAB & "Ctrl + N", $FileM, 0) ; create second level menu item new ^ file
@@ -278,8 +278,8 @@ EndFunc   ;==>chkTxt
 
 Func wordCount()
 	Local $count
-	$count = _GUICtrlEdit_GetTextLen($pEditWindow)
-	MsgBox(0, "Word Count", $count)
+	$count = _GUICtrlEdit_GetTextLen($pEditWindow) ; get the length of the entire string
+	MsgBox(0, "Word Count", $count) ; tell us
 EndFunc
 
 ; http://www.autoitscript.com/forum/topic/149659-alternate-data-streams-viewer/
