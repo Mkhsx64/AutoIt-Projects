@@ -7,3 +7,4 @@
 - Took out extra save dialog in the Save() function.
 - Drag and drop functionality added (thanks to AZJIO)
 - Took out check for txt file when opening
+- Fixed open function to delete text already in control and ask to save
