@@ -12,3 +12,9 @@
 - Added default font
 - Set the font in the setWW() function
 - added word count functionality with a accelerator key
+
+---==== 1.5.1 ====---
+
+- Fixed word count function
+- Added line count thanks to DreamVB
+- Added uppercase and lowercase thanks to DreamVB

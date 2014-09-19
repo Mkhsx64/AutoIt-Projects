@@ -26,6 +26,7 @@ Global Const $PROCESS_VM_WRITE = 0x00000020
 Global Const $ES_AUTOVSCROLL = 64
 Global Const $ES_WANTRETURN = 4096
 Global Const $EC_ERR = -1
+Global Const $EM_GETLINECOUNT = 0xBA
 Global Const $EM_GETSEL = 0xB0
 Global Const $EM_REPLACESEL = 0xC2
 Global Const $EM_SCROLL = 0xB5
@@ -599,6 +600,10 @@ EndIf
 EndIf
 EndIf
 EndFunc
+Func _GUICtrlEdit_GetLineCount($hWnd)
+If Not IsHWnd($hWnd) Then $hWnd = GUICtrlGetHandle($hWnd)
+Return _SendMessage($hWnd, $EM_GETLINECOUNT)
+EndFunc
 Func _GUICtrlEdit_GetSel($hWnd)
 If Not IsHWnd($hWnd) Then $hWnd = GUICtrlGetHandle($hWnd)
 Local $aSel[2]
@@ -798,7 +803,7 @@ If @error = 0 Then Return $vDllAns[0]
 SetError(1)
 Return -1
 EndFunc
-Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $WWcounter = 0, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forWW, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC
+Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $WWcounter = 0, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forWW, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC, $eLC, $lCount, $eSU, $eSL, $lpRead, $sUpper, $sLower
 Local $abChild, $fCount = 0, $sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru, $fColor
 AdlibRegister("chkSel", 1000)
 AdlibRegister("chkTxt", 1000)
@@ -807,7 +812,7 @@ HotKeySet("{F2}", "Help")
 GUI()
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico')
 GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial")
-Local $aAccelKeys[9][9] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew], ["^w", $eWC]]
+Local $aAccelKeys[10][10] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], ["^l", $eLC]]
 GUISetAccelerators($aAccelKeys, $pWnd)
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES")
 While 1
@@ -839,6 +844,17 @@ Case $eTab
 Tab()
 Case $eWC
 wordCount()
+Case $eLC
+$lCount = _GUICtrlEdit_GetLineCount($pEditWindow)
+MsgBox(0, "Line Count", $lCount)
+Case $eSU
+$lpRead = GUICtrlRead($pEditWindow)
+$sUpper = StringUpper($lpRead)
+GUICtrlSetData($pEditWindow, $sUpper)
+Case $eSL
+$lpRead = GUICtrlRead($pEditWindow)
+$sLower = StringLower($lpRead)
+GUICtrlSetData($pEditWindow, $sLower)
 Case $fSave
 Save()
 Case $fSaveAs
@@ -905,6 +921,10 @@ $eTab = GUICtrlCreateMenuItem("Tab" & @TAB & "Tab", $EditM, 11)
 $eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 12)
 $eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 13)
 $eWC = GUICtrlCreateMenuItem("Word Count" & @TAB & "Ctrl + W", $EditM, 14)
+$eLC = GUICtrlCreateMenuItem("Line Count" & @TAB & "Ctrl + L", $EditM, 15)
+GUICtrlCreateMenuItem("", $EditM, 16)
+$eSU = GUICtrlCreateMenuItem("Uppercase Text", $EditM, 17)
+$eSL = GUICtrlCreateMenuItem("Lowercase Text", $EditM, 18)
 $FormatM = GUICtrlCreateMenu("Format")
 $forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0)
 $forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1)
@@ -1009,8 +1029,12 @@ GUICtrlSetState($eReplace, 64)
 EndIf
 EndFunc
 Func wordCount()
-Local $count
-$count = _GUICtrlEdit_GetTextLen($pEditWindow)
+Local $test, $count, $tS, $tR, $tSS
+$text = GUICtrlRead($pEditWindow)
+$tR = StringReplace($text, @CRLF, " ")
+$tS = StringStripWS($tR, 7)
+$tSS = StringSplit($tS, " ", 1)
+$count = $tSS[0]
 MsgBox(0, "Word Count", $count)
 EndFunc
 Func WM_DROPFILES($hWnd, $iMsg, $wParam, $lParam)

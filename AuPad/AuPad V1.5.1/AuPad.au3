@@ -43,7 +43,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$strLen, $forStrRepl, $hp, _
 		$mmssgg, $openBuff, $eTab, _
 		$eWC, $eLC, $lCount, $eSU, _
-		$eSL
+		$eSL, $lpRead, $sUpper, _
+		$sLower
 
 ; child gui vars
 Local $abChild, $fCount = 0, $sFontName, _
