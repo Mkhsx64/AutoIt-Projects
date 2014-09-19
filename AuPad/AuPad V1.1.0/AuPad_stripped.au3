@@ -41,6 +41,8 @@ Global Const $WS_MINIMIZEBOX = 0x00020000
 Global Const $WS_SIZEBOX = 0x00040000
 Global Const $WS_SYSMENU = 0x00080000
 Global Const $WS_VSCROLL = 0x00200000
+Global Const $WS_EX_ACCEPTFILES = 0x00000010
+Global Const $WS_EX_COMPOSITED = 0x02000000
 Global Const $WM_DROPFILES = 0x0233
 Global Const $MEM_COMMIT = 0x00001000
 Global Const $MEM_RESERVE = 0x00002000
@@ -791,14 +793,16 @@ If @error = 0 Then Return $vDllAns[0]
 SetError(1)
 Return -1
 EndFunc
-Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $WWcounter = 0, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forWW, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg
+Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $WWcounter = 0, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forWW, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab
 Local $abChild, $fCount = 0, $sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru, $fColor
 AdlibRegister("chkSel", 1000)
 AdlibRegister("chkTxt", 1000)
 HotKeySet("{F5}", "timeDate")
 HotKeySet("{F2}", "Help")
 GUI()
-Local $aAccelKeys[7][7] = [["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew]]
+If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico')
+GUICtrlSetFont( $pEditWindow,10, Default, Default, "Arial")
+Local $aAccelKeys[8][8] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew]]
 GUISetAccelerators($aAccelKeys, $pWnd)
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES")
 While 1
@@ -826,6 +830,8 @@ Find()
 Case $eReplace
 $fCount = 1
 Find()
+Case $eTab
+Tab()
 Case $fSave
 Save()
 Case $fSaveAs
@@ -866,7 +872,7 @@ Sleep(10)
 WEnd
 Func GUI()
 Local $FileM, $EditM, $FormatM, $ViewM, $HelpM
-$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX)
+$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX, $WS_EX_COMPOSITED + $WS_EX_ACCEPTFILES)
 $pEditWindow = GUICtrlCreateEdit("", 0, 0, 600, 495)
 $FileM = GUICtrlCreateMenu("File")
 $fNew = GUICtrlCreateMenuItem("New" & @TAB & "Ctrl + N", $FileM, 0)
@@ -888,8 +894,9 @@ GUICtrlCreateMenuItem("", $EditM, 6)
 $eFind = GUICtrlCreateMenuItem("Find..." & @TAB & "Ctrl + F", $EditM, 7)
 $eReplace = GUICtrlCreateMenuItem("Replace..." & @TAB & "Ctrl + H", $EditM, 9)
 GUICtrlCreateMenuItem("", $EditM, 10)
-$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 11)
-$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 12)
+$eTab = GUICtrlCreateMenuItem("Tab" & @TAB & "Tab", $EditM, 11)
+$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 12)
+$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 13)
 $FormatM = GUICtrlCreateMenu("Format")
 $forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0)
 $forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1)
@@ -938,11 +945,21 @@ If $check = 0 Then
 $rw = GUICtrlRead($pEditWindow)
 GUICtrlDelete($pEditWindow)
 $pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495, BitOR($ES_AUTOVSCROLL, $ES_WANTRETURN, $WS_VSCROLL))
+If Not IsArray($fontBox) Then
+GUICtrlSetFont( $pEditWindow,10, Default, Default, "Arial")
+Else
+GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName)
+EndIf
 ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490)
 Else
 $rw = GUICtrlRead($pEditWindow)
 GUICtrlDelete($pEditWindow)
 $pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495)
+If Not IsArray($fontBox) Then
+GUICtrlSetFont( $pEditWindow,10, Default, Default, "Arial")
+Else
+GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName)
+EndIf
 ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490)
 EndIf
 EndFunc
@@ -1000,22 +1017,27 @@ Return 1
 EndFunc
 Func _DragQueryFile($hDrop, $iIndex = 0)
 Local $aCall = DllCall("shell32.dll", "dword", "DragQueryFileW", "handle", $hDrop, "dword", $iIndex, "wstr", "", "dword", 32767)
-If @error Or Not $aCall[0] Then Return SetError(1, 0, "")
+If @error Or Not $aCall[0] Then Return MsgBox(0, "", "error")
 Return $aCall[3]
 EndFunc
 Func _DragFinish($hDrop)
 DllCall("shell32.dll", "none", "DragFinish", "handle", $hDrop)
+If @error Then Return MsgBox(0, "", "error in _DragFinish: " & @error)
 EndFunc
 Func _MessageBeep($iType)
 DllCall("user32.dll", "int", "MessageBeep", "dword", $iType)
+If @error Then Return MsgBox(0, "", "error in _MessageBeep: " & @error)
 EndFunc
 Func _OpenFile($droppedPath)
+Local $i, $iPath, $fName
 $ifCharSet = FileGetEncoding($droppedPath)
 Local $sText = FileRead($droppedPath)
 GUICtrlSetData($pEditWindow, $sText)
 _GUICtrlEdit_SetSel($pEditWindow, 0, 0)
-$sPathCur = $droppedPath
-WinSetTitle($pWnd, '', StringRegExpReplace($droppedPath, '^(?:.*\\)([^\\]+?)(\.[^.]+)?$', '\1\2') & ' - ' & "AuPad")
+$iPath = StringSplit($droppedPath, "\")
+$i = $iPath[0]
+$fName = StringSplit($iPath[$i], ".")
+WinSetTitle($pWnd, '', $fName[1] & ' - ' & "AuPad")
 _GUICtrlEdit_SetModify($pEditWindow, False)
 EndFunc
 Func Print()
@@ -1040,6 +1062,11 @@ $th = _PrintGetTextHeight($hp, $winText)
 _PrintText($hp, $winText, 0, _PrintGetYOffset($hp))
 _PrintEndPrint($hp)
 _PrintDLLClose($hp)
+EndFunc
+Func Tab()
+Local $rwin
+$rwin = GUICtrlRead($pEditWindow)
+GUICtrlSetData($pEditWindow, $rwin & "        ")
 EndFunc
 Func Find()
 If $fCount = 0 Then
@@ -1098,29 +1125,39 @@ GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, Default, $sFontName)
 EndIf
 EndFunc
 Func Open()
-Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, $strinString, $read, $stripString
-$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)", BitOR(1, 2))
+Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, $strinString, $stripString, $titleNow, $mBox, $spltTitle
+$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|All (*.*)", BitOR(1, 2))
 $strSplit = StringSplit($fileOpenD, "\")
 $oIndex = $strSplit[0]
-If $strSplit[$oIndex] = "" Or $strSplit[$oIndex] = ".txt" Then
+If $strSplit[$oIndex] = "" Then
 MsgBox(0, "error", "Did not open a file")
 Return
 EndIf
 $strinString = StringSplit($strSplit[$oIndex], ".")
-If $strinString[2] <> "txt" Then
-MsgBox(0, "error", "Invalid file type selected")
-Return
-EndIf
 $fileOpen = FileOpen($fileOpenD, 0)
 If $fileOpen = -1 Then
 MsgBox(0, "error", "Could not open the file")
 Return
 EndIf
 $fileRead = FileRead($fileOpen)
-$read = GUICtrlRead($pEditWindow)
-$stripString = StringReplace($strSplit[$oIndex], ".txt", "")
-WinSetTitle($pWnd, $read, $stripString & " - AuPad")
-GUICtrlSetData($pEditWindow, $fileRead, $read)
+$openBuff = GUICtrlRead($pEditWindow)
+If $openBuff <> "" And $openBuff <> $fileRead Then
+$titleNow = WinGetTitle($pWnd)
+$spltTitle = StringSplit($titleNow, " - ")
+$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?")
+If $mBox = 6 And $spltTitle[1] = "Untitled" Then
+$saveCounter = 0
+Save()
+ElseIf $mBox = 6 Then
+$saveCounter += 1
+Save()
+EndIf
+EndIf
+_GUICtrlEdit_SetText($pEditWindow, "")
+$stripString = StringReplace($strSplit[$oIndex], "." & $strinString[2], "")
+WinSetTitle($pWnd, $openBuff, $stripString & " - AuPad")
+GUICtrlSetData($pEditWindow, $fileRead, $openBuff)
+$saveCounter += 1
 $fn[$oIndex] = $fileOpenD
 FileClose($fileOpen)
 EndFunc
