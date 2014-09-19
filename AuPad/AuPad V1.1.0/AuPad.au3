@@ -56,6 +56,7 @@ HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDa
 HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help function
 
 GUI() ; create the window
+If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico') ; if the script isn't compiled then set the icon
 
 Local $aAccelKeys[7][7] = [["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew]]
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
