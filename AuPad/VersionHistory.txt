@@ -9,3 +9,5 @@
 - Took out check for txt file when opening
 - Fixed open function to delete text already in control and ask to save
 - Added $ws_ex_composite to stop flicker on xp machines.
+- Added default font
+- Set the font in the setWW() function
