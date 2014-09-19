@@ -36,11 +36,16 @@ Global Const $EM_UNDO = 0xC7
 Global Const $GUI_EVENT_CLOSE = -3
 Global Const $GUI_CHECKED = 1
 Global Const $GUI_UNCHECKED = 4
+Global Const $WS_OVERLAPPED = 0
 Global Const $WS_MAXIMIZEBOX = 0x00010000
 Global Const $WS_MINIMIZEBOX = 0x00020000
 Global Const $WS_SIZEBOX = 0x00040000
+Global Const $WS_THICKFRAME = $WS_SIZEBOX
 Global Const $WS_SYSMENU = 0x00080000
 Global Const $WS_VSCROLL = 0x00200000
+Global Const $WS_CAPTION = 0x00C00000
+Global Const $WS_OVERLAPPEDWINDOW = BitOR($WS_CAPTION, $WS_MAXIMIZEBOX, $WS_MINIMIZEBOX, $WS_OVERLAPPED, $WS_SYSMENU, $WS_THICKFRAME)
+Global Const $WS_POPUP = 0x80000000
 Global Const $WS_EX_ACCEPTFILES = 0x00000010
 Global Const $WS_EX_COMPOSITED = 0x02000000
 Global Const $WM_DROPFILES = 0x0233
@@ -793,7 +798,7 @@ If @error = 0 Then Return $vDllAns[0]
 SetError(1)
 Return -1
 EndFunc
-Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $WWcounter = 0, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forWW, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab
+Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $WWcounter = 0, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forWW, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC
 Local $abChild, $fCount = 0, $sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru, $fColor
 AdlibRegister("chkSel", 1000)
 AdlibRegister("chkTxt", 1000)
@@ -801,8 +806,8 @@ HotKeySet("{F5}", "timeDate")
 HotKeySet("{F2}", "Help")
 GUI()
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico')
-GUICtrlSetFont( $pEditWindow,10, Default, Default, "Arial")
-Local $aAccelKeys[8][8] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew]]
+GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial")
+Local $aAccelKeys[9][9] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew], ["^w", $eWC]]
 GUISetAccelerators($aAccelKeys, $pWnd)
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES")
 While 1
@@ -832,6 +837,8 @@ $fCount = 1
 Find()
 Case $eTab
 Tab()
+Case $eWC
+wordCount()
 Case $fSave
 Save()
 Case $fSaveAs
@@ -872,7 +879,7 @@ Sleep(10)
 WEnd
 Func GUI()
 Local $FileM, $EditM, $FormatM, $ViewM, $HelpM
-$pWnd = GUICreate("AuPad", 600, 500, -1, -1, $WS_SYSMENU + $WS_SIZEBOX + $WS_MINIMIZEBOX + $WS_MAXIMIZEBOX, $WS_EX_COMPOSITED + $WS_EX_ACCEPTFILES)
+$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_COMPOSITED + $WS_EX_ACCEPTFILES)
 $pEditWindow = GUICtrlCreateEdit("", 0, 0, 600, 495)
 $FileM = GUICtrlCreateMenu("File")
 $fNew = GUICtrlCreateMenuItem("New" & @TAB & "Ctrl + N", $FileM, 0)
@@ -897,6 +904,7 @@ GUICtrlCreateMenuItem("", $EditM, 10)
 $eTab = GUICtrlCreateMenuItem("Tab" & @TAB & "Tab", $EditM, 11)
 $eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 12)
 $eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 13)
+$eWC = GUICtrlCreateMenuItem("Word Count" & @TAB & "Ctrl + W", $EditM, 14)
 $FormatM = GUICtrlCreateMenu("Format")
 $forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0)
 $forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1)
@@ -946,7 +954,7 @@ $rw = GUICtrlRead($pEditWindow)
 GUICtrlDelete($pEditWindow)
 $pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495, BitOR($ES_AUTOVSCROLL, $ES_WANTRETURN, $WS_VSCROLL))
 If Not IsArray($fontBox) Then
-GUICtrlSetFont( $pEditWindow,10, Default, Default, "Arial")
+GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial")
 Else
 GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName)
 EndIf
@@ -956,7 +964,7 @@ $rw = GUICtrlRead($pEditWindow)
 GUICtrlDelete($pEditWindow)
 $pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495)
 If Not IsArray($fontBox) Then
-GUICtrlSetFont( $pEditWindow,10, Default, Default, "Arial")
+GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial")
 Else
 GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName)
 EndIf
@@ -999,6 +1007,11 @@ GUICtrlSetState($eCopy, 64)
 GUICtrlSetState($eCut, 64)
 GUICtrlSetState($eReplace, 64)
 EndIf
+EndFunc
+Func wordCount()
+Local $count
+$count = _GUICtrlEdit_GetTextLen($pEditWindow)
+MsgBox(0, "Word Count", $count)
 EndFunc
 Func WM_DROPFILES($hWnd, $iMsg, $wParam, $lParam)
 #forceref $iMsg, $lParam
