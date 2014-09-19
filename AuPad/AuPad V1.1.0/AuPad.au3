@@ -339,14 +339,12 @@ Func Print()
 	_PrintDLLClose($hp) ; close the dll
 EndFunc   ;==>Print
 
-; Thanks to AZJIO's tab functionality for the thought behind this functionality
-;======================================================
+; Thanks to AZJIO for idea
 Func Tab()
 	Local $rwin
 	$rwin = GUICtrlRead($pEditWindow) ; read the text in the window already
 	GUICtrlSetData($pEditWindow, $rwin & "        ") ; add a tab into the window after the text
 EndFunc
-;======================================================
 
 Func Find()
 	If $fCount = 0 Then
