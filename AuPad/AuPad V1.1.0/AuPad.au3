@@ -399,18 +399,14 @@ EndFunc   ;==>fontGUI
 Func Open()
 	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
 			$strinString, $read, $stripString
-	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)", BitOR(1, 2)) ; ask the user what they would like to open
+	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|All (*.*)", BitOR(1, 2)) ; ask the user what they would like to open
 	$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
 	$oIndex = $strSplit[0] ; set the $oIndex to the last value in the split array
-	If $strSplit[$oIndex] = "" Or $strSplit[$oIndex] = ".txt" Then ; if there is not value or just .txt then tell us and return
+	If $strSplit[$oIndex] = "" Then ; if there is not a value
 		MsgBox(0, "error", "Did not open a file") ; tell us
 		Return ; get out
 	EndIf
 	$strinString = StringSplit($strSplit[$oIndex], ".") ; split the file name by the . char
-	If $strinString[2] <> "txt" Then ; if the file extension does not equal text
-		MsgBox(0, "error", "Invalid file type selected") ; tell us
-		Return ; get out
-	EndIf
 	$fileOpen = FileOpen($fileOpenD, 0) ; open the file specified
 	If $fileOpen = -1 Then ; if that didn't work
 		MsgBox(0, "error", "Could not open the file") ; tell us
@@ -418,8 +414,9 @@ Func Open()
 	EndIf
 	$fileRead = FileRead($fileOpen) ; read the open file
 	$read = GUICtrlRead($pEditWindow) ; get the current text in the window
-	$stripString = StringReplace($strSplit[$oIndex], ".txt", "") ; replace the file name extension with nothing
+	$stripString = StringReplace($strSplit[$oIndex], "." & $strinString[2], "") ; replace the file name extension with nothing
 	WinSetTitle($pWnd, $read, $stripString & " - AuPad") ; set the title of the window
+	If $read <> "" Then GUICtrlSetData($pEditWindow, "") ; if there is already data in the control delete it
 	GUICtrlSetData($pEditWindow, $fileRead, $read) ; set the read data into the window
 	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
 	FileClose($fileOpen) ; close the file
