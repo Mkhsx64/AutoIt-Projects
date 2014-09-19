@@ -41,8 +41,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fnCount = 0, $selBufferEx, _
 		$fullStrRepl, $strFnd, $strEnd, _
 		$strLen, $forStrRepl, $hp, _
-		$mmssgg, $openBuff, $eTab, _
-		$eWC
+		$mmssgg, $openBuff, $eTab
 
 ; child gui vars
 Local $abChild, $fCount = 0, $sFontName, _
@@ -58,12 +57,11 @@ HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help funct
 
 GUI() ; create the window
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico') ; if the script isn't compiled then set the icon
-GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial") ; set the default font
+GUICtrlSetFont( $pEditWindow,10, Default, Default, "Arial") ; set the default font
 
 Local $aAccelKeys[9][9] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
-		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
-		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC]]
-
+						["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
+						["^p", $fPrint], ["^n", $fNew], ["^w", $eWC]]
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES") ; register GUI msg for drop files
@@ -219,7 +217,7 @@ Func setWW($check)
 		GUICtrlDelete($pEditWindow) ; delete the edit control
 		$pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495, BitOR($ES_AUTOVSCROLL, $ES_WANTRETURN, $WS_VSCROLL)) ; create the edit with the word wrap ability
 		If Not IsArray($fontBox) Then ; if the font has not been set
-			GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial") ; set the default font
+			GUICtrlSetFont( $pEditWindow,10, Default, Default, "Arial") ; set the default font
 		Else
 			GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName) ; set the current font
 		EndIf
@@ -229,7 +227,7 @@ Func setWW($check)
 		GUICtrlDelete($pEditWindow) ; delete the edit control
 		$pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495) ; create the edit window without word wrap
 		If Not IsArray($fontBox) Then ; if the font has not been set
-			GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial") ; set the default font
+			GUICtrlSetFont( $pEditWindow,10, Default, Default, "Arial") ; set the default font
 		Else
 			GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName) ; set the current font
 		EndIf
@@ -275,12 +273,6 @@ Func chkTxt()
 		GUICtrlSetState($eReplace, 64) ; un-grey the replace menu option
 	EndIf
 EndFunc   ;==>chkTxt
-
-Func wordCount()
-	Local $count
-	$count = _GUICtrlEdit_GetTextLen($pEditWindow)
-	MsgBox(0, "Word Count", $count)
-EndFunc
 
 ; http://www.autoitscript.com/forum/topic/149659-alternate-data-streams-viewer/
 ; Thanks to AZJIO's My notepad program -- http://www.autoitscript.com/forum/topic/152017-my-notepad/
@@ -368,7 +360,7 @@ Func Tab()
 	Local $rwin
 	$rwin = GUICtrlRead($pEditWindow) ; read the text in the window already
 	GUICtrlSetData($pEditWindow, $rwin & "        ") ; add a tab into the window after the text
-EndFunc   ;==>Tab
+EndFunc
 
 Func Find()
 	If $fCount = 0 Then
