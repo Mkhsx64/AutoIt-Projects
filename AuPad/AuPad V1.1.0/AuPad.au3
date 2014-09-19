@@ -296,12 +296,16 @@ Func _MessageBeep($iType)
 EndFunc   ;==>_MessageBeep
 
 Func _OpenFile($droppedPath)
+	Local $i, $iPath, $fName
 	$ifCharSet = FileGetEncoding($droppedPath)
 	Local $sText = FileRead($droppedPath)
 	GUICtrlSetData($pEditWindow, $sText)
 	_GUICtrlEdit_SetSel($pEditWindow, 0, 0)
 	$sPathCur = $droppedPath
-	WinSetTitle($pWnd, '', StringRegExpReplace($droppedPath, '^(?:.*\\)([^\\]+?)(\.[^.]+)?$', '\1\2') & ' - ' & "AuPad")
+	$iPath = StringSplit($droppedPath, "\")
+	$i = $iPath[0]
+	$fName = StringSplit($iPath[$i], ".")
+	WinSetTitle($pWnd, '', $fName[1] & ' - ' & "AuPad")
 	_GUICtrlEdit_SetModify($pEditWindow, False)
 	;;_AddRecent($droppedPath)
 EndFunc   ;==>_OpenFile
