@@ -12,3 +12,7 @@
 -added a check for the decryptData function to check if it could not create the key
 -changed the getFile function to use FileOpenDialog instead of FileSaveDialog when opening a file
 -commented all code
+
+----==== 1.5.0.0 ====----
+
+-added drag and drop support for encrypting and decrypting files

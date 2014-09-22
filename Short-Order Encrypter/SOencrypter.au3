@@ -3,7 +3,7 @@
 #AutoIt3Wrapper_Outfile=
 #AutoIt3Wrapper_Res_Comment=Short-Order Encrypter
 #AutoIt3Wrapper_Res_Description=Will encrypt and decrypt messages and files.
-#AutoIt3Wrapper_Res_Fileversion=1.0.5
+#AutoIt3Wrapper_Res_Fileversion=1.5.0
 #AutoIt3Wrapper_Run_Au3Stripper=y
 #Au3Stripper_Parameters=/so
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
@@ -20,8 +20,8 @@
 
 #include <GUIConstantsEx.au3>
 #include <Crypt.au3>
+#include <GUIConstants.au3>
 
-Opt("MustDeclareVars", 1) ; lets be strict for clarities sake
 
 ; vars
 Local $hGUI, $msg = 0, $hInput, $iButton, $hDecode, $dButton, _
@@ -30,11 +30,13 @@ Local $hGUI, $msg = 0, $hInput, $iButton, $hDecode, $dButton, _
 		$eButton = 9999, $iEdit, $dChild = 9999, $dMsgBox, $dPswdBox, _
 		$dSubmit = 9999, $dMsg, $dPswd, $iFileGetB, $dFileGetB, _
 		$fChildi = 9999, $iFilePass, $iFilePassBox, $iPassSubmit, _
-		$fcPath, $ED = ""
+		$fcPath, $ED = "", $inputBox = -1
 
 ; Main line
 
 GUI()
+
+GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES") ; register GUI msg for drop files
 
 While 1
 	$msg = GUIGetMsg(1) ; return an array, instead of a single event
@@ -105,7 +107,7 @@ WEnd
 ;functions
 
 Func GUI()
-	$hGUI = GUICreate("Short-Order Encrypter", 300, 200) ; create the parent gui
+	$hGUI = GUICreate("Short-Order Encrypter", 300, 200, Default, Default, Default, $WS_EX_ACCEPTFILES) ; create the parent gui
 	GUICtrlCreateLabel("Encrypt a Message or a File!", 75, 10) ; label
 	GUICtrlCreateLabel("This is a simple input and output encryption program. You will", 5, 30) ; label
 	GUICtrlCreateLabel("select which method of encryption, then input your", 32, 43) ; label
@@ -323,6 +325,69 @@ Func iPswdBox($eord)
 	$iPassSubmit = GUICtrlCreateButton("Run", 80, 70) ; create the run button
 	GUISetState() ; show the child GUI
 EndFunc   ;==>iPswdBox
+
+; http://www.autoitscript.com/forum/topic/149659-alternate-data-streams-viewer/
+; Thanks to AZJIO's My notepad program -- http://www.autoitscript.com/forum/topic/152017-my-notepad/
+;======================================================
+; Proccessing files dropped onto the GUI
+Func WM_DROPFILES($hWnd, $iMsg, $wParam, $lParam)
+	#forceref $iMsg, $lParam
+	If $hWnd = $hGUI Then
+		$sDroppedFiles = _DragQueryFile($wParam)
+		If @error Or StringInStr(FileGetAttrib($sDroppedFiles), "D") Then
+			_MessageBeep(48)
+			Return 1
+		EndIf
+		_DragFinish($wParam)
+		_getInput($sDroppedFiles)
+		Return 1
+	EndIf
+	_MessageBeep(48)
+	Return 1
+EndFunc   ;==>WM_DROPFILES
+
+; Functions to handle dropped files
+Func _DragQueryFile($hDrop, $iIndex = 0)
+	Local $aCall = DllCall("shell32.dll", "dword", "DragQueryFileW", _
+			"handle", $hDrop, _
+			"dword", $iIndex, _
+			"wstr", "", _
+			"dword", 32767)
+	If @error Or Not $aCall[0] Then Return MsgBox(0, "", "error")
+	Return $aCall[3]
+EndFunc   ;==>_DragQueryFile
+
+Func _DragFinish($hDrop)
+	DllCall("shell32.dll", "none", "DragFinish", "handle", $hDrop)
+	If @error Then Return MsgBox(0, "", "error in _DragFinish: " & @error)
+EndFunc   ;==>_DragFinish
+
+Func _MessageBeep($iType)
+	DllCall("user32.dll", "int", "MessageBeep", "dword", $iType)
+	If @error Then Return MsgBox(0, "", "error in _MessageBeep: " & @error)
+EndFunc   ;==>_MessageBeep
+
+Func _getInput($droppedPath)
+	Local $i, $iPath, $fName
+	$ifCharSet = FileGetEncoding($droppedPath) ; get file encoding
+	$msgBox = MsgBox(3, "Dropped File", "Yes: Encrypt ; No: Decrypt ; Cancel: Exit")
+	If $msgBox = 6 Then
+		$ED = "E"
+		$inputBox = InputBox("Encryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of encryption you would like to use.")
+		$cValue = Int(StringStripWS($inputBox, 8))
+		$fcPath = $droppedPath
+		iPswdBox($ED)
+	ElseIf $msgBox = 7 Then
+		$ED = "D"
+		$inputBox = InputBox("Decryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of decryption you would like to use.")
+		$cValue = Int(StringStripWS($inputBox, 8))
+		$fcPath = $droppedPath
+		iPswdBox($ED)
+	Else
+		Return
+	EndIf
+EndFunc   ;==>_OpenFile
+;======================================================
 
 Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 	Local $fFlag[8], $sPath, $fEcrypt, $fDcrypt, $aError, _
