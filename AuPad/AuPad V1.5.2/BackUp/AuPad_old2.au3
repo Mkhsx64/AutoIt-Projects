@@ -354,20 +354,20 @@ EndFunc   ;==>_MessageBeep
 
 Func _OpenFile($droppedPath)
 	Local $i, $iPath, $fName, $fSize, $sText, $BtS, _
-			$fileOpenD
+		$fileOpenD
 	$fSize = FileGetSize($droppedPath)
 	$fSize = $fSize / 1048576
 	If $fSize < 100 Then
-		$fOpenD = FileOpen($droppedPath, 0) ; get file encoding
-		$sText = FileRead($droppedPath) ; read the file
-		GUICtrlSetData($pEditWindow, $sText) ; put the text in the edit control
-		_GUICtrlEdit_SetSel($pEditWindow, 0, 0) ; take off the selection
+	$fOpenD = FileOpen($droppedPath, 0) ; get file encoding
+	$sText = FileRead($droppedPath) ; read the file
+	GUICtrlSetData($pEditWindow, $sText) ; put the text in the edit control
+	_GUICtrlEdit_SetSel($pEditWindow, 0, 0) ; take off the selection
 	Else
-		$fOpenD = FileOpen($droppedPath, 16)
-		$sText = FileRead($droppedPath) ; read the file
-		$BtS = BinaryToString($sText) ; change the binary to a string
-		GUICtrlSetData($pEditWindow, $BtS) ; put the text in the edit control
-		_GUICtrlEdit_SetSel($pEditWindow, 0, 0) ; take off the selection
+	$fOpenD = FileOpen($droppedPath, 16)
+	$sText = FileRead($droppedPath) ; read the file
+	$BtS = BinaryToString($sText)
+	GUICtrlSetData($pEditWindow, $BtS) ; put the text in the edit control
+	_GUICtrlEdit_SetSel($pEditWindow, 0, 0) ; take off the selection
 	EndIf
 	$iPath = StringSplit($droppedPath, "\") ; split the string by "\"
 	$i = $iPath[0] ; set the last index
