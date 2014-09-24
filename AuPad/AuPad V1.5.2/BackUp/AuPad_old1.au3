@@ -461,7 +461,7 @@ EndFunc   ;==>fontGUI
 Func Open()
 	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
 			$strinString, $stripString, $titleNow, $mBox, _
-			$spltTitle, $fileGetSize, $fileReadEx
+			$spltTitle, $fileGetSize
 	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|All (*.*)", BitOR(1, 2)) ; ask the user what they would like to open
 	$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
 	$oIndex = $strSplit[0] ; set the $oIndex to the last value in the split array
@@ -470,20 +470,18 @@ Func Open()
 		Return ; get out
 	EndIf
 	$strinString = StringSplit($strSplit[$oIndex], ".") ; split the file name by the . char
-	$fileGetSize = FileGetSize($fileOpenD) ; get the size of the file
-	$fileGetSize = $fileGetSize / 1048576 ; get the MB
-	If $fileGetSize < 100 Then ; if it is less than 100 MB
-		$fileOpen = FileOpen($fileOpenD, 0) ; open the file specified
-		$fileRead = FileRead($fileOpen) ; read the open file
+	$fileGetSize = FileGetSize($fileOpenD)
+	$fileGetSize = $fileGetSize / 1048576
+	If $fileGetSize < 100 Then
+	$fileOpen = FileOpen($fileOpenD, 0) ; open the file specified
 	Else
-		$fileOpen = FileOpen($fileOpenD, 16) ; open the file in binary form
-		$fileReadEx = FileRead($fileOpen) ; read the open file
-		$fileRead = BinaryToString($fileReadEx) ; set the binary data to ANSI
+	$fileOpen = FileOpen($fileOpenD, 16)
 	EndIf
 	If $fileOpen = -1 Then ; if that didn't work
 		MsgBox(0, "error", "Could not open the file") ; tell us
 		Return ; get out
 	EndIf
+	$fileRead = FileRead($fileOpen) ; read the open file
 	$openBuff = GUICtrlRead($pEditWindow) ; get the current text in the window
 	If $openBuff <> "" And $openBuff <> $fileRead Then ; initiaze the save dialog if their is text in the control and it does not match the file read
 		$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
