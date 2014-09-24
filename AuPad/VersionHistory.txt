@@ -18,3 +18,9 @@
 - Fixed word count function
 - Added line count thanks to DreamVB
 - Added uppercase and lowercase thanks to DreamVB
+
+---==== 1.5.2 ====---
+
+- Added better text limit
+- Fixed the edit control to show the horizontal scrollbar
+- Made resizing of the edit control AUTO; making the menu AUTO, instead of just 5 pixel height
