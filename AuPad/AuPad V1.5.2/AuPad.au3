@@ -220,6 +220,10 @@ Func setNew()
 	If $title = "" Then MsgBox(0, "error", "Could not set window title...", 10) ; if the title equals nothing tell us
 EndFunc   ;==>setNew
 
+Func addRecent($path)
+	; --- ;
+EndFunc
+
 Func aChild()
 	Local $authLabel, $nameLabel
 	$abChild = GUICreate("About AuPad", 150, 150) ; create the window
