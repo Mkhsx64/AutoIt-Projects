@@ -46,7 +46,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$eSL, $lpRead, $sUpper, _
 		$sLower
 
-Local $tLimit = (1000000 * 1000000)
+Local $tLimit = 1000000 * 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
 ; child gui vars
 Local $abChild, $fCount = 0, $sFontName, _
