@@ -160,7 +160,7 @@ Func GUI()
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_COMPOSITED + $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
 	$pEditWindow = GUICtrlCreateEdit("", 0, 0, 600, 480) ; creates the main text window for typing text
 	GUICtrlSetResizing($pEditWindow, $GUI_DOCKAUTO) ; added to make sure edit control sizes correctly even when display properties change
-	$textl = _GUICtrlEdit_SetLimitText($pEditWindow, $tLimit)
+	$textl = _GUICtrlEdit_SetLimitText($pEditWindow, $tLimit) ; set the text limit for the edit control
 	$FileM = GUICtrlCreateMenu("File") ; create the first level file menu item
 	$fNew = GUICtrlCreateMenuItem("New" & @TAB & "Ctrl + N", $FileM, 0) ; create second level menu item new ^ file
 	$fOpen = GUICtrlCreateMenuItem("Open..." & @TAB & "Ctrl + O", $FileM, 1) ; create second level menu item open ^ file
