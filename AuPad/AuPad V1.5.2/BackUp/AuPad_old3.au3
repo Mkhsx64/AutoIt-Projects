@@ -222,7 +222,7 @@ EndFunc   ;==>setNew
 
 Func addRecent($path)
 	; --- ;
-EndFunc   ;==>addRecent
+EndFunc
 
 Func aChild()
 	Local $authLabel, $nameLabel
@@ -382,7 +382,7 @@ EndFunc   ;==>_OpenFile
 ;======================================================
 
 Func Print()
-	Local $selected, $printDLL = "printmg.dll", $txtWhr = 25
+	Local $selected, $printDLL = "printmg.dll"
 	$hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
 	If $hp = 0 Then ; if we couldn't open the dll
 		MsgBox(0, "", "Error from dllstart = " & $mmssgg & @CRLF) ; tell us
@@ -399,15 +399,10 @@ Func Print()
 	EndIf
 	$winText = GUICtrlRead($pEditWindow) ; read the edit control
 	$spltText = StringSplit($winText, @CRLF)
-	For $i = 1 To $spltText[0] Step 1
-		$tw = _PrintGetTextWidth($hp, $spltText[$i]) ; get the width of the text
-		$th = _PrintGetTextHeight($hp, $spltText[$i]) ; get the height of the text
-		If $i = 1 Then
-		_PrintText($hp, $spltText[$i], 0, 25) ; set the text to be printed
-		Else
-		$txtWhr += 25
-		_PrintText($hp, $spltText[$i], 0, $txtWhr)
-		EndIf
+	For $i = 0 To $spltText[0] Step 1
+	$tw = _PrintGetTextWidth($hp, $winText) ; get the width of the text
+	$th = _PrintGetTextHeight($hp, $winText) ; get the height of the text
+	_PrintText($hp, $winText, 0, _PrintGetYOffset($hp)) ; set the text to be printed
 	Next
 	_PrintEndPrint($hp) ; end the print job
 	_PrintDLLClose($hp) ; close the dll

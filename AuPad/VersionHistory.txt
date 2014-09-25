@@ -29,3 +29,4 @@
 - Added accelerator keys for uppercase, lowercase and save as
 - Took out unnecarry MsgBox in save function
 - Added keyboard shortcuts to menu items
+- Added print by line support
