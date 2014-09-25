@@ -37,6 +37,7 @@ Global Const $EM_UNDO = 0xC7
 Global Const $GUI_EVENT_CLOSE = -3
 Global Const $GUI_CHECKED = 1
 Global Const $GUI_UNCHECKED = 4
+Global Const $GUI_DOCKAUTO = 0x0001
 Global Const $WS_OVERLAPPED = 0
 Global Const $WS_MAXIMIZEBOX = 0x00010000
 Global Const $WS_MINIMIZEBOX = 0x00020000
@@ -779,12 +780,6 @@ If @error = 0 Then Return $vDllAns[0]
 SetError(1)
 Return -1
 EndFunc
-Func _PrintGetYOffset($hDll)
-Local $vDllAns = DllCall($hDll, 'int', 'GetYOffset')
-If @error = 0 Then Return $vDllAns[0]
-SetError(1)
-Return -1
-EndFunc
 Func _PrintGetTextWidth($hDll, $sWText)
 Local $vDllAns = DllCall($hDll, 'int', 'TextWidth', 'str', $sWText)
 If @error = 0 Then Return $vDllAns[0]
@@ -803,7 +798,7 @@ If @error = 0 Then Return $vDllAns[0]
 SetError(1)
 Return -1
 EndFunc
-Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $WWcounter = 0, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forWW, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC, $eLC, $lCount, $eSU, $eSL, $lpRead, $sUpper, $sLower
+Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $WWcounter = 0, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forWW, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC, $eLC, $lCount, $eSU, $eSL, $lpRead, $sUpper, $sLower, $wwINIvalue
 Local $abChild, $fCount = 0, $sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru, $fColor
 AdlibRegister("chkSel", 1000)
 AdlibRegister("chkTxt", 1000)
@@ -812,7 +807,16 @@ HotKeySet("{F2}", "Help")
 GUI()
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico')
 GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial")
-Local $aAccelKeys[10][10] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], ["^l", $eLC]]
+If Not FileExists(@ProgramFilesDir & "\AuPad\Settings.ini") Then
+IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "runSuccess", "Yes")
+IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "Off")
+EndIf
+Local $wwINIvalue = IniRead(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "Off")
+If $wwINIvalue = "On" Then
+GUICtrlSetState($forWW, $GUI_CHECKED)
+setWW($WWcounter)
+EndIf
+Local $aAccelKeys[13][13] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], ["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], ["^+s", $fSaveAs]]
 GUISetAccelerators($aAccelKeys, $pWnd)
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES")
 While 1
@@ -894,18 +898,19 @@ EndSwitch
 Sleep(10)
 WEnd
 Func GUI()
-Local $FileM, $EditM, $FormatM, $ViewM, $HelpM
+Local $FileM, $EditM, $FormatM, $ViewM, $HelpM, $textl
 $pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_COMPOSITED + $WS_EX_ACCEPTFILES)
-$pEditWindow = GUICtrlCreateEdit("", 0, 0, 600, 495)
+$pEditWindow = GUICtrlCreateEdit("", 0, 0, 600, 480)
+GUICtrlSetResizing($pEditWindow, $GUI_DOCKAUTO)
 $FileM = GUICtrlCreateMenu("File")
 $fNew = GUICtrlCreateMenuItem("New" & @TAB & "Ctrl + N", $FileM, 0)
 $fOpen = GUICtrlCreateMenuItem("Open..." & @TAB & "Ctrl + O", $FileM, 1)
 $fSave = GUICtrlCreateMenuItem("Save" & @TAB & "Ctrl + S", $FileM, 2)
-$fSaveAs = GUICtrlCreateMenuItem("Save As...", $FileM, 3)
+$fSaveAs = GUICtrlCreateMenuItem("Save As..." & @TAB & "Ctrl + Shft + S", $FileM, 3)
 GUICtrlCreateMenuItem("", $FileM, 4)
 $fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 5)
 GUICtrlCreateMenuItem("", $FileM, 6)
-$fExit = GUICtrlCreateMenuItem("Exit", $FileM, 7)
+$fExit = GUICtrlCreateMenuItem("Exit" & @TAB & "ESC", $FileM, 7)
 $EditM = GUICtrlCreateMenu("Edit")
 $eUndo = GUICtrlCreateMenuItem("Undo" & @TAB & "Ctrl + Z", $EditM, 0)
 GUICtrlCreateMenuItem("", $EditM, 1)
@@ -923,8 +928,8 @@ $eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 13)
 $eWC = GUICtrlCreateMenuItem("Word Count" & @TAB & "Ctrl + W", $EditM, 14)
 $eLC = GUICtrlCreateMenuItem("Line Count" & @TAB & "Ctrl + L", $EditM, 15)
 GUICtrlCreateMenuItem("", $EditM, 16)
-$eSU = GUICtrlCreateMenuItem("Uppercase Text", $EditM, 17)
-$eSL = GUICtrlCreateMenuItem("Lowercase Text", $EditM, 18)
+$eSU = GUICtrlCreateMenuItem("Uppercase Text" & @TAB & "Ctrl + Shft + U", $EditM, 17)
+$eSL = GUICtrlCreateMenuItem("Lowercase Text" & @TAB & "Ctrl + Shft + L", $EditM, 18)
 $FormatM = GUICtrlCreateMenu("Format")
 $forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0)
 $forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1)
@@ -1066,11 +1071,21 @@ DllCall("user32.dll", "int", "MessageBeep", "dword", $iType)
 If @error Then Return MsgBox(0, "", "error in _MessageBeep: " & @error)
 EndFunc
 Func _OpenFile($droppedPath)
-Local $i, $iPath, $fName
-$ifCharSet = FileGetEncoding($droppedPath)
-Local $sText = FileRead($droppedPath)
+Local $i, $iPath, $fName, $fSize, $sText, $BtS, $fileOpenD
+$fSize = FileGetSize($droppedPath)
+$fSize = $fSize / 1048576
+If $fSize < 100 Then
+$fOpenD = FileOpen($droppedPath, 0)
+$sText = FileRead($droppedPath)
 GUICtrlSetData($pEditWindow, $sText)
 _GUICtrlEdit_SetSel($pEditWindow, 0, 0)
+Else
+$fOpenD = FileOpen($droppedPath, 16)
+$sText = FileRead($droppedPath)
+$BtS = BinaryToString($sText)
+GUICtrlSetData($pEditWindow, $BtS)
+_GUICtrlEdit_SetSel($pEditWindow, 0, 0)
+EndIf
 $iPath = StringSplit($droppedPath, "\")
 $i = $iPath[0]
 $fName = StringSplit($iPath[$i], ".")
@@ -1078,7 +1093,7 @@ WinSetTitle($pWnd, '', $fName[1] & ' - ' & "AuPad")
 _GUICtrlEdit_SetModify($pEditWindow, False)
 EndFunc
 Func Print()
-Local $selected, $printDLL = "printmg.dll"
+Local $selected, $printDLL = "printmg.dll", $txtWhr = 25
 $hp = _PrintDLLStart($mmssgg, $printDLL)
 If $hp = 0 Then
 MsgBox(0, "", "Error from dllstart = " & $mmssgg & @CRLF)
@@ -1094,9 +1109,17 @@ Else
 _PrintSetFont($hp, $sFontName, $iFontSize, 0, $fontBox[1])
 EndIf
 $winText = GUICtrlRead($pEditWindow)
-$tw = _PrintGetTextWidth($hp, $winText)
-$th = _PrintGetTextHeight($hp, $winText)
-_PrintText($hp, $winText, 0, _PrintGetYOffset($hp))
+$spltText = StringSplit($winText, @CRLF)
+For $i = 1 To $spltText[0] Step 1
+$tw = _PrintGetTextWidth($hp, $spltText[$i])
+$th = _PrintGetTextHeight($hp, $spltText[$i])
+If $i = 1 Then
+_PrintText($hp, $spltText[$i], 0, 25)
+Else
+$txtWhr += 25
+_PrintText($hp, $spltText[$i], 0, $txtWhr)
+EndIf
+Next
 _PrintEndPrint($hp)
 _PrintDLLClose($hp)
 EndFunc
@@ -1162,7 +1185,7 @@ GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, Default, $sFontName)
 EndIf
 EndFunc
 Func Open()
-Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, $strinString, $stripString, $titleNow, $mBox, $spltTitle
+Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, $strinString, $stripString, $titleNow, $mBox, $spltTitle, $fileGetSize, $fileReadEx
 $fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|All (*.*)", BitOR(1, 2))
 $strSplit = StringSplit($fileOpenD, "\")
 $oIndex = $strSplit[0]
@@ -1171,12 +1194,20 @@ MsgBox(0, "error", "Did not open a file")
 Return
 EndIf
 $strinString = StringSplit($strSplit[$oIndex], ".")
+$fileGetSize = FileGetSize($fileOpenD)
+$fileGetSize = $fileGetSize / 1048576
+If $fileGetSize < 100 Then
 $fileOpen = FileOpen($fileOpenD, 0)
+$fileRead = FileRead($fileOpen)
+Else
+$fileOpen = FileOpen($fileOpenD, 16)
+$fileReadEx = FileRead($fileOpen)
+$fileRead = BinaryToString($fileReadEx)
+EndIf
 If $fileOpen = -1 Then
 MsgBox(0, "error", "Could not open the file")
 Return
 EndIf
-$fileRead = FileRead($fileOpen)
 $openBuff = GUICtrlRead($pEditWindow)
 If $openBuff <> "" And $openBuff <> $fileRead Then
 $titleNow = WinGetTitle($pWnd)
@@ -1206,7 +1237,6 @@ $fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", 16, ".txt",
 $fn = StringSplit($fs, "\")
 $i = $fn[0]
 If $fn[$i] = ".txt" Or $fn[$i] = "" Then
-MsgBox(0, "error", "No name chosen exiting save function...")
 Return
 EndIf
 $fo = FileOpen($fs, 1)
@@ -1240,6 +1270,11 @@ $st = StringLen($rd)
 $wgt = WinGetTitle($pWnd, "")
 $title = StringSplit($wgt, " - ")
 If $st = 0 And $title[1] = "Untitled" Then
+If $WWcounter <> 1 Then
+IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "On")
+Else
+IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "Off")
+EndIf
 Exit
 ElseIf $title[1] <> "Untitled" Then
 $fOp = FileOpen($fn[$oIndex])
@@ -1248,6 +1283,11 @@ If $rd = $fRd Then
 $saveCounter += 1
 Save()
 FileClose($fOp)
+If $WWcounter <> 1 Then
+IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "On")
+Else
+IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "Off")
+EndIf
 Exit
 EndIf
 $winTitle = WinGetTitle("[ACTIVE]")
@@ -1264,6 +1304,11 @@ If $mBox = 6 Then
 $saveCounter = 0
 Save()
 EndIf
+EndIf
+If $WWcounter <> 1 Then
+IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "On")
+Else
+IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "Off")
 EndIf
 Exit
 EndFunc

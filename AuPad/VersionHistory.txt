@@ -19,7 +19,7 @@
 - Added line count thanks to DreamVB
 - Added uppercase and lowercase thanks to DreamVB
 
----==== 1.5.2 ====---
+---==== 1.6.0 ====---
 
 - Added better text limit
 - Fixed the edit control to show the horizontal scrollbar
@@ -30,3 +30,5 @@
 - Took out unnecarry MsgBox in save function
 - Added keyboard shortcuts to menu items
 - Added print by line support
+- Added ini file for settings saved
+- Added setting in ini for word wrap

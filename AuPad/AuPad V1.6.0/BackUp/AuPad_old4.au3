@@ -2,9 +2,9 @@
 #AutoIt3Wrapper_UseX64=N ; must run as x86 for printing functionality
 #AutoIt3Wrapper_Icon=aupad.ico
 #AutoIt3Wrapper_Outfile=
-#AutoIt3Wrapper_Res_Comment=Version 1.1.0
+#AutoIt3Wrapper_Res_Comment=Version 1.6.0
 #AutoIt3Wrapper_Res_Description=Notepad written in AutoIt
-#AutoIt3Wrapper_Res_Fileversion=1.0.0
+#AutoIt3Wrapper_Res_Fileversion=1.6.0
 #AutoIt3Wrapper_Run_Au3Stripper=y
 #Au3Stripper_Parameters=/so
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
@@ -63,6 +63,17 @@ HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help funct
 GUI() ; create the window
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico') ; if the script isn't compiled then set the icon
 GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial") ; set the default font
+If Not FileExists(@ProgramFilesDir & "\AuPad\Settings.ini") Then ; if we haven't created the settings ini file
+	IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "runSuccess", "Yes") ; create it now
+	IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "Off") ; create the word wrap ini settings
+EndIf
+
+Local $wwINIvalue = IniRead(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap")
+If $wwINIvalue = "Yes" Then
+	GUICtrlSetState($forWW, $GUI_CHECKED) ; set the state of the menu item to be checked
+						setWW($WWcounter) ; call the setWW function passing it the $WWcounter
+EndIf
+
 
 Local $aAccelKeys[13][13] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
@@ -598,5 +609,9 @@ Func Quit()
 			Save() ; call the save function
 		EndIf
 	EndIf
+	If $WWcounter <> 1 Then
+		IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "Yes")
+	Else
+		IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "No")
 	Exit ; get out
 EndFunc   ;==>Quit
