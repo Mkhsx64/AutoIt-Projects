@@ -64,10 +64,11 @@ GUI() ; create the window
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico') ; if the script isn't compiled then set the icon
 GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial") ; set the default font
 
-Local $aAccelKeys[10][10] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
+Local $aAccelKeys[13][13] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
 		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], _
-		["^l", $eLC]]
+		["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], _
+		["^+s", $fSaveAs]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
@@ -164,11 +165,11 @@ Func GUI()
 	$fNew = GUICtrlCreateMenuItem("New" & @TAB & "Ctrl + N", $FileM, 0) ; create second level menu item new ^ file
 	$fOpen = GUICtrlCreateMenuItem("Open..." & @TAB & "Ctrl + O", $FileM, 1) ; create second level menu item open ^ file
 	$fSave = GUICtrlCreateMenuItem("Save" & @TAB & "Ctrl + S", $FileM, 2) ; create second level menu item save ^ file
-	$fSaveAs = GUICtrlCreateMenuItem("Save As...", $FileM, 3) ; create second level menu item save as ^ file
+	$fSaveAs = GUICtrlCreateMenuItem("Save As..." & @TAB & "Ctrl + Shft + S", $FileM, 3) ; create second level menu item save as ^ file
 	GUICtrlCreateMenuItem("", $FileM, 4) ; create line
 	$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 5) ; create second level menu item print ^ file
 	GUICtrlCreateMenuItem("", $FileM, 6) ; create line
-	$fExit = GUICtrlCreateMenuItem("Exit", $FileM, 7) ; create second level menu item exit ^ file
+	$fExit = GUICtrlCreateMenuItem("Exit" & @TAB & "ESC", $FileM, 7) ; create second level menu item exit ^ file
 	$EditM = GUICtrlCreateMenu("Edit") ; create the first level edit menu item
 	$eUndo = GUICtrlCreateMenuItem("Undo" & @TAB & "Ctrl + Z", $EditM, 0) ; create the second level undo menu item
 	GUICtrlCreateMenuItem("", $EditM, 1) ; create line
@@ -186,8 +187,8 @@ Func GUI()
 	$eWC = GUICtrlCreateMenuItem("Word Count" & @TAB & "Ctrl + W", $EditM, 14) ; create the second level word count menu item
 	$eLC = GUICtrlCreateMenuItem("Line Count" & @TAB & "Ctrl + L", $EditM, 15) ; create the second level line count menu item
 	GUICtrlCreateMenuItem("", $EditM, 16) ; create line
-	$eSU = GUICtrlCreateMenuItem("Uppercase Text", $EditM, 17) ; create the second level uppercase text menu item
-	$eSL = GUICtrlCreateMenuItem("Lowercase Text", $EditM, 18) ; create the second level lowercase text menu item
+	$eSU = GUICtrlCreateMenuItem("Uppercase Text" & @TAB & "Ctrl + Shft + U", $EditM, 17) ; create the second level uppercase text menu item
+	$eSL = GUICtrlCreateMenuItem("Lowercase Text" & @TAB & "Ctrl + Shft + L", $EditM, 18) ; create the second level lowercase text menu item
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
 	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
@@ -528,7 +529,6 @@ Func Save()
 		$fn = StringSplit($fs, "\") ; split the saved directory and name
 		$i = $fn[0]
 		If $fn[$i] = ".txt" Or $fn[$i] = "" Then ; if the value in the filesavedialog is not valid
-			MsgBox(0, "error", "No name chosen exiting save function...") ; tell us
 			Return ; get out
 		EndIf
 		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file

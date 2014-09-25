@@ -26,3 +26,6 @@
 - Made resizing of the edit control AUTO; making the menu AUTO, instead of just 5 pixel height
 - Changed any file over 100 MB to read in as binary
 - Changed any file dragged and dropped to read in as binary if over 100 MB in size
+- Added accelerator keys for uppercase, lowercase and save as
+- Took out unnecarry MsgBox in save function
+- Added keyboard shortcuts to menu items
