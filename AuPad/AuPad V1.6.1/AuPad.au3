@@ -45,7 +45,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$eWC, $eLC, $lCount, $eSU, _
 		$eSL, $lpRead, $sUpper, _
 		$sLower, $wwINIvalue, _
-		$aRecent[10][4]
+		$aRecent[10][4], $fAR
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 Local $iniPath = @ProgramFilesDir & "\AuPad\Settings.ini"
