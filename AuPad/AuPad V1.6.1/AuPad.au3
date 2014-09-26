@@ -412,15 +412,15 @@ Func Print()
 		_PrintSetFont($hp, $sFontName, $iFontSize, 0, $fontBox[1]) ; set the font we have choosen
 	EndIf
 	$winText = GUICtrlRead($pEditWindow) ; read the edit control
-	$spltText = StringSplit($winText, @CRLF)
+	$spltText = StringSplit($winText, @CRLF) ; split the string by line
 	For $i = 1 To $spltText[0] Step 1
 		$tw = _PrintGetTextWidth($hp, $spltText[$i]) ; get the width of the text
 		$th = _PrintGetTextHeight($hp, $spltText[$i]) ; get the height of the text
 		If $i = 1 Then
 			_PrintText($hp, $spltText[$i], 0, 25) ; set the text to be printed
 		Else
-			$txtWhr += 25
-			_PrintText($hp, $spltText[$i], 0, $txtWhr)
+			$txtWhr += 25 ; increment the y value
+			_PrintText($hp, $spltText[$i], 0, $txtWhr) ; set the text to be printed
 		EndIf
 	Next
 	_PrintEndPrint($hp) ; end the print job
