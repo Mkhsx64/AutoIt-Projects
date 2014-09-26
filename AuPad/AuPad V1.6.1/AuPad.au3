@@ -48,6 +48,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$aRecent[10][4]
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
+Local $iniPath = @ProgramFilesDir & "\AuPad\Settings.ini"
 
 ; child gui vars
 Local $abChild, $fCount = 0, $sFontName, _
@@ -64,12 +65,12 @@ HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help funct
 GUI() ; create the window
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico') ; if the script isn't compiled then set the icon
 GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial") ; set the default font
-If Not FileExists(@ProgramFilesDir & "\AuPad\Settings.ini") Then ; if we haven't created the settings ini file
-	IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "runSuccess", "Yes") ; create it now
-	IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "Off") ; create the word wrap ini settings
+If Not FileExists($iniPath) Then ; if we haven't created the settings ini file
+	IniWrite($iniPath, "Settings", "runSuccess", "Yes") ; create it now
+	IniWrite($iniPath, "Settings", "WordWrap", "Off") ; create the word wrap ini settings
 EndIf
 
-Local $wwINIvalue = IniRead(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "Off")
+Local $wwINIvalue = IniRead($iniPath, "Settings", "WordWrap", "Off")
 If $wwINIvalue = "On" Then
 	GUICtrlSetState($forWW, $GUI_CHECKED) ; set the state of the menu item to be checked
 	setWW($WWcounter) ; call the setWW function passing it the $WWcounter
@@ -587,9 +588,9 @@ Func Quit()
 	$title = StringSplit($wgt, " - ") ; split the window title
 	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
 		If $WWcounter <> 1 Then
-			IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "On")
+			IniWrite($iniPath, "Settings", "WordWrap", "On")
 		Else
-			IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "Off")
+			IniWrite($iniPath, "Settings", "WordWrap", "Off")
 		EndIf
 		Exit ; get out
 	ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
@@ -600,9 +601,9 @@ Func Quit()
 			Save() ; call the save function
 			FileClose($fOp) ; close the file
 			If $WWcounter <> 1 Then
-				IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "On")
+				IniWrite($iniPath, "Settings", "WordWrap", "On")
 			Else
-				IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "Off")
+				IniWrite($iniPath, "Settings", "WordWrap", "Off")
 			EndIf
 			Exit ; exit the script
 		EndIf
@@ -626,9 +627,9 @@ Func Quit()
 		EndIf
 	EndIf
 	If $WWcounter <> 1 Then
-		IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "On")
+		IniWrite($iniPath, "Settings", "WordWrap", "On")
 	Else
-		IniWrite(@ProgramFilesDir & "\AuPad\Settings.ini", "Settings", "WordWrap", "Off")
+		IniWrite($iniPath, "Settings", "WordWrap", "Off")
 	EndIf
 	Exit ; get out
 EndFunc   ;==>Quit
