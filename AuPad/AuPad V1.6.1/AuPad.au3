@@ -605,17 +605,21 @@ Func Quit()
 		EndIf
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
 		$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
-		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
+		$mBox = MsgBox(3, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
 		If $mBox = 6 Then ; if we said yes
 			Save() ; run the save function
+		ElseIf $mBox = 2 Then
+			Return
 		EndIf
 	ElseIf $st > 0 Then ; if there is something in the window, and it is called Untitled
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
 		$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
-		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
+		$mBox = MsgBox(3, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
 		If $mBox = 6 Then ; if we said yes
 			$saveCounter = 0 ; reset the save counter
 			Save() ; call the save function
+		ElseIf $mBox = 2 Then
+			Return
 		EndIf
 	EndIf
 	If $WWcounter <> 1 Then

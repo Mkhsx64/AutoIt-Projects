@@ -32,3 +32,7 @@
 - Added print by line support
 - Added ini file for settings saved
 - Added setting in ini for word wrap
+
+---==== 1.6.1 ====---
+
+- Added cancel button when quitting
