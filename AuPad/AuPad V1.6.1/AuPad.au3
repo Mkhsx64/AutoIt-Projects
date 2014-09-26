@@ -44,7 +44,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$mmssgg, $openBuff, $eTab, _
 		$eWC, $eLC, $lCount, $eSU, _
 		$eSL, $lpRead, $sUpper, _
-		$sLower, $wwINIvalue
+		$sLower, $wwINIvalue, _
+		$aRecent[10][4]
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
