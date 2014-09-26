@@ -179,7 +179,9 @@ Func GUI()
 	GUICtrlCreateMenuItem("", $FileM, 4) ; create line
 	$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 5) ; create second level menu item print ^ file
 	GUICtrlCreateMenuItem("", $FileM, 6) ; create line
-	$fExit = GUICtrlCreateMenuItem("Exit" & @TAB & "ESC", $FileM, 7) ; create second level menu item exit ^ file
+	$fAR = GUICtrlCreateMenu("Recent Files", $FileM, 7) ; create the menu item for recent files
+	GUICtrlCreateMenuItem("", $FileM, 8) ; create line
+	$fExit = GUICtrlCreateMenuItem("Exit" & @TAB & "ESC", $FileM, 9) ; create second level menu item exit ^ file
 	$EditM = GUICtrlCreateMenu("Edit") ; create the first level edit menu item
 	$eUndo = GUICtrlCreateMenuItem("Undo" & @TAB & "Ctrl + Z", $EditM, 0) ; create the second level undo menu item
 	GUICtrlCreateMenuItem("", $EditM, 1) ; create line
