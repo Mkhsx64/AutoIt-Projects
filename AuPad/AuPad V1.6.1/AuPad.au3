@@ -16,6 +16,7 @@
 ;==========================================================
 
 #include <WinAPIDlg.au3>
+#include <WinAPI.au3>
 #include <Constants.au3>
 #include <GUIConstants.au3>
 #include <Array.au3>
