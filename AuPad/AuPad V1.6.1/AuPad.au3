@@ -22,7 +22,6 @@
 #include <GUIEdit.au3>
 #include <Misc.au3>
 #include <File.au3>
-#include <WinAPIDlg.au3>
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
 #include <printMGv2.au3> ; printing support from martin's print UDF
