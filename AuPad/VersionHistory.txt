@@ -36,4 +36,4 @@
 ---==== 1.6.1 ====---
 
 - Added cancel button when quitting
-- Var holding ini path
+- Took out extra include
