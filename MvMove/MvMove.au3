@@ -12,18 +12,29 @@
 
 #include <Array.au3>
 #include <FileOperations.au3> ;; Thanks to AZJIO for this amazing library
-#include <GUIConstantsEx.au3>
+#include <GUIConstants.au3>
+#include <Constants.au3>
+#include <File.au3>
 
 ;; Variables ;;
 
-
-
-
+Local $pWnd, $msg
 
 ;; Main Line ;;
 
+GUI()
 
-
+While 1
+	$msg = GUIGetMsg()
+	Switch $msg
+		Case $GUI_EVENT_CLOSE
+			Exit
+	EndSwitch
+WEnd
 
 ;; Functions ;;
 
+Func GUI()
+	$pWnd = GUICreate("Search Files & Folders", 600, 500, -1, -1, -1)
+	GUISetState()
+EndFunc
