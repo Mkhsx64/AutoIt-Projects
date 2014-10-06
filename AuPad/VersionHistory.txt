@@ -39,3 +39,5 @@
 - Took out extra include
 - set default font into font variables
 - set default font when word wrap has been selected
+- set default font when taking off word wrap
+- Added RTF files and All files to save dialog

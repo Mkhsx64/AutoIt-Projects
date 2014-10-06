@@ -31,7 +31,7 @@
 #include <printMGv2.au3> ; printing support from martin's print UDF
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
-		$fSave = 9999, $fSaveAs = 9999, $fontBox, _
+		$fSave, $fSaveAs, $fontBox, _
 		$fPrint, $fExit, $pEditWindow, _
 		$eUndo, $pActiveW, $WWcounter = 0, _
 		$eCut, $eCopy, $ePaste, _
