@@ -16,11 +16,14 @@
 ;==========================================================
 
 #include <WinAPIDlg.au3>
+#include <WindowsConstants.au3>
+#include <GUIConstantsEx.au3>
 #include <WinAPI.au3>
 #include <Constants.au3>
 #include <GUIConstants.au3>
 #include <Array.au3>
 #include <GUIEdit.au3>
+#include <GuiRichEdit.au3>
 #include <Misc.au3>
 #include <File.au3>
 #include <WinAPIFiles.au3>
@@ -28,7 +31,7 @@
 #include <printMGv2.au3> ; printing support from martin's print UDF
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
-		$fSave, $fSaveAs, $fontBox, _
+		$fSave = 9999, $fSaveAs = 9999, $fontBox, _
 		$fPrint, $fExit, $pEditWindow, _
 		$eUndo, $pActiveW, $WWcounter = 0, _
 		$eCut, $eCopy, $ePaste, _
@@ -175,8 +178,8 @@ WEnd
 Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM, $textl
-	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_COMPOSITED + $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
-	$pEditWindow = _GUICtrlRichEdit_Create("", 0, 0, 600, 480) ; creates the main text window for typing text
+	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
+	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 2, 600, 480) ; creates the main text window for typing text
 	GUICtrlSetResizing($pEditWindow, $GUI_DOCKAUTO) ; added to make sure edit control sizes correctly even when display properties change_GUICtrlEdit_SetLimitText($pEditWindow, $tLimit) ; set the text limit for the edit control
 	$FileM = GUICtrlCreateMenu("File") ; create the first level file menu item
 	$fNew = GUICtrlCreateMenuItem("New" & @TAB & "Ctrl + N", $FileM, 0) ; create second level menu item new ^ file
@@ -219,7 +222,7 @@ Func GUI()
 	GUICtrlCreateMenuItem("", $HelpM, 1) ; create line
 	$hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 2) ; create the second level about aupad menu item
 	setNew() ; set the window to have a new file
-	GUISetState() ; show the window
+	GUISetState(@SW_SHOW) ; show the window
 EndFunc   ;==>GUI
 
 Func setNew()
@@ -285,6 +288,7 @@ EndFunc   ;==>setWW
 Func chkSel()
 	Local $gs, $gc, $getState, $readWin, $strMid
 	$gs = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the selected text
+	If @error Then Return
 	$gc = $gs[1] - $gs[0] ; get how many characters have been selected
 	If $gc > 0 Then ; if the selection is not blank
 		GUICtrlSetState($eDelete, 64) ; otherwise, set the state
@@ -558,7 +562,7 @@ Func Save()
 	Local $r, $sd, $cn, $i
 	$r = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
 	If $saveCounter = 0 Then ; if we haven't saved before
-		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", 16, ".txt", $pWnd) ; tell us where and what to call your file
+		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)|RTF files (*.rtf)|All files(*.*)", 16, ".txt", $pWnd) ; tell us where and what to call your file
 		$fn = StringSplit($fs, "\") ; split the saved directory and name
 		$i = $fn[0]
 		If $fn[$i] = ".txt" Or $fn[$i] = "" Then Return ; if the value in the filesavedialog is not valid get out
@@ -585,7 +589,7 @@ EndFunc   ;==>Help
 Func Quit()
 	Local $wgt, $rd, $stringis, $title, $st, $active, $mBox, _
 			$winTitle, $spltTitle, $fOp, $fRd
-	$rd = GUICtrlRead($pEditWindow) ; read the edit control
+	$rd = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
 	$st = StringLen($rd) ; find the length of the string read from the edit control
 	$wgt = WinGetTitle($pWnd, "") ; get the title of the window
 	$title = StringSplit($wgt, " - ") ; split the window title
