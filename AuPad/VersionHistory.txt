@@ -38,3 +38,4 @@
 - Added cancel button when quitting
 - Took out extra include
 - set default font into font variables
+- set default font when word wrap has been selected

@@ -102,7 +102,7 @@ While 1
 				Case $fExit
 					Quit() ; if exit option selected in file menu then call the quit function
 				Case $eUndo
-					_GUICtrlEdit_Undo($pEditWindow) ; undo the last action in the edit window
+					_GUICtrlRichEdit_Undo($pEditWindow) ; undo the last action in the edit window
 				Case $eCopy
 					Copy() ; call the Copy function when the copy option is selected
 				Case $ePaste
@@ -110,17 +110,15 @@ While 1
 				Case $eTD
 					timeDate() ; call the timeDate function when the time/date option is selected
 				Case $eFind
-					$fCount = 0 ; reset the find counter
-					Find() ; call the find function when the find option is selected
+					_WinAPI_FindTextDlg($pEditWindow) ; open the find text dialog
 				Case $eReplace
-					$fCount = 1 ; increment the find counter
-					Find() ; call the find function when the replace option is selected
+					_WinAPI_ReplaceTextDlg($pEditWindow) ; open the replace text dialog
 				Case $eTab
 					Tab() ; call the find function when the tab menu option is selected
 				Case $eWC
 					wordCount() ; call the wordCount function when the word count menu option is selected
 				Case $eLC
-					$lCount = _GUICtrlEdit_GetLineCount($pEditWindow) ; get the line count from the edit control
+					$lCount = _GUICtrlRichEdit_GetLineCount($pEditWindow) ; get the line count from the edit control
 					MsgBox(0, "Line Count", $lCount) ; tell us
 				Case $eSU
 					$lpRead = GUICtrlRead($pEditWindow) ; read the edit control
@@ -138,7 +136,7 @@ While 1
 				Case $fOpen
 					Open() ; call the open function when the open menu option is selected
 				Case $eDelete
-					_GUICtrlEdit_ReplaceSel($pEditWindow, "") ; whatever is selected delete it when this menu option is selected
+					_GUICtrlRichEdit_ReplaceText($pEditWindow, "") ; whatever is selected delete it when this menu option is selected
 				Case $fPrint
 					Print() ; call the print function when the print menu option is selected
 				Case $forWW
@@ -152,7 +150,7 @@ While 1
 						$WWcounter += 1 ; increment the counter
 					EndIf
 				Case $eSA
-					_GUICtrlEdit_SetSel($pEditWindow, 0, -1) ; call the setSel edit function if the user selects the select all option
+					_GUICtrlRichEdit_SetSel($pEditWindow, 0, -1) ; call the setSel edit function if the user selects the select all option
 				Case $hAA
 					aChild() ; call the about aupad child window if the menu option has been selected
 				Case $forFont
@@ -175,7 +173,7 @@ Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM, $textl
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_COMPOSITED + $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
-	$pEditWindow = GUICtrlCreateEdit("", 0, 0, 600, 480) ; creates the main text window for typing text
+	$pEditWindow = _GUICtrlRichEdit_Create("", 0, 0, 600, 480) ; creates the main text window for typing text
 	GUICtrlSetResizing($pEditWindow, $GUI_DOCKAUTO) ; added to make sure edit control sizes correctly even when display properties change_GUICtrlEdit_SetLimitText($pEditWindow, $tLimit) ; set the text limit for the edit control
 	$FileM = GUICtrlCreateMenu("File") ; create the first level file menu item
 	$fNew = GUICtrlCreateMenuItem("New" & @TAB & "Ctrl + N", $FileM, 0) ; create second level menu item new ^ file
@@ -223,7 +221,7 @@ EndFunc   ;==>GUI
 
 Func setNew()
 	Local $titleNow, $title, $readWinO, $spltTitle, $mBox
-	$readWinO = GUICtrlRead($pEditWindow) ; get the current text in the edit control
+	$readWinO = _GUICtrlRichEdit_GetText($pEditWindow) ; get the current text in the edit control
 	If $readWinO <> "" Then ; if there is something in the window, and it is called Untitled
 		$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
 		$spltTitle = StringSplit($titleNow, " - ") ; cut it into two pieces
@@ -232,7 +230,7 @@ Func setNew()
 			$saveCounter = 0 ; reset the save counter
 			Save() ; call the save function
 		EndIf
-		_GUICtrlEdit_SetText($pEditWindow, "") ; reset the text in the edit control
+		_GUICtrlRichEdit_SetText($pEditWindow, "") ; reset the text in the edit control
 	EndIf
 	$title = WinSetTitle($pWnd, $titleNow, "Untitled - AuPad") ; set the title to untitled since this is a new file
 	If $title = "" Then MsgBox(0, "error", "Could not set window title...", 10) ; if the title equals nothing tell us
@@ -259,11 +257,11 @@ EndFunc   ;==>aChild
 Func setWW($check)
 	Local $rw
 	If $check = 0 Then ; if we turned word wrap on
-		$rw = GUICtrlRead($pEditWindow) ; get the data in the window
-		GUICtrlDelete($pEditWindow) ; delete the edit control
-		$pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495, BitOR($ES_AUTOVSCROLL, $ES_WANTRETURN, $WS_VSCROLL)) ; create the edit with the word wrap ability
+		$rw = _GUICtrlRichEdit_GetText($pEditWindow) ; get the data in the window
+		_GUICtrlRichEdit_Destroy($pEditWindow) ; delete the edit control
+		$pEditWindow = _GUICtrlRichEdit_Create($rw, 0, 0, 600, 495, BitOR($ES_AUTOVSCROLL, $ES_WANTRETURN, $WS_VSCROLL)) ; create the edit with the word wrap ability
 		If Not IsArray($fontBox) Then ; if the font has not been set
-			GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial") ; set the default font
+			GUICtrlSetFont($pEditWindow, $iFontSize, Default, Default, $sFontName) ; set the default font
 		Else
 			GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName) ; set the current font
 		EndIf
@@ -437,14 +435,6 @@ Func Tab()
 	$rwin = GUICtrlRead($pEditWindow) ; read the text in the window already
 	GUICtrlSetData($pEditWindow, $rwin & "        ") ; add a tab into the window after the text
 EndFunc   ;==>Tab
-
-Func Find()
-	If $fCount = 0 Then
-		_GUICtrlEdit_Find($pEditWindow) ; bring up the find dialog
-	Else
-		_GUICtrlEdit_Find($pEditWindow, True) ; bring up the find and replace dialog
-	EndIf
-EndFunc   ;==>Find
 
 Func Copy()
 	Local $gt, $st, $ct
