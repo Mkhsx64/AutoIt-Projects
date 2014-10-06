@@ -49,7 +49,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$eSL, $lpRead, $sUpper, _
 		$sLower, $wwINIvalue, _
 		$aRecent[10][4], $fAR, $iDefaultSize, _
-		$iBufferedfSize = ""
+		$iBufferedfSize = "", $eRedo
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 Local $iniPath = @ProgramFilesDir & "\AuPad\Settings.ini"
@@ -62,6 +62,7 @@ Local $abChild, $fCount = 0, $sFontName, _
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
+AdlibRegister("chkUndo", 1000) ; check if there has been any undo actions
 
 HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
 HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help function
@@ -74,6 +75,7 @@ _GUICtrlRichEdit_ChangeFontSize($pEditWindow, 10) ; set the default font size
 $sFontName = 'Arial'
 $iFontSize = 10
 $iDefaultSize = 10
+GUICtrlSetState($eRedo, 128)
 
 If Not FileExists($iniPath) Then ; if we haven't created the settings ini file
 	IniWrite($iniPath, "Settings", "runSuccess", "Yes") ; create it now
@@ -86,11 +88,11 @@ If $wwINIvalue = "On" Then
 	setWW($WWcounter) ; call the setWW function passing it the $WWcounter
 EndIf
 
-Local $aAccelKeys[13][13] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
+Local $aAccelKeys[14][14] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
 		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], _
 		["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], _
-		["^+s", $fSaveAs]]
+		["^+s", $fSaveAs], ["^+r", $eRedo]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
@@ -109,6 +111,8 @@ While 1
 					Quit() ; if exit option selected in file menu then call the quit function
 				Case $eUndo
 					_GUICtrlRichEdit_Undo($pEditWindow) ; undo the last action in the edit window
+				Case $eRedo
+					_GUICtrlRichEdit_Redo($pEditWindow) ; redo the last undone action in the edit window
 				Case $eCopy
 					Copy() ; call the Copy function when the copy option is selected
 				Case $ePaste
@@ -194,23 +198,25 @@ Func GUI()
 	$fExit = GUICtrlCreateMenuItem("Exit" & @TAB & "ESC", $FileM, 9) ; create second level menu item exit ^ file
 	$EditM = GUICtrlCreateMenu("Edit") ; create the first level edit menu item
 	$eUndo = GUICtrlCreateMenuItem("Undo" & @TAB & "Ctrl + Z", $EditM, 0) ; create the second level undo menu item
-	GUICtrlCreateMenuItem("", $EditM, 1) ; create line
-	$eCut = GUICtrlCreateMenuItem("Cut" & @TAB & "Ctrl + X", $EditM, 2) ; create the second level cut menu item
-	$eCopy = GUICtrlCreateMenuItem("Copy" & @TAB & "Ctrl + C", $EditM, 3) ; create the second level copy menu item
-	$ePaste = GUICtrlCreateMenuItem("Paste" & @TAB & "Ctrl + V", $EditM, 4) ; create the second level paste menu item
-	$eDelete = GUICtrlCreateMenuItem("Delete" & @TAB & "Del", $EditM, 5) ; create the second level delete menu item
-	GUICtrlCreateMenuItem("", $EditM, 6) ; create line
-	$eFind = GUICtrlCreateMenuItem("Find..." & @TAB & "Ctrl + F", $EditM, 7) ; create the second level find menu item
+	$eRedo = GUICtrlCreateMenuItem("Redo" & @TAB & "Ctrl + R", $EditM, 1) ; create the second level redo menu item
+	GUICtrlCreateMenuItem("", $EditM, 2) ; create line
+	$eCut = GUICtrlCreateMenuItem("Cut" & @TAB & "Ctrl + X", $EditM, 3) ; create the second level cut menu item
+	$eCopy = GUICtrlCreateMenuItem("Copy" & @TAB & "Ctrl + C", $EditM, 4) ; create the second level copy menu item
+	$ePaste = GUICtrlCreateMenuItem("Paste" & @TAB & "Ctrl + V", $EditM, 5) ; create the second level paste menu item
+	$eDelete = GUICtrlCreateMenuItem("Delete" & @TAB & "Del", $EditM, 6) ; create the second level delete menu item
+	GUICtrlCreateMenuItem("", $EditM, 7) ; create line
+	$eFind = GUICtrlCreateMenuItem("Find..." & @TAB & "Ctrl + F", $EditM, 8) ; create the second level find menu item
 	$eReplace = GUICtrlCreateMenuItem("Replace..." & @TAB & "Ctrl + H", $EditM, 9) ; create the second level replace menu item
 	GUICtrlCreateMenuItem("", $EditM, 10) ; create line
 	$eTab = GUICtrlCreateMenuItem("Tab" & @TAB & "Tab", $EditM, 11) ; create the tab second level menu item
 	$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 12) ; create the second level select all menu item
 	$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 13) ; create the second level time/date menu item
-	$eWC = GUICtrlCreateMenuItem("Word Count" & @TAB & "Ctrl + W", $EditM, 14) ; create the second level word count menu item
-	$eLC = GUICtrlCreateMenuItem("Line Count" & @TAB & "Ctrl + L", $EditM, 15) ; create the second level line count menu item
-	GUICtrlCreateMenuItem("", $EditM, 16) ; create line
-	$eSU = GUICtrlCreateMenuItem("Uppercase Text" & @TAB & "Ctrl + Shft + U", $EditM, 17) ; create the second level uppercase text menu item
-	$eSL = GUICtrlCreateMenuItem("Lowercase Text" & @TAB & "Ctrl + Shft + L", $EditM, 18) ; create the second level lowercase text menu item
+	GUICtrlCreateMenuItem("", $EditM, 14)
+	$eWC = GUICtrlCreateMenuItem("Word Count" & @TAB & "Ctrl + W", $EditM, 15) ; create the second level word count menu item
+	$eLC = GUICtrlCreateMenuItem("Line Count" & @TAB & "Ctrl + L", $EditM, 16) ; create the second level line count menu item
+	GUICtrlCreateMenuItem("", $EditM, 17) ; create line
+	$eSU = GUICtrlCreateMenuItem("Uppercase Text" & @TAB & "Ctrl + Shft + U", $EditM, 18) ; create the second level uppercase text menu item
+	$eSL = GUICtrlCreateMenuItem("Lowercase Text" & @TAB & "Ctrl + Shft + L", $EditM, 19) ; create the second level lowercase text menu item
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
 	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
@@ -324,6 +330,11 @@ Func chkTxt()
 		GUICtrlSetState($eReplace, 64) ; un-grey the replace menu option
 	EndIf
 EndFunc   ;==>chkTxt
+
+Func chkUndo()
+	Local $cUndo = _GUICtrlRichEdit_CanRedo($pEditWindow)
+	If $cUndo = True Then GUICtrlSetState($eUndo, 64)
+EndFunc
 
 ;Thanks Water - http://www.autoitscript.com/forum/topic/137364-the-number-of-words-in-the-text/?p=961616
 ;=====================================================
