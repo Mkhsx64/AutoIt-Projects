@@ -45,8 +45,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$eWC, $eLC, $lCount, $eSU, _
 		$eSL, $lpRead, $sUpper, _
 		$sLower, $wwINIvalue, _
-		$aRecent[10][4], $fAR, $iDefaultSize, _
-		$iBufferedfSize = ""
+		$aRecent[10][4], $fAR
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 Local $iniPath = @ProgramFilesDir & "\AuPad\Settings.ini"
@@ -488,20 +487,14 @@ Func fontGUI()
 	If $fontBox[1] <> 0 Then
 		_GUICtrlRichEdit_SetFont($pEditWindow, $iFontWeight, $sFontName) ; set the new font
 		If $iFontSize > 10 Then
-			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iDefaultSize)
+		_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iDefaultSize)
 		Else
-			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iDefaultSize - $iFontSize)
+		_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iDefaultSize - $iFontSize)
 		EndIf
-		$iBufferedfSize = $iFontSize
 		_GUICtrlRichEdit_SetCharColor($pEditWindow, $iColorRef) ; set the font color
 	Else
 		_GUICtrlRichEdit_SetFont($pEditWindow, $iFontWeight, $sFontName) ; if their has been no selections in the font gui
-		If $iBufferedfSize = "" Then $iBufferedfSize = 10
-		If $iFontSize > $iBufferedfSize Then
-			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iBufferedfSize)
-		Else
-			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iBufferedfSize - $iFontSize)
-		EndIf
+		_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $
 		_GUICtrlRichEdit_SetCharColor($pEditWindow, $iColorRef) ; set the font color
 	EndIf
 EndFunc   ;==>fontGUI
@@ -532,7 +525,7 @@ Func Open()
 		MsgBox(0, "error", "Could not open the file") ; tell us
 		Return ; get out
 	EndIf
-	$openBuff = _GUICtrlRichEdit_GetText($pEditWindow) ; get the current text in the window
+	$openBuff = GUICtrlRead($pEditWindow) ; get the current text in the window
 	If $openBuff <> "" And $openBuff <> $fileRead Then ; initiaze the save dialog if their is text in the control and it does not match the file read
 		$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
 		$spltTitle = StringSplit($titleNow, " - ") ; cut it into two pieces
@@ -545,10 +538,10 @@ Func Open()
 			Save() ; call the save function
 		EndIf
 	EndIf
-	_GUICtrlRichEdit_SetText($pEditWindow, "") ; reset the text in the edit control
+	_GUICtrlEdit_SetText($pEditWindow, "") ; reset the text in the edit control
 	$stripString = StringReplace($strSplit[$oIndex], "." & $strinString[2], "") ; replace the file name extension with nothing
 	WinSetTitle($pWnd, $openBuff, $stripString & " - AuPad") ; set the title of the window
-	_GUICtrlRichEdit_SetText($pEditWindow, $fileRead) ; set the read data into the window
+	GUICtrlSetData($pEditWindow, $fileRead, $openBuff) ; set the read data into the window
 	$saveCounter += 1 ; increment the save counter
 	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
 	FileClose($fileOpen) ; close the file
@@ -556,14 +549,19 @@ EndFunc   ;==>Open
 
 Func Save()
 	Local $r, $sd, $cn, $i
-	$r = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
+	$r = GUICtrlRead($pEditWindow) ; read the edit control
 	If $saveCounter = 0 Then ; if we haven't saved before
 		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)", 16, ".txt", $pWnd) ; tell us where and what to call your file
 		$fn = StringSplit($fs, "\") ; split the saved directory and name
 		$i = $fn[0]
-		If $fn[$i] = ".txt" Or $fn[$i] = "" Then Return ; if the value in the filesavedialog is not valid get out
+		If $fn[$i] = ".txt" Or $fn[$i] = "" Then ; if the value in the filesavedialog is not valid
+			Return ; get out
+		EndIf
 		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
-		If $fo = -1 Then Return MsgBox(0, "error", "Could not create file : " & $saveCounter) ; if it didn't work tell us then get out
+		If $fo = -1 Then ; if it didn't work
+			MsgBox(0, "error", "Could not create file : " & $saveCounter) ; tell us
+			Return ; get out
+		EndIf
 		$fw = FileWrite($fs, $r) ; write everything into the file we specified
 		FileClose($fn[$i]) ; then close the file we specified
 		$cn = StringSplit($fn[$i], ".") ; split the file name
@@ -572,7 +570,10 @@ Func Save()
 		Return ; get out
 	EndIf
 	$fo = FileOpen($fn[$oIndex], 2) ; if we've already saved before, open the file and set it to overwrite current contents
-	If $fo = -1 Then Return MsgBox(0, "error", "Could not create file") ; if it didn't work tell us and get out
+	If $fo = -1 Then ; if it didn't work
+		MsgBox(0, "error", "Could not create file") ; tell us
+		Return ; get out
+	EndIf
 	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
 	FileClose($fn[$oIndex]) ; close the file we specified
 EndFunc   ;==>Save
