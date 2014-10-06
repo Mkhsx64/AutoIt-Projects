@@ -65,7 +65,8 @@ HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help funct
 GUI() ; create the window
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico') ; if the script isn't compiled then set the icon
 
-GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial") ; set the default font
+_GUICtrlRichEdit_SetFont($pEditWindow, Default, "Arial") ; set the default font
+_GUICtrlRichEdit_ChangeFontSize($pEditWindow, 10) ; set the default font size
 $sFontName = 'Arial'
 $iFontSize = 10
 
@@ -267,11 +268,11 @@ Func setWW($check)
 		EndIf
 		ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490) ; click the window, so that it is focused at the end of the string
 	Else
-		$rw = GUICtrlRead($pEditWindow) ; get the data in the window
-		GUICtrlDelete($pEditWindow) ; delete the edit control
-		$pEditWindow = GUICtrlCreateEdit($rw, 0, 0, 600, 495) ; create the edit window without word wrap
+		$rw = _GUICtrlRichEdit_GetText($pEditWindow) ; get the data in the window
+		_GUICtrlRichEdit_Destroy($pEditWindow) ; delete the edit control
+		$pEditWindow = _GUICtrlRichEdit_Create($rw, 0, 0, 600, 495) ; create the edit window without word wrap
 		If Not IsArray($fontBox) Then ; if the font has not been set
-			GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial") ; set the default font
+			GUICtrlSetFont($pEditWindow, $iFontSize, Default, Default, $sFontName) ; set the default font
 		Else
 			GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName) ; set the current font
 		EndIf
@@ -281,11 +282,11 @@ EndFunc   ;==>setWW
 
 Func chkSel()
 	Local $gs, $gc, $getState, $readWin, $strMid
-	$gs = _GUICtrlEdit_GetSel($pEditWindow) ; get the selected text
+	$gs = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the selected text
 	$gc = $gs[1] - $gs[0] ; get how many characters have been selected
 	If $gc > 0 Then ; if the selection is not blank
 		GUICtrlSetState($eDelete, 64) ; otherwise, set the state
-		$readWin = GUICtrlRead($pEditWindow) ; read the edit control
+		$readWin = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
 		$strMid = StringMid($readWin, $gs[0] + 1, $gs[1] + 1) ; find the selected string
 		$selBuffer = $strMid ; put the string into the buffer
 	Else
@@ -300,7 +301,7 @@ EndFunc   ;==>chkSel
 
 Func chkTxt()
 	Local $gtext, $gstate
-	$gtext = _GUICtrlEdit_GetText($pEditWindow) ; get the text from the edit control
+	$gtext = _GUICtrlRichEdit_GetText($pEditWindow) ; get the text from the edit control
 	If $gtext = "" Then ; if the text in the window is nothing
 		$gstate = GUICtrlGetState($eFind) ; get the state of the find menu item
 		If $gstate = 128 Then ; if the state is already greyed
@@ -322,7 +323,7 @@ EndFunc   ;==>chkTxt
 ;=====================================================
 Func wordCount()
 	Local $test, $count, $tS, $tR, $tSS
-	$text = GUICtrlRead($pEditWindow) ; get the length of the entire string
+	$text = _GUICtrlRichEdit_GetText($pEditWindow) ; get the length of the entire string
 	$tR = StringReplace($text, @CRLF, " ") ; replace all @CRLF
 	$tS = StringStripWS($tR, 7) ; strip all whitespace
 	$tSS = StringSplit($tS, " ", 1) ; split by whitespace
@@ -380,20 +381,20 @@ Func _OpenFile($droppedPath)
 	If $fSize < 100 Then
 		$fOpenD = FileOpen($droppedPath, 0) ; get file encoding
 		$sText = FileRead($droppedPath) ; read the file
-		GUICtrlSetData($pEditWindow, $sText) ; put the text in the edit control
-		_GUICtrlEdit_SetSel($pEditWindow, 0, 0) ; take off the selection
+		_GUICtrlRichEdit_SetText($pEditWindow, $sText) ; put the text in the edit control
+		_GUICtrlRichEdit_SetSel($pEditWindow, 0, 0) ; take off the selection
 	Else
 		$fOpenD = FileOpen($droppedPath, 16)
 		$sText = FileRead($droppedPath) ; read the file
 		$BtS = BinaryToString($sText) ; change the binary to a string
 		GUICtrlSetData($pEditWindow, $BtS) ; put the text in the edit control
-		_GUICtrlEdit_SetSel($pEditWindow, 0, 0) ; take off the selection
+		_GUICtrlRichEdit_SetSel($pEditWindow, 0, 0) ; take off the selection
 	EndIf
 	$iPath = StringSplit($droppedPath, "\") ; split the string by "\"
 	$i = $iPath[0] ; set the last index
 	$fName = StringSplit($iPath[$i], ".") ; split the string by "."
 	WinSetTitle($pWnd, '', $fName[1] & ' - ' & "AuPad") ; set the window title
-	_GUICtrlEdit_SetModify($pEditWindow, False) ; set the modify flag
+	_GUICtrlRichEdit_SetModified($pEditWindow, False) ; set the modify flag
 EndFunc   ;==>_OpenFile
 ;======================================================
 
@@ -413,7 +414,7 @@ Func Print()
 	Else
 		_PrintSetFont($hp, $sFontName, $iFontSize, 0, $fontBox[1]) ; set the font we have choosen
 	EndIf
-	$winText = GUICtrlRead($pEditWindow) ; read the edit control
+	$winText = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
 	$spltText = StringSplit($winText, @CRLF) ; split the string by line
 	For $i = 1 To $spltText[0] Step 1
 		$tw = _PrintGetTextWidth($hp, $spltText[$i]) ; get the width of the text
@@ -432,17 +433,17 @@ EndFunc   ;==>Print
 ; Thanks to AZJIO for idea
 Func Tab()
 	Local $rwin
-	$rwin = GUICtrlRead($pEditWindow) ; read the text in the window already
-	GUICtrlSetData($pEditWindow, $rwin & "        ") ; add a tab into the window after the text
+	$rwin = _GUICtrlRichEdit_GetText($pEditWindow) ; read the text in the window already
+	_GUICtrlRichEdit_SetText($pEditWindow, $rwin & "        ") ; add a tab into the window after the text
 EndFunc   ;==>Tab
 
 Func Copy()
 	Local $gt, $st, $ct
-	$gt = _GUICtrlEdit_GetSel($pEditWindow) ; get the start ($gt[0]) and end ($gt[1]) positions of the selected text
+	$gt = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the start ($gt[0]) and end ($gt[1]) positions of the selected text
 	If $gt[0] = 0 And $gt[1] = 1 Then ; if there is no selected text in the edit control
 		Return ; get out
 	Else
-		$st = StringMid(GUICtrlRead($pEditWindow), $gt[0] + 1, $gt[1] - $gt[0]) ; get the characters between the start and end characters from the selected text in theedit control
+		$st = StringMid(_GUICtrlRichEdit_GetText($pEditWindow), $gt[0] + 1, $gt[1] - $gt[0]) ; get the characters between the start and end characters from the selected text in theedit control
 	EndIf
 	$ct = ClipPut($st) ; put the selected text into the clipboard
 	If $ct = 0 Then MsgBox(0, "error", "Could not copy selected text") ; check if it worked tell us if it didn't
@@ -452,19 +453,19 @@ Func Paste()
 	Local $g, $p, $r
 	$g = ClipGet() ; get the string from the clipboard
 	If @error Then Return ; if @error is set get out
-	$r = GUICtrlRead($pEditWindow) ; read the edit control
-	$p = GUICtrlSetData($pEditWindow, $g) ; set the string into the edit control
+	$r = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
+	$p = _GUICtrlRichEdit_SetText($pEditWindow, $g) ; set the string into the edit control
 EndFunc   ;==>Paste
 
 Func timeDate()
 	Local $r, $p, $h, $s
-	$r = GUICtrlRead($pEditWindow) ; read the window for the current text
+	$r = _GUICtrlRichEdit_GetText($pEditWindow) ; read the window for the current text
 	If @HOUR >= 12 Then ; if it is after 11:59 AM
 		$h = @HOUR - 12 ; set it to the windows standard notepad hour notation
 		$s = Int($h) ; turn the string into an integer
-		$p = GUICtrlSetData($pEditWindow, $r & $s & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
+		$p = _GUICtrlRichEdit_SetText($pEditWindow, $r & $s & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
 	Else ; otherwise if it is in the AM
-		$p = GUICtrlSetData($pEditWindow, $r & @HOUR & ":" & @MIN & " AM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
+		$p = _GUICtrlRichEdit_SetText($pEditWindow, $r & @HOUR & ":" & @MIN & " AM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
 	EndIf
 EndFunc   ;==>timeDate
 
@@ -483,9 +484,11 @@ Func fontGUI()
 	EndIf
 	If UBound($fontBox) = 0 Then Return ; if they closed the font box and made no selections get out
 	If $fontBox[1] <> 0 Then
-		GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName) ; set the new font
+		_GUICtrlRichEdit_SetFont($pEditWindow, $iFontWeight, $sFontName) ; set the new font
+		_GUICtrlRichEdit_SetCharColor($pEditWindow, $iColorRef)
 	Else
-		GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, Default, $sFontName) ; if their has been no selections in the font gui
+		_GUICtrlRichEdit_SetFont($pEditWindow, $iFontWeight, $sFontName) ; if their has been no selections in the font gui
+		_GUICtrlRichEdit_SetCharColor($pEditWindow, $iColorRef)
 	EndIf
 EndFunc   ;==>fontGUI
 
