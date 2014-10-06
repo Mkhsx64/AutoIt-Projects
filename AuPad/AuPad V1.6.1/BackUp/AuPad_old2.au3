@@ -351,7 +351,7 @@ EndFunc   ;==>chkTxt
 Func chkUndo()
 	Local $cUndo = _GUICtrlRichEdit_CanRedo($pEditWindow)
 	If $cUndo = True Then GUICtrlSetState($eUndo, 64)
-EndFunc   ;==>chkUndo
+EndFunc
 
 ;Thanks Water - http://www.autoitscript.com/forum/topic/137364-the-number-of-words-in-the-text/?p=961616
 ;=====================================================
@@ -525,13 +525,13 @@ Func fontGUI()
 			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iDefaultSize - $iFontSize)
 		EndIf
 		Switch $fontBox[1]
-			Case 2
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
-			Case 4
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'un+')
-			Case 8
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
-		EndSwitch
+				Case 2
+					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
+				Case 4
+					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'un+')
+				Case 8
+					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
+			EndSwitch
 		$iBufferedfSize = $iFontSize
 		_GUICtrlRichEdit_SetCharColor($pEditWindow, $iColorRef) ; set the font color
 	Else
@@ -543,13 +543,13 @@ Func fontGUI()
 			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iBufferedfSize - $iFontSize)
 		EndIf
 		Switch $fontBox[1]
-			Case 2
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
-			Case 4
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'un+')
-			Case 8
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
-		EndSwitch
+				Case 2
+					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
+				Case 4
+					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'un+')
+				Case 8
+					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
+			EndSwitch
 		_GUICtrlRichEdit_SetCharColor($pEditWindow, $iColorRef) ; set the font color
 	EndIf
 EndFunc   ;==>fontGUI

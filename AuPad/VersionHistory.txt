@@ -41,3 +41,5 @@
 - set default font when word wrap has been selected
 - set default font when taking off word wrap
 - Added RTF files and All files to save dialog
+- Added redo functionality
+- added character attribute functionality for rich edit
