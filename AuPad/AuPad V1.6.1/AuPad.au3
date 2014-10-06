@@ -184,6 +184,7 @@ Func GUI()
 			$HelpM, $textl
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 2, 600, 480) ; creates the main text window for typing text
+	_GUICtrlRichEdit_SetLimitOnText($pEditWindow, $tLimit) ; set the limit of the rich edit control
 	GUICtrlSetResizing($pEditWindow, $GUI_DOCKAUTO) ; added to make sure edit control sizes correctly even when display properties change_GUICtrlEdit_SetLimitText($pEditWindow, $tLimit) ; set the text limit for the edit control
 	$FileM = GUICtrlCreateMenu("File") ; create the first level file menu item
 	$fNew = GUICtrlCreateMenuItem("New" & @TAB & "Ctrl + N", $FileM, 0) ; create second level menu item new ^ file
@@ -273,7 +274,7 @@ Func setWW($check)
 		_GUICtrlRichEdit_Destroy($pEditWindow) ; delete the edit control
 		$pEditWindow = _GUICtrlRichEdit_Create($rw, 0, 0, 600, 495, BitOR($ES_AUTOVSCROLL, $ES_WANTRETURN, $WS_VSCROLL)) ; create the edit with the word wrap ability
 		If Not IsArray($fontBox) Then ; if the font has not been set
-			GUICtrlSetFont($pEditWindow, $iFontSize, Default, Default, $sFontName) ; set the default font
+			_GUICtrlRichEdit_SetFont($pEditWindow, $iFontSize, $sFontName) ; set the default font
 		Else
 			GUICtrlSetFont($pEditWindow, $iFontSize, $iFontWeight, $fontBox[1], $sFontName) ; set the current font
 		EndIf
