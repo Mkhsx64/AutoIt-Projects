@@ -43,3 +43,4 @@
 - Added RTF files and All files to save dialog
 - Added redo functionality
 - added character attribute functionality for rich edit
+- added rtf files to the open file dialog
