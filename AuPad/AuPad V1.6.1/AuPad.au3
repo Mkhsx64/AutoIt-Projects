@@ -64,7 +64,11 @@ HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help funct
 
 GUI() ; create the window
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico') ; if the script isn't compiled then set the icon
+
 GUICtrlSetFont($pEditWindow, 10, Default, Default, "Arial") ; set the default font
+$sFontName = 'Arial'
+$iFontSize = 10
+
 If Not FileExists($iniPath) Then ; if we haven't created the settings ini file
 	IniWrite($iniPath, "Settings", "runSuccess", "Yes") ; create it now
 	IniWrite($iniPath, "Settings", "WordWrap", "Off") ; create the word wrap ini settings
