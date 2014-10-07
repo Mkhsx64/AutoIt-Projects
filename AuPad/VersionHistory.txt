@@ -37,10 +37,17 @@
 
 - Added cancel button when quitting
 - Took out extra include
-- set default font into font variables
-- set default font when word wrap has been selected
-- set default font when taking off word wrap
+- Set default font into font variables
+- Set default font when word wrap has been selected
+- Set default font when taking off word wrap
 - Added RTF files and All files to save dialog
 - Added redo functionality
 - added character attribute functionality for rich edit
 - added rtf files to the open file dialog
+- Added color support 
+- Added picture support
+- Added background color support
+- Added stream rtf from file support
+- Added stream rtf to file support
+- Added print preview
+

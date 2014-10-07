@@ -29,7 +29,6 @@
 #include <File.au3>
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
-#include <RTF_Printer.au3>
 #include <printMGv2.au3> ; printing support from martin's print UDF
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
@@ -52,8 +51,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$sLower, $wwINIvalue, _
 		$aRecent[10][4], $fAR, $iDefaultSize, _
 		$iBufferedfSize = "", $eRedo, _
-		$forBkClr, $fPrintPrvw, _
-		$printDLL = "printmg.dll"
+		$forBkClr
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 Local $iniPath = @ProgramFilesDir & "\AuPad\Settings.ini"
@@ -95,13 +93,11 @@ If FileExists($iniPath) Then
 	EndIf
 EndIf
 
-$hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
-
-Local $aAccelKeys[15][15] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
+Local $aAccelKeys[14][14] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
 		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], _
 		["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], _
-		["^+s", $fSaveAs], ["^r", $eRedo], ["^+p", $fPrintPrvw]]
+		["^+s", $fSaveAs], ["^+r", $eRedo]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
@@ -159,9 +155,6 @@ While 1
 					Open() ; call the open function when the open menu option is selected
 				Case $eDelete
 					_GUICtrlRichEdit_ReplaceText($pEditWindow, "") ; whatever is selected delete it when this menu option is selected
-				Case $fPrintPrvw
-					$dc = __GetDC_PrinterSetup()
-					__RTF_Preview($dc, $pEditWindow)
 				Case $fPrint
 					Print() ; call the print function when the print menu option is selected
 				Case $forWW
@@ -207,12 +200,11 @@ Func GUI()
 	$fSave = GUICtrlCreateMenuItem("Save" & @TAB & "Ctrl + S", $FileM, 2) ; create second level menu item save ^ file
 	$fSaveAs = GUICtrlCreateMenuItem("Save As..." & @TAB & "Ctrl + Shft + S", $FileM, 3) ; create second level menu item save as ^ file
 	GUICtrlCreateMenuItem("", $FileM, 4) ; create line
-	$fPrintPrvw = GUICtrlCreateMenuItem("Print Preview" & @TAB & "Ctrl + Shft + P", $FileM, 5) ; create the second level menu item print preview
-	$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 6) ; create second level menu item print ^ file
-	GUICtrlCreateMenuItem("", $FileM, 7) ; create line
-	$fAR = GUICtrlCreateMenu("Recent Files", $FileM, 8) ; create the menu item for recent files
-	GUICtrlCreateMenuItem("", $FileM, 9) ; create line
-	$fExit = GUICtrlCreateMenuItem("Exit" & @TAB & "ESC", $FileM, 10) ; create second level menu item exit ^ file
+	$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 5) ; create second level menu item print ^ file
+	GUICtrlCreateMenuItem("", $FileM, 6) ; create line
+	$fAR = GUICtrlCreateMenu("Recent Files", $FileM, 7) ; create the menu item for recent files
+	GUICtrlCreateMenuItem("", $FileM, 8) ; create line
+	$fExit = GUICtrlCreateMenuItem("Exit" & @TAB & "ESC", $FileM, 9) ; create second level menu item exit ^ file
 	$EditM = GUICtrlCreateMenu("Edit") ; create the first level edit menu item
 	$eUndo = GUICtrlCreateMenuItem("Undo" & @TAB & "Ctrl + Z", $EditM, 0) ; create the second level undo menu item
 	$eRedo = GUICtrlCreateMenuItem("Redo" & @TAB & "Ctrl + R", $EditM, 1) ; create the second level redo menu item
@@ -450,7 +442,8 @@ EndFunc   ;==>_OpenFile
 ;======================================================
 
 Func Print()
-	Local $selected, $txtWhr = 25
+	Local $selected, $printDLL = "printmg.dll", $txtWhr = 25
+	$hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
 	If $hp = 0 Then ; if we couldn't open the dll
 		MsgBox(0, "", "Error from dllstart = " & $mmssgg & @CRLF) ; tell us
 		Return ; get out
@@ -607,12 +600,12 @@ Func Open()
 			EndIf
 		EndIf
 		$stripString = StringReplace($strSplit[$oIndex], "." & $strinString[2], "") ; replace the file name extension with nothing
-		WinSetTitle($pWnd, $openBuff, $stripString & " - AuPad") ; set the title of the window
-		$saveCounter += 1 ; increment the save counter
-		$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
-		$fileOpen = _GUICtrlRichEdit_StreamFromFile($pEditWindow, $fileOpenD) ; stream the rtf file using rich edit functionality
-		Return ; get out
-	EndIf
+	WinSetTitle($pWnd, $openBuff, $stripString & " - AuPad") ; set the title of the window
+	$saveCounter += 1 ; increment the save counter
+	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
+		$fileOpen = _GUICtrlRichEdit_StreamFromFile($pEditWindow, $fileOpenD)
+		Return
+		EndIf
 	If $fileOpen = -1 Then ; if that didn't work
 		MsgBox(0, "error", "Could not open the file") ; tell us
 		Return ; get out
@@ -640,32 +633,17 @@ Func Open()
 EndFunc   ;==>Open
 
 Func Save()
-	Local $r, $sd, $cn, $i, $chkExt
+	Local $r, $sd, $cn, $i
 	$r = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
 	If $saveCounter = 0 Then ; if we haven't saved before
 		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)|RTF files (*.rtf)|All files(*.*)", 16, ".txt", $pWnd) ; tell us where and what to call your file
 		$fn = StringSplit($fs, "\") ; split the saved directory and name
 		$i = $fn[0]
-		If $fn[$i] = ".txt" Or $fn[$i] = ".rtf" Or $fn[$i] = "" Then Return ; if the value in the filesavedialog is not valid get out
-		$chkExt = StringInStr($fn[$i], "rtf")
-		If $chkExt <> 0 Then
-			_GUICtrlRichEdit_StreamToFile($pEditWindow, $fs)
-			$cn = StringSplit($fn[$i], ".") ; split the file name
-			$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
-			$saveCounter += 1 ; increment the save counter
-			Return ; get out
-		EndIf
+		If $fn[$i] = ".txt" Or $fn[$i] = "" Then Return ; if the value in the filesavedialog is not valid get out
 		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
 		If $fo = -1 Then Return MsgBox(0, "error", "Could not create file : " & $saveCounter) ; if it didn't work tell us then get out
 		$fw = FileWrite($fs, $r) ; write everything into the file we specified
 		FileClose($fn[$i]) ; then close the file we specified
-		$cn = StringSplit($fn[$i], ".") ; split the file name
-		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
-		$saveCounter += 1 ; increment the save counter
-		Return ; get out
-	EndIf
-	If StringInStr($fn[$oIndex], "rtf") Then
-		_GUICtrlRichEdit_StreamToFile($pEditWindow, $fs)
 		$cn = StringSplit($fn[$i], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
