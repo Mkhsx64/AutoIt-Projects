@@ -47,3 +47,6 @@
 - Added color support 
 - Added picture support
 - Added background color support
+- Added stream rtf from file support
+- Added stream rtf to file support
+

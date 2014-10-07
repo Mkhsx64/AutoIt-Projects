@@ -640,25 +640,18 @@ Func Save()
 		$fn = StringSplit($fs, "\") ; split the saved directory and name
 		$i = $fn[0]
 		If $fn[$i] = ".txt" Or $fn[$i] = ".rtf" Or $fn[$i] = "" Then Return ; if the value in the filesavedialog is not valid get out
-		$chkExt = StringInStr($fn[$i], "rtf")
+		$chkExt = StringinStr($fn[$i], "rtf")
 		If $chkExt <> 0 Then
 			_GUICtrlRichEdit_StreamToFile($pEditWindow, $fs)
 			$cn = StringSplit($fn[$i], ".") ; split the file name
-			$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
-			$saveCounter += 1 ; increment the save counter
-			Return ; get out
+		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
+		$saveCounter += 1 ; increment the save counter
+		Return ; get out
 		EndIf
 		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
 		If $fo = -1 Then Return MsgBox(0, "error", "Could not create file : " & $saveCounter) ; if it didn't work tell us then get out
 		$fw = FileWrite($fs, $r) ; write everything into the file we specified
 		FileClose($fn[$i]) ; then close the file we specified
-		$cn = StringSplit($fn[$i], ".") ; split the file name
-		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
-		$saveCounter += 1 ; increment the save counter
-		Return ; get out
-	EndIf
-	If StringInStr($fn[$oIndex], "rtf") Then
-		_GUICtrlRichEdit_StreamToFile($pEditWindow, $fs)
 		$cn = StringSplit($fn[$i], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
