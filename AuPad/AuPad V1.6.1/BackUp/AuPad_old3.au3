@@ -25,7 +25,6 @@
 #include <GUIEdit.au3>
 #include <GuiRichEdit.au3>
 #include <Misc.au3>
-#include <Color.au3>
 #include <File.au3>
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
@@ -85,13 +84,12 @@ If Not FileExists($iniPath) Then ; if we haven't created the settings ini file
 EndIf
 
 If FileExists($iniPath) Then
-	$wwINIvalue = IniRead($iniPath, "Settings", "WordWrap", "Off")
-	If $wwINIvalue = "On" Then
-		GUICtrlSetState($forWW, $GUI_CHECKED) ; set the state of the menu item to be checked
-		setWW($WWcounter) ; call the setWW function passing it the $WWcounter
-	EndIf
+$wwINIvalue = IniRead($iniPath, "Settings", "WordWrap", "Off")
+If $wwINIvalue = "On" Then
+	GUICtrlSetState($forWW, $GUI_CHECKED) ; set the state of the menu item to be checked
+	setWW($WWcounter) ; call the setWW function passing it the $WWcounter
 EndIf
-
+EndIf
 Local $aAccelKeys[14][14] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
 		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], _
@@ -232,7 +230,7 @@ Func GUI()
 	$hVHelp = GUICtrlCreateMenuItem("View Help" & @TAB & "F2", $HelpM, 0) ; create the second level view help menu item
 	GUICtrlCreateMenuItem("", $HelpM, 1) ; create line
 	$hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 2) ; create the second level about aupad menu item
-	setNew() ; set the window to have a new file
+	;setNew() ; set the window to have a new file
 	GUISetState(@SW_SHOW) ; show the window
 EndFunc   ;==>GUI
 
@@ -522,7 +520,7 @@ Func fontGUI()
 	EndIf
 	If UBound($fontBox) = 0 Then Return ; if they closed the font box and made no selections get out
 	If $fontBox[1] <> 0 Then
-		_GUICtrlRichEdit_SetFont($pEditWindow, $fontbox[3], $fontBox[2]) ; set the new font
+		_GUICtrlRichEdit_SetFont($pEditWindow, $iFontWeight, $sFontName) ; set the new font
 		If $iFontSize > 10 Then
 			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iDefaultSize)
 		Else
@@ -537,16 +535,15 @@ Func fontGUI()
 				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
 		EndSwitch
 		$iBufferedfSize = $iFontSize
-		_GUICtrlRichEdit_SetCharColor($pEditWindow, $fontBox[5]) ; set the font color
+		_GUICtrlRichEdit_SetCharColor($pEditWindow, $iColorRef) ; set the font color
 	Else
-		_GUICtrlRichEdit_SetFont($pEditWindow, $fontbox[3], $fontBox[2]) ; if their has been no selections in the font gui
+		_GUICtrlRichEdit_SetFont($pEditWindow, $iFontWeight, $sFontName) ; if their has been no selections in the font gui
 		If $iBufferedfSize = "" Then $iBufferedfSize = 10
 		If $iFontSize > $iBufferedfSize Then
 			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iBufferedfSize)
 		Else
 			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iBufferedfSize - $iFontSize)
 		EndIf
-		MsgBox(0, "", $fontBox[1])
 		Switch $fontBox[1]
 			Case 2
 				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
@@ -555,7 +552,7 @@ Func fontGUI()
 			Case 8
 				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
 		EndSwitch
-		$colorSet = _GUICtrlRichEdit_SetCharColor($pEditWindow, $fontBox[5]) ; set the font color
+		_GUICtrlRichEdit_SetCharColor($pEditWindow, $iColorRef) ; set the font color
 	EndIf
 EndFunc   ;==>fontGUI
 
