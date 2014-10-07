@@ -50,7 +50,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$eSL, $lpRead, $sUpper, _
 		$sLower, $wwINIvalue, _
 		$aRecent[10][4], $fAR, $iDefaultSize, _
-		$iBufferedfSize = "", $eRedo
+		$iBufferedfSize = "", $eRedo, _
+		$forBkClr
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 Local $iniPath = @ProgramFilesDir & "\AuPad\Settings.ini"
@@ -59,7 +60,7 @@ Local $iniPath = @ProgramFilesDir & "\AuPad\Settings.ini"
 Local $abChild, $fCount = 0, $sFontName, _
 		$iFontSize, $iColorRef, $iFontWeight, _
 		$bItalic, $bUnderline, $bStrikethru, _
-		$fColor
+		$fColor, $cColor
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -123,6 +124,9 @@ While 1
 					Paste() ; call the Paste function when the paste option is selected
 				Case $eTD
 					timeDate() ; call the timeDate function when the time/date option is selected
+				Case $forBkClr
+					$cColor = _ChooseColor(0)
+					$tryColor = _GUICtrlRichEdit_SetBkColor($pEditWindow, $cColor)
 				Case $eFind
 					_WinAPI_FindTextDlg($pEditWindow) ; open the find text dialog
 				Case $eReplace
@@ -225,6 +229,7 @@ Func GUI()
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
 	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
+	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 2) ; create the second level background color menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default

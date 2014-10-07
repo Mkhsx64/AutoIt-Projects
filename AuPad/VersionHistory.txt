@@ -46,4 +46,4 @@
 - added rtf files to the open file dialog
 - Added color support 
 - Added picture support
-
+- Added background color support
