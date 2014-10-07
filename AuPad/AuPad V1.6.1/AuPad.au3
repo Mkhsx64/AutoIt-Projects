@@ -271,7 +271,7 @@ Func addRecent($path)
 	For $i = 1 To $aRecent[0][0] Step 1 ; we need to check if we called it on the same recent path
 		If $aRecent[$i][3] = $path Then Return ; if we did get out
 	Next
-	$aRecent[0][0] += 1
+	$aRecent[0][0] += 1 ; increment the counter
 	For $i = 1 To $aRecent[0][0] Step 1 ; from 1 to the number of items we have
 		$aRecent[$i][1] = GUICtrlCreateMenuItem($path, $fAR, $i) ; create the menu item
 		$aRecent[$i][2] = ControlGetHandle($aRecent[$i][1]) ; get the handle
