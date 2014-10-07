@@ -268,9 +268,14 @@ EndFunc   ;==>setNew
 
 Func addRecent($path)
 	Local $i
-	For $i = 1 To $aRecent[0][0] Step 1
-		If $aRecent[$i][1] <> Null Then $aRecent[$i][1] = GUICtrlCreateMenuItem($path, $fAR, $i)
-		$aRecent[$i][2] = ControlGetHandle($aRecent[$i][1])
+	For $i = 1 To $aRecent[0][0] Step 1 ; we need to check if we called it on the same recent path
+		If $aRecent[$i][3] = $path Then Return ; if we did get out
+	Next
+	$aRecent[0][0] += 1
+	For $i = 1 To $aRecent[0][0] Step 1 ; from 1 to the number of items we have
+		$aRecent[$i][1] = GUICtrlCreateMenuItem($path, $fAR, $i) ; create the menu item
+		$aRecent[$i][2] = ControlGetHandle($aRecent[$i][1]) ; get the handle
+		$aRecent[$i][3] = $path ; put the path in the array
 	Next
 EndFunc   ;==>addRecent
 
@@ -605,6 +610,7 @@ Func Open()
 			If $mBox = 6 And $spltTitle[1] = "Untitled" Then ; if we said yes and the title is untitled
 				$saveCounter = 0 ; reset the save counter
 				Save() ; call the save function
+				addRecent(
 			ElseIf $mBox = 6 Then ; if it is just yes
 				$saveCounter += 1 ; increment the save counter
 				Save() ; call the save function
