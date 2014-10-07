@@ -271,6 +271,7 @@ Func addRecent($path)
 	For $i = 1 To $aRecent[0][0] Step 1 ; we need to check if we called it on the same recent path
 		If $aRecent[$i][3] = $path Then Return ; if we did get out
 	Next
+	If $aRecent[0][0] = 9 Then _ArrayDelete($aRecent, 1) ; if we are at the end of the list delete the first added
 	$aRecent[0][0] += 1 ; increment the counter
 	For $i = 1 To $aRecent[0][0] Step 1 ; from 1 to the number of items we have
 		$aRecent[$i][1] = GUICtrlCreateMenuItem($path, $fAR, $i) ; create the menu item
