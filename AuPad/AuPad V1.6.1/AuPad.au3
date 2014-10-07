@@ -267,7 +267,11 @@ Func setNew()
 EndFunc   ;==>setNew
 
 Func addRecent($path)
-	; --- ;
+	Local $i
+	For $i = 1 To $aRecent[0][0] Step 1
+		If $aRecent[$i][1] <> Null Then $aRecent[$i][1] = GUICtrlCreateMenuItem($path, $fAR, $i)
+		$aRecent[$i][2] = ControlGetHandle($aRecent[$i][1])
+	Next
 EndFunc   ;==>addRecent
 
 Func aChild()
