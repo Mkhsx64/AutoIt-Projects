@@ -183,7 +183,7 @@ While 1
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
 			EndSwitch
-		Case $abChild
+			Case $abChild
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
