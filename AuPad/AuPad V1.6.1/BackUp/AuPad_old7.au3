@@ -600,12 +600,12 @@ Func Open()
 			EndIf
 		EndIf
 		$stripString = StringReplace($strSplit[$oIndex], "." & $strinString[2], "") ; replace the file name extension with nothing
-		WinSetTitle($pWnd, $openBuff, $stripString & " - AuPad") ; set the title of the window
-		$saveCounter += 1 ; increment the save counter
-		$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
-		$fileOpen = _GUICtrlRichEdit_StreamFromFile($pEditWindow, $fileOpenD) ; stream the rtf file using rich edit functionality
-		Return ; get out
-	EndIf
+	WinSetTitle($pWnd, $openBuff, $stripString & " - AuPad") ; set the title of the window
+	$saveCounter += 1 ; increment the save counter
+	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
+		$fileOpen = _GUICtrlRichEdit_StreamFromFile($pEditWindow, $fileOpenD)
+		Return
+		EndIf
 	If $fileOpen = -1 Then ; if that didn't work
 		MsgBox(0, "error", "Could not open the file") ; tell us
 		Return ; get out

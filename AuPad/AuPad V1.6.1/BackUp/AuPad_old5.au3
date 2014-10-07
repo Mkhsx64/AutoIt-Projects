@@ -527,7 +527,7 @@ Func fontGUI()
 	EndIf
 	If UBound($fontBox) = 0 Then Return ; if they closed the font box and made no selections get out
 	If $fontBox[1] <> 0 Then
-		_GUICtrlRichEdit_SetFont($pEditWindow, $fontBox[3], $fontBox[2]) ; set the new font
+		_GUICtrlRichEdit_SetFont($pEditWindow, $fontbox[3], $fontBox[2]) ; set the new font
 		If $iFontSize > 10 Then
 			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iDefaultSize)
 		Else
@@ -544,7 +544,7 @@ Func fontGUI()
 		$iBufferedfSize = $iFontSize
 		_GUICtrlRichEdit_SetCharColor($pEditWindow, $fontBox[5]) ; set the font color
 	Else
-		_GUICtrlRichEdit_SetFont($pEditWindow, $fontBox[3], $fontBox[2]) ; if their has been no selections in the font gui
+		_GUICtrlRichEdit_SetFont($pEditWindow, $fontbox[3], $fontBox[2]) ; if their has been no selections in the font gui
 		If $iBufferedfSize = "" Then $iBufferedfSize = 10
 		If $iFontSize > $iBufferedfSize Then
 			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iBufferedfSize)
@@ -587,24 +587,18 @@ Func Open()
 		$fileRead = BinaryToString($fileReadEx) ; set the binary data to ANSI
 	Else
 		$openBuff = _GUICtrlRichEdit_GetText($pEditWindow) ; get the current text in the window
-		If $openBuff <> "" And $openBuff <> $fileRead Then ; initiaze the save dialog if their is text in the control and it does not match the file read
-			$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
-			$spltTitle = StringSplit($titleNow, " - ") ; cut it into two pieces
-			$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
-			If $mBox = 6 And $spltTitle[1] = "Untitled" Then ; if we said yes and the title is untitled
-				$saveCounter = 0 ; reset the save counter
-				Save() ; call the save function
-			ElseIf $mBox = 6 Then ; if it is just yes
-				$saveCounter += 1 ; increment the save counter
-				Save() ; call the save function
-			EndIf
+	If $openBuff <> "" And $openBuff <> $fileRead Then ; initiaze the save dialog if their is text in the control and it does not match the file read
+		$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
+		$spltTitle = StringSplit($titleNow, " - ") ; cut it into two pieces
+		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
+		If $mBox = 6 And $spltTitle[1] = "Untitled" Then ; if we said yes and the title is untitled
+			$saveCounter = 0 ; reset the save counter
+			Save() ; call the save function
+		ElseIf $mBox = 6 Then ; if it is just yes
+			$saveCounter += 1 ; increment the save counter
+			Save() ; call the save function
 		EndIf
-		$stripString = StringReplace($strSplit[$oIndex], "." & $strinString[2], "") ; replace the file name extension with nothing
-		WinSetTitle($pWnd, $openBuff, $stripString & " - AuPad") ; set the title of the window
-		$saveCounter += 1 ; increment the save counter
-		$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
-		$fileOpen = _GUICtrlRichEdit_StreamFromFile($pEditWindow, $fileOpenD) ; stream the rtf file using rich edit functionality
-		Return ; get out
+	EndIf
 	EndIf
 	If $fileOpen = -1 Then ; if that didn't work
 		MsgBox(0, "error", "Could not open the file") ; tell us
