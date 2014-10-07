@@ -274,7 +274,7 @@ Func addRecent($path)
 	$aRecent[0][0] += 1 ; increment the counter
 	For $i = 1 To $aRecent[0][0] Step 1 ; from 1 to the number of items we have
 		$aRecent[$i][1] = GUICtrlCreateMenuItem($path, $fAR, $i) ; create the menu item
-		$aRecent[$i][2] = ControlGetHandle($aRecent[$i][1]) ; get the handle
+		$aRecent[$i][2] = ControlGetHandle($path, "", $aRecent[$i][1]) ; get the handle
 		$aRecent[$i][3] = $path ; put the path in the array
 	Next
 EndFunc   ;==>addRecent
@@ -610,7 +610,6 @@ Func Open()
 			If $mBox = 6 And $spltTitle[1] = "Untitled" Then ; if we said yes and the title is untitled
 				$saveCounter = 0 ; reset the save counter
 				Save() ; call the save function
-				addRecent(
 			ElseIf $mBox = 6 Then ; if it is just yes
 				$saveCounter += 1 ; increment the save counter
 				Save() ; call the save function
@@ -663,6 +662,7 @@ Func Save()
 			$cn = StringSplit($fn[$i], ".") ; split the file name
 			$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 			$saveCounter += 1 ; increment the save counter
+			addRecent($fs) ; add it to the recent files
 			Return ; get out
 		EndIf
 		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
@@ -672,19 +672,22 @@ Func Save()
 		$cn = StringSplit($fn[$i], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
+		addRecent($fs)
 		Return ; get out
 	EndIf
 	If StringInStr($fn[$oIndex], "rtf") Then
-		_GUICtrlRichEdit_StreamToFile($pEditWindow, $fs)
-		$cn = StringSplit($fn[$i], ".") ; split the file name
+		_GUICtrlRichEdit_StreamToFile($pEditWindow, $fn[$oIndex])
+		$cn = StringSplit($fn[$oIndex], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
+		addRecent($fn[$oIndex])
 		Return ; get out
 	EndIf
 	$fo = FileOpen($fn[$oIndex], 2) ; if we've already saved before, open the file and set it to overwrite current contents
 	If $fo = -1 Then Return MsgBox(0, "error", "Could not create file") ; if it didn't work tell us and get out
 	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
 	FileClose($fn[$oIndex]) ; close the file we specified
+	addRecent($fn[$oIndex])
 EndFunc   ;==>Save
 
 Func Help()
