@@ -29,6 +29,7 @@
 #include <File.au3>
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
+#include <RTF_Printer.au3>
 #include <printMGv2.au3> ; printing support from martin's print UDF
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
@@ -51,7 +52,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$sLower, $wwINIvalue, _
 		$aRecent[10][4], $fAR, $iDefaultSize, _
 		$iBufferedfSize = "", $eRedo, _
-		$forBkClr
+		$forBkClr, $fPrintPrvw, _
+		$printDLL = "printmg.dll"
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 Local $iniPath = @ProgramFilesDir & "\AuPad\Settings.ini"
@@ -93,11 +95,13 @@ If FileExists($iniPath) Then
 	EndIf
 EndIf
 
-Local $aAccelKeys[14][14] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
+$hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
+
+Local $aAccelKeys[15][15] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
 		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], _
 		["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], _
-		["^+s", $fSaveAs], ["^+r", $eRedo]]
+		["^+s", $fSaveAs], ["^r", $eRedo], ["^+p", $fPrintPrvw]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
@@ -155,6 +159,9 @@ While 1
 					Open() ; call the open function when the open menu option is selected
 				Case $eDelete
 					_GUICtrlRichEdit_ReplaceText($pEditWindow, "") ; whatever is selected delete it when this menu option is selected
+				Case $fPrintPrvw
+					$dc = __GetDC_PrinterSetup()
+					__RTF_Preview($dc, $pEditWindow)
 				Case $fPrint
 					Print() ; call the print function when the print menu option is selected
 				Case $forWW
@@ -200,11 +207,12 @@ Func GUI()
 	$fSave = GUICtrlCreateMenuItem("Save" & @TAB & "Ctrl + S", $FileM, 2) ; create second level menu item save ^ file
 	$fSaveAs = GUICtrlCreateMenuItem("Save As..." & @TAB & "Ctrl + Shft + S", $FileM, 3) ; create second level menu item save as ^ file
 	GUICtrlCreateMenuItem("", $FileM, 4) ; create line
-	$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 5) ; create second level menu item print ^ file
-	GUICtrlCreateMenuItem("", $FileM, 6) ; create line
-	$fAR = GUICtrlCreateMenu("Recent Files", $FileM, 7) ; create the menu item for recent files
-	GUICtrlCreateMenuItem("", $FileM, 8) ; create line
-	$fExit = GUICtrlCreateMenuItem("Exit" & @TAB & "ESC", $FileM, 9) ; create second level menu item exit ^ file
+	$fPrintPrvw = GUICtrlCreateMenuItem("Print Preview" & @TAB & "Ctrl + Shft + P", $FileM, 5) ; create the second level menu item print preview
+	$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 6) ; create second level menu item print ^ file
+	GUICtrlCreateMenuItem("", $FileM, 7) ; create line
+	$fAR = GUICtrlCreateMenu("Recent Files", $FileM, 8) ; create the menu item for recent files
+	GUICtrlCreateMenuItem("", $FileM, 9) ; create line
+	$fExit = GUICtrlCreateMenuItem("Exit" & @TAB & "ESC", $FileM, 10) ; create second level menu item exit ^ file
 	$EditM = GUICtrlCreateMenu("Edit") ; create the first level edit menu item
 	$eUndo = GUICtrlCreateMenuItem("Undo" & @TAB & "Ctrl + Z", $EditM, 0) ; create the second level undo menu item
 	$eRedo = GUICtrlCreateMenuItem("Redo" & @TAB & "Ctrl + R", $EditM, 1) ; create the second level redo menu item
@@ -442,8 +450,7 @@ EndFunc   ;==>_OpenFile
 ;======================================================
 
 Func Print()
-	Local $selected, $printDLL = "printmg.dll", $txtWhr = 25
-	$hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
+	Local $selected, $txtWhr = 25
 	If $hp = 0 Then ; if we couldn't open the dll
 		MsgBox(0, "", "Error from dllstart = " & $mmssgg & @CRLF) ; tell us
 		Return ; get out
