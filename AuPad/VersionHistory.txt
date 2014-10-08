@@ -53,3 +53,4 @@
 - Added recent files to menu item
 - Added AutoIt syntax highlighting; thanks goes to Beege for RESH UDF
 - Took out word wrap function and menu item as RichEdit is word wrapped already
+- Took out ini for the word wrap, but want to be very portable anyway
