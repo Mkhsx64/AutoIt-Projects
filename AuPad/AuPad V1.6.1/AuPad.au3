@@ -36,13 +36,13 @@
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fSave, $fSaveAs, $fontBox, _
 		$fPrint, $fExit, $pEditWindow, _
-		$eUndo, $pActiveW, $WWcounter = 0, _
+		$eUndo, $pActiveW, _
 		$eCut, $eCopy, $ePaste, _
 		$eDelete, $eFind, $eReplace, _
 		$eSA, $oIndex = 0, _
 		$eTD, $saveCounter = 0, $fe, $fs, _
 		$fn[20], $fo, $fw, _
-		$forWW, $forFont, $vStatus, $hVHelp, _
+		$forFont, $vStatus, $hVHelp, _
 		$hAA, $selBuffer, $strB, $fnArray, _
 		$fnCount = 0, $selBufferEx, _
 		$fullStrRepl, $strFnd, $strEnd, _
@@ -83,19 +83,6 @@ $iFontSize = 10
 $iDefaultSize = 10
 
 GUICtrlSetState($eRedo, 128)
-
-If Not FileExists($iniPath) Then ; if we haven't created the settings ini file
-	IniWrite($iniPath, "Settings", "runSuccess", "Yes") ; create it now
-	IniWrite($iniPath, "Settings", "WordWrap", "Off") ; create the word wrap ini settings
-EndIf
-
-If FileExists($iniPath) Then
-	$wwINIvalue = IniRead($iniPath, "Settings", "WordWrap", "Off")
-	If $wwINIvalue = "On" Then
-		GUICtrlSetState($forWW, $GUI_CHECKED) ; set the state of the menu item to be checked
-		setWW($WWcounter) ; call the setWW function passing it the $WWcounter
-	EndIf
-EndIf
 
 $hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
 
@@ -173,16 +160,6 @@ While 1
 					__RTF_Preview($dc, $pEditWindow)
 				Case $fPrint
 					Print() ; call the print function when the print menu option is selected
-				Case $forWW
-					If $WWcounter = 1 Then ; if the counter is at 1
-						GUICtrlSetState($forWW, $GUI_UNCHECKED) ; set the state of the menu item to be unchecked
-						setWW($WWcounter) ; call the setWW function passing it the $WWcounter
-						$WWcounter -= 1 ; increment the counter
-					Else
-						GUICtrlSetState($forWW, $GUI_CHECKED) ; set the state of the menu item to be checked
-						setWW($WWcounter) ; call the setWW function passing it the $WWcounter
-						$WWcounter += 1 ; increment the counter
-					EndIf
 				Case $eSA
 					_GUICtrlRichEdit_SetSel($pEditWindow, 0, -1) ; call the setSel edit function if the user selects the select all option
 				Case $hAA
@@ -244,10 +221,9 @@ Func GUI()
 	$eSU = GUICtrlCreateMenuItem("Uppercase Text" & @TAB & "Ctrl + Shft + U", $EditM, 18) ; create the second level uppercase text menu item
 	$eSL = GUICtrlCreateMenuItem("Lowercase Text" & @TAB & "Ctrl + Shft + L", $EditM, 19) ; create the second level lowercase text menu item
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
-	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
-	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
-	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 2) ; create the second level background color menu item
-	$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 3) ; create the second level syntax highlighting menu
+	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 0) ; create the second level font menu item
+	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 1) ; create the second level background color menu item
+	$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 2) ; create the second level syntax highlighting menu
 	$synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn) ; create the third level menu item for autoit syntax highlighting
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
@@ -335,47 +311,6 @@ Func aChild()
 	GUICtrlSetFont(-1, 7, 500) ; set the font
 	GUISetState() ; show the window
 EndFunc   ;==>aChild
-
-Func setWW($check)
-	Local $rw
-	If $check = 0 Then ; if we turned word wrap on
-		$rw = _GUICtrlRichEdit_GetText($pEditWindow) ; get the data in the window
-		_GUICtrlRichEdit_Destroy($pEditWindow) ; delete the edit control
-		$pEditWindow = _GUICtrlRichEdit_Create($rw, 0, 0, 600, 495, BitOR($ES_AUTOVSCROLL, $ES_WANTRETURN, $WS_VSCROLL)) ; create the edit with the word wrap ability
-		If Not IsArray($fontBox) Then ; if the font has not been set
-			_GUICtrlRichEdit_SetFont($pEditWindow, $iFontSize, $sFontName) ; set the default font
-		Else
-			Switch $fontBox[1]
-				Case 2
-					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
-				Case 4
-					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'un+')
-				Case 8
-					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
-			EndSwitch
-			_GUICtrlRichEdit_SetFont($pEditWindow, $iFontSize, $sFontName) ; set the current font
-		EndIf
-		ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490) ; click the window, so that it is focused at the end of the string
-	Else
-		$rw = _GUICtrlRichEdit_GetText($pEditWindow) ; get the data in the window
-		_GUICtrlRichEdit_Destroy($pEditWindow) ; delete the edit control
-		$pEditWindow = _GUICtrlRichEdit_Create($rw, 0, 0, 600, 495) ; create the edit window without word wrap
-		If Not IsArray($fontBox) Then ; if the font has not been set
-			_GUICtrlRichEdit_SetFont($pEditWindow, $iFontSize, $sFontName) ; set the default font
-		Else
-			Switch $fontBox[1]
-				Case 2
-					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
-				Case 4
-					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'un+')
-				Case 8
-					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
-			EndSwitch
-			_GUICtrlRichEdit_SetFont($pEditWindow, $iFontSize, $sFontName) ; set the current font
-		EndIf
-		ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490) ; click the window, so that it is focused at the end of the string
-	EndIf
-EndFunc   ;==>setWW
 
 Func chkSel()
 	Local $gs, $gc, $getState, $readWin, $strMid
