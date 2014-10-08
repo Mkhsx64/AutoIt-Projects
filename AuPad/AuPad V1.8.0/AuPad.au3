@@ -239,6 +239,7 @@ Func GUI()
 EndFunc   ;==>GUI
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
+; Library included has fix for _ArraySwap() in the RESH UDF
 ;========================================================
 Func au3Syn()
 	Local $gRTFcode, $gSel

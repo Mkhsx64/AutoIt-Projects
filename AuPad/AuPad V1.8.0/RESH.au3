@@ -668,7 +668,7 @@ Func __RESH_GenerateUniqueStrings()
 
 	;_ArrayCombinations creates patterns like AAB,AAC,AAD. Mix up the array to avoid simalar unique key being used.
 	For $i = 1 To UBound($aUniq) / 2
-		_ArraySwap($aUniq[Random(1, $aUniq[0], 1)], $aUniq[Random(1, $aUniq[0], 1)])
+		_ArraySwap($aUniq, $aUniq[Random(1, $aUniq[0], 1)], $aUniq[Random(1, $aUniq[0], 1)])
 	Next
 
 ;~ 	ConsoleWrite($gP += (TimerDiff($time)/38317)*100& '  ' & $aUniq[0] & @LF)
