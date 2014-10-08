@@ -27,6 +27,7 @@
 #include <Misc.au3>
 #include <Color.au3>
 #include <File.au3>
+#include <RESH.au3>
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
 #include <RTF_Printer.au3>
@@ -53,7 +54,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$aRecent[10][4], $fAR, $iDefaultSize, _
 		$iBufferedfSize = "", $eRedo, _
 		$forBkClr, $fPrintPrvw, _
-		$printDLL = "printmg.dll"
+		$printDLL = "printmg.dll", _
+		$forSyn, $synAu3, $alrCount = 0
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 Local $iniPath = @ProgramFilesDir & "\AuPad\Settings.ini"
@@ -150,6 +152,13 @@ While 1
 					$lpRead = GUICtrlRead($pEditWindow) ; read the edit control
 					$sLower = StringLower($lpRead) ; make the entire text lowercase
 					GUICtrlSetData($pEditWindow, $sLower) ; set the string
+				Case $synAu3
+					If $alrCount = 0 Then
+						$alrCount = AdlibRegister("au3Syn", 1000)
+					Else
+						AdlibUnRegister("au3Syn")
+						$alrCount = 0
+					EndIf
 				Case $fSave
 					Save() ; call the save function when the save menu option is selected
 				Case $fSaveAs
@@ -238,6 +247,8 @@ Func GUI()
 	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
 	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
 	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 2) ; create the second level background color menu item
+	$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 3) ; create the second level syntax highlighting menu
+	$synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn) ; create the third level menu item for autoit syntax highlighting
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
@@ -248,6 +259,15 @@ Func GUI()
 	setNew() ; set the window to have a new file
 	GUISetState(@SW_SHOW) ; show the window
 EndFunc   ;==>GUI
+
+Func au3Syn()
+	Local $gRTFcode, $gSel
+	$gSel = _GUICtrlRichEdit_GetSel($pEditWindow)
+	$gRTFcode = _RESH_GenerateRTFCode(_GUICtrlRichEdit_GetText($pEditWindow), $pEditWindow)
+	_GUICtrlRichEdit_SetText($pEditWindow, $gRTFcode)
+	_GUICtrlRichEdit_GotoCharPos($pEditWindow, -1)
+	_GUICtrlRichEdit_SetSel($pEditWindow, $gSel[0], $gSel[1])
+EndFunc
 
 Func setNew()
 	Local $titleNow, $title, $readWinO, $spltTitle, $mBox
