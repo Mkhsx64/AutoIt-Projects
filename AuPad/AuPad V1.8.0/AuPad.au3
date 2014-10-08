@@ -507,6 +507,7 @@ Func timeDate()
 EndFunc   ;==>timeDate
 
 Func fontGUI()
+	Local $scAtt
 	If UBound($fontBox) <> 0 Then ; if the array of font values has been made
 		$sFontName = $fontBox[2] ; set the font name
 		$iFontSize = $fontBox[3] ; set the font size
@@ -529,11 +530,14 @@ Func fontGUI()
 		EndIf
 		Switch $fontBox[1]
 			Case 2
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
+				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
+				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 			Case 4
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'un+')
+				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+un')
+				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 			Case 8
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
+				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+st')
+				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 		EndSwitch
 		$iBufferedfSize = $iFontSize
 		_GUICtrlRichEdit_SetCharColor($pEditWindow, $fontBox[5]) ; set the font color
@@ -548,11 +552,14 @@ Func fontGUI()
 		MsgBox(0, "", $fontBox[1])
 		Switch $fontBox[1]
 			Case 2
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
+				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
+				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 			Case 4
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'un+')
+				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+un')
+				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 			Case 8
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
+				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+st')
+				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 		EndSwitch
 		$colorSet = _GUICtrlRichEdit_SetCharColor($pEditWindow, $fontBox[5]) ; set the font color
 	EndIf
