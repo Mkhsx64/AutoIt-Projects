@@ -50,4 +50,4 @@
 - Added stream rtf from file support
 - Added stream rtf to file support
 - Added print preview
-- Added recent files to menu item
+- Added recent files to menu item	
