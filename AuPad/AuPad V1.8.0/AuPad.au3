@@ -660,7 +660,7 @@ Func Save()
 		$cn = StringSplit($fn[$i], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
-		addRecent($fs)
+		addRecent($fs) ; add the path to the recent files list
 		Return ; get out
 	EndIf
 	If StringInStr($fn[$oIndex], "rtf") Then
@@ -668,14 +668,14 @@ Func Save()
 		$cn = StringSplit($fn[$oIndex], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
-		addRecent($fn[$oIndex])
+		addRecent($fn[$oIndex]) ; add the path to the recent files list
 		Return ; get out
 	EndIf
 	$fo = FileOpen($fn[$oIndex], 2) ; if we've already saved before, open the file and set it to overwrite current contents
 	If $fo = -1 Then Return MsgBox(0, "error", "Could not create file") ; if it didn't work tell us and get out
 	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
 	FileClose($fn[$oIndex]) ; close the file we specified
-	addRecent($fn[$oIndex])
+	addRecent($fn[$oIndex]) ; add the path to the recent files list
 EndFunc   ;==>Save
 
 Func Help()
