@@ -681,11 +681,6 @@ Func Quit()
 	$wgt = WinGetTitle($pWnd, "") ; get the title of the window
 	$title = StringSplit($wgt, " - ") ; split the window title
 	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
-		If $WWcounter <> 1 Then
-			IniWrite($iniPath, "Settings", "WordWrap", "On")
-		Else
-			IniWrite($iniPath, "Settings", "WordWrap", "Off")
-		EndIf
 		Exit ; get out
 	ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
 		$fOp = FileOpen($fn[$oIndex]) ; open the already opened file
@@ -694,11 +689,6 @@ Func Quit()
 			$saveCounter += 1 ; increment the save counter
 			Save() ; call the save function
 			FileClose($fOp) ; close the file
-			If $WWcounter <> 1 Then
-				IniWrite($iniPath, "Settings", "WordWrap", "On")
-			Else
-				IniWrite($iniPath, "Settings", "WordWrap", "Off")
-			EndIf
 			Exit ; exit the script
 		EndIf
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
@@ -719,11 +709,6 @@ Func Quit()
 		ElseIf $mBox = 2 Then
 			Return
 		EndIf
-	EndIf
-	If $WWcounter <> 1 Then
-		IniWrite($iniPath, "Settings", "WordWrap", "On")
-	Else
-		IniWrite($iniPath, "Settings", "WordWrap", "Off")
 	EndIf
 	Exit ; get out
 EndFunc   ;==>Quit
