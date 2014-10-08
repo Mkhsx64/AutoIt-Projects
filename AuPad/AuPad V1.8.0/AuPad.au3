@@ -82,6 +82,8 @@ $sFontName = 'Arial'
 $iFontSize = 10
 $iDefaultSize = 10
 
+$aRecent[0][0] = 0 ; start the recent files counter
+
 GUICtrlSetState($eRedo, 128)
 
 $hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
