@@ -262,11 +262,11 @@ EndFunc   ;==>GUI
 
 Func au3Syn()
 	Local $gRTFcode, $gSel
-	$gSel = _GUICtrlRichEdit_GetSel($pEditWindow)
-	$gRTFcode = _RESH_GenerateRTFCode(_GUICtrlRichEdit_GetText($pEditWindow), $pEditWindow)
-	_GUICtrlRichEdit_SetText($pEditWindow, $gRTFcode)
-	_GUICtrlRichEdit_GotoCharPos($pEditWindow, -1)
-	_GUICtrlRichEdit_SetSel($pEditWindow, $gSel[0], $gSel[1])
+	$gSel = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the current selection if there is any
+	$gRTFcode = _RESH_GenerateRTFCode(_GUICtrlRichEdit_GetText($pEditWindow), $pEditWindow) ; generate the au3 code from the rtf text
+	_GUICtrlRichEdit_SetText($pEditWindow, $gRTFcode) ; set the au3 code into the rich edit
+	_GUICtrlRichEdit_GotoCharPos($pEditWindow, -1) ; go to the last character position
+	_GUICtrlRichEdit_SetSel($pEditWindow, $gSel[0], $gSel[1]) ; set the selection if there was anything selected
 EndFunc
 
 Func setNew()
