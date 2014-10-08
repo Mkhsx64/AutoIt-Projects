@@ -27,7 +27,7 @@
 #include <Misc.au3>
 #include <Color.au3>
 #include <File.au3>
-#include <RESH.au3> ; thanks goes to Brian J Christy (Beege)
+#include <RESH.au3>
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
 #include <RTF_Printer.au3>
@@ -192,7 +192,7 @@ While 1
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
 			EndSwitch
-		Case $abChild
+			Case $abChild
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
@@ -260,36 +260,33 @@ Func GUI()
 	GUISetState(@SW_SHOW) ; show the window
 EndFunc   ;==>GUI
 
-; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
-;========================================================
 Func au3Syn()
 	Local $gRTFcode, $gSel
+	$gSel = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the current selection if there is any
 	$gRTFcode = _RESH_GenerateRTFCode(_GUICtrlRichEdit_GetText($pEditWindow), $pEditWindow) ; generate the au3 code from the rtf text
 	Local $aColorTable[13]
-	Local Enum $iMacros, $iStrings, $iSpecial, $iComments, $iVariables, $iOperators, $iNumbers, $iKeywords, _
-				$iUDFs, $iSendKeys, $iFunctions, $iPreProc, $iComObjects
-	;notice values can be either 0x or #
-	$aColorTable[$iMacros] = '#808000'
-	$aColorTable[$iStrings] = 0xFF0000
-	$aColorTable[$iSpecial] = '#DC143C'
-	$aColorTable[$iComments] = '#008000'
-	$aColorTable[$iVariables] = '#5A5A5A'
-	$aColorTable[$iOperators] = '#FF8000'
-	$aColorTable[$iNumbers] = 0x0000FF
-	$aColorTable[$iKeywords] = '#0000FF'
-	$aColorTable[$iUDFs] = '#0080FF'
-	$aColorTable[$iSendKeys] = '#808080'
-	$aColorTable[$iFunctions] = '#000090'
-	$aColorTable[$iPreProc] = '#808000'
-	$aColorTable[$iComObjects] = 0x993399
+
+		;notice values can be either 0x or #
+		$aColorTable[$iMacros] = '#808000'
+		$aColorTable[$iStrings] = 0xFF0000
+		$aColorTable[$iSpecial] = '#DC143C'
+		$aColorTable[$iComments] = '#008000'
+		$aColorTable[$iVariables] = '#5A5A5A'
+		$aColorTable[$iOperators] = '#FF8000'
+		$aColorTable[$iNumbers] = 0x0000FF
+		$aColorTable[$iKeywords] = '#0000FF'
+		$aColorTable[$iUDFs] = '#0080FF'
+		$aColorTable[$iSendKeys] = '#808080'
+		$aColorTable[$iFunctions] = '#000090'
+		$aColorTable[$iPreProc] = '#808000'
+		$aColorTable[$iComObjects] = 0x993399
+
 	_RESH_SetColorTable($aColorTable)
 	If @error Then MsgBox(0, 'ERROR', 'Error setting new color table!')
 	_GUICtrlRichEdit_SetText($pEditWindow, $gRTFcode) ; set the au3 code into the rich edit
 	_GUICtrlRichEdit_GotoCharPos($pEditWindow, -1) ; go to the last character position
-	If Not IsArray($gSel) Then Return ; get out if we don't need to select anything
 	_GUICtrlRichEdit_SetSel($pEditWindow, $gSel[0], $gSel[1]) ; set the selection if there was anything selected
-EndFunc   ;==>au3Syn
-;========================================================
+EndFunc
 
 Func setNew()
 	Local $titleNow, $title, $readWinO, $spltTitle, $mBox
