@@ -33,7 +33,7 @@
 - Added ini file for settings saved
 - Added setting in ini for word wrap
 
----==== 1.6.1 ====---
+---==== 1.8.0 ====---
 
 - Added cancel button when quitting
 - Took out extra include
@@ -50,4 +50,8 @@
 - Added stream rtf from file support
 - Added stream rtf to file support
 - Added print preview
-
+- Added recent files to menu item
+- Added AutoIt syntax highlighting; thanks goes to Beege for RESH UDF
+- Took out word wrap function and menu item as RichEdit is word wrapped already
+- Took out ini for the word wrap, but want to be very portable anyway
+- Added check for character attributes change

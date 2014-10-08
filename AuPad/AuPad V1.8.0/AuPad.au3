@@ -27,6 +27,7 @@
 #include <Misc.au3>
 #include <Color.au3>
 #include <File.au3>
+#include <RESH.au3> ; thanks goes to Brian J Christy (Beege)
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
 #include <RTF_Printer.au3>
@@ -35,13 +36,13 @@
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fSave, $fSaveAs, $fontBox, _
 		$fPrint, $fExit, $pEditWindow, _
-		$eUndo, $pActiveW, $WWcounter = 0, _
+		$eUndo, $pActiveW, _
 		$eCut, $eCopy, $ePaste, _
 		$eDelete, $eFind, $eReplace, _
 		$eSA, $oIndex = 0, _
 		$eTD, $saveCounter = 0, $fe, $fs, _
 		$fn[20], $fo, $fw, _
-		$forWW, $forFont, $vStatus, $hVHelp, _
+		$forFont, $vStatus, $hVHelp, _
 		$hAA, $selBuffer, $strB, $fnArray, _
 		$fnCount = 0, $selBufferEx, _
 		$fullStrRepl, $strFnd, $strEnd, _
@@ -53,7 +54,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$aRecent[10][4], $fAR, $iDefaultSize, _
 		$iBufferedfSize = "", $eRedo, _
 		$forBkClr, $fPrintPrvw, _
-		$printDLL = "printmg.dll"
+		$printDLL = "printmg.dll", _
+		$forSyn, $synAu3, $alrCount = 0
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 Local $iniPath = @ProgramFilesDir & "\AuPad\Settings.ini"
@@ -81,19 +83,6 @@ $iFontSize = 10
 $iDefaultSize = 10
 
 GUICtrlSetState($eRedo, 128)
-
-If Not FileExists($iniPath) Then ; if we haven't created the settings ini file
-	IniWrite($iniPath, "Settings", "runSuccess", "Yes") ; create it now
-	IniWrite($iniPath, "Settings", "WordWrap", "Off") ; create the word wrap ini settings
-EndIf
-
-If FileExists($iniPath) Then
-	$wwINIvalue = IniRead($iniPath, "Settings", "WordWrap", "Off")
-	If $wwINIvalue = "On" Then
-		GUICtrlSetState($forWW, $GUI_CHECKED) ; set the state of the menu item to be checked
-		setWW($WWcounter) ; call the setWW function passing it the $WWcounter
-	EndIf
-EndIf
 
 $hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
 
@@ -150,6 +139,13 @@ While 1
 					$lpRead = GUICtrlRead($pEditWindow) ; read the edit control
 					$sLower = StringLower($lpRead) ; make the entire text lowercase
 					GUICtrlSetData($pEditWindow, $sLower) ; set the string
+				Case $synAu3
+					If $alrCount = 0 Then
+						$alrCount = AdlibRegister("au3Syn", 1000)
+					Else
+						AdlibUnRegister("au3Syn")
+						$alrCount = 0
+					EndIf
 				Case $fSave
 					Save() ; call the save function when the save menu option is selected
 				Case $fSaveAs
@@ -164,16 +160,6 @@ While 1
 					__RTF_Preview($dc, $pEditWindow)
 				Case $fPrint
 					Print() ; call the print function when the print menu option is selected
-				Case $forWW
-					If $WWcounter = 1 Then ; if the counter is at 1
-						GUICtrlSetState($forWW, $GUI_UNCHECKED) ; set the state of the menu item to be unchecked
-						setWW($WWcounter) ; call the setWW function passing it the $WWcounter
-						$WWcounter -= 1 ; increment the counter
-					Else
-						GUICtrlSetState($forWW, $GUI_CHECKED) ; set the state of the menu item to be checked
-						setWW($WWcounter) ; call the setWW function passing it the $WWcounter
-						$WWcounter += 1 ; increment the counter
-					EndIf
 				Case $eSA
 					_GUICtrlRichEdit_SetSel($pEditWindow, 0, -1) ; call the setSel edit function if the user selects the select all option
 				Case $hAA
@@ -235,9 +221,10 @@ Func GUI()
 	$eSU = GUICtrlCreateMenuItem("Uppercase Text" & @TAB & "Ctrl + Shft + U", $EditM, 18) ; create the second level uppercase text menu item
 	$eSL = GUICtrlCreateMenuItem("Lowercase Text" & @TAB & "Ctrl + Shft + L", $EditM, 19) ; create the second level lowercase text menu item
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
-	$forWW = GUICtrlCreateMenuItem("Word Wrap", $FormatM, 0) ; create the second level Word Wrap menu item
-	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 1) ; create the second level font menu item
-	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 2) ; create the second level background color menu item
+	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 0) ; create the second level font menu item
+	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 1) ; create the second level background color menu item
+	$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 2) ; create the second level syntax highlighting menu
+	$synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn) ; create the third level menu item for autoit syntax highlighting
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
@@ -248,6 +235,37 @@ Func GUI()
 	setNew() ; set the window to have a new file
 	GUISetState(@SW_SHOW) ; show the window
 EndFunc   ;==>GUI
+
+; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
+;========================================================
+Func au3Syn()
+	Local $gRTFcode, $gSel
+	$gRTFcode = _RESH_GenerateRTFCode(_GUICtrlRichEdit_GetText($pEditWindow), $pEditWindow) ; generate the au3 code from the rtf text
+	Local $aColorTable[13]
+	Local Enum $iMacros, $iStrings, $iSpecial, $iComments, $iVariables, $iOperators, $iNumbers, $iKeywords, _
+				$iUDFs, $iSendKeys, $iFunctions, $iPreProc, $iComObjects
+	;notice values can be either 0x or #
+	$aColorTable[$iMacros] = '#808000'
+	$aColorTable[$iStrings] = 0xFF0000
+	$aColorTable[$iSpecial] = '#DC143C'
+	$aColorTable[$iComments] = '#008000'
+	$aColorTable[$iVariables] = '#5A5A5A'
+	$aColorTable[$iOperators] = '#FF8000'
+	$aColorTable[$iNumbers] = 0x0000FF
+	$aColorTable[$iKeywords] = '#0000FF'
+	$aColorTable[$iUDFs] = '#0080FF'
+	$aColorTable[$iSendKeys] = '#808080'
+	$aColorTable[$iFunctions] = '#000090'
+	$aColorTable[$iPreProc] = '#808000'
+	$aColorTable[$iComObjects] = 0x993399
+	_RESH_SetColorTable($aColorTable)
+	If @error Then MsgBox(0, 'ERROR', 'Error setting new color table!')
+	_GUICtrlRichEdit_SetText($pEditWindow, $gRTFcode) ; set the au3 code into the rich edit
+	_GUICtrlRichEdit_GotoCharPos($pEditWindow, -1) ; go to the last character position
+	If Not IsArray($gSel) Then Return ; get out if we don't need to select anything
+	_GUICtrlRichEdit_SetSel($pEditWindow, $gSel[0], $gSel[1]) ; set the selection if there was anything selected
+EndFunc   ;==>au3Syn
+;========================================================
 
 Func setNew()
 	Local $titleNow, $title, $readWinO, $spltTitle, $mBox
@@ -267,7 +285,17 @@ Func setNew()
 EndFunc   ;==>setNew
 
 Func addRecent($path)
-	; --- ;
+	Local $i
+	For $i = 1 To $aRecent[0][0] Step 1 ; we need to check if we called it on the same recent path
+		If $aRecent[$i][3] = $path Then Return ; if we did get out
+	Next
+	If $aRecent[0][0] = 9 Then _ArrayDelete($aRecent, 1) ; if we are at the end of the list delete the first added
+	$aRecent[0][0] += 1 ; increment the counter
+	For $i = 1 To $aRecent[0][0] Step 1 ; from 1 to the number of items we have
+		$aRecent[$i][1] = GUICtrlCreateMenuItem($path, $fAR, $i) ; create the menu item
+		$aRecent[$i][2] = ControlGetHandle($path, "", $aRecent[$i][1]) ; get the handle
+		$aRecent[$i][3] = $path ; put the path in the array
+	Next
 EndFunc   ;==>addRecent
 
 Func aChild()
@@ -283,47 +311,6 @@ Func aChild()
 	GUICtrlSetFont(-1, 7, 500) ; set the font
 	GUISetState() ; show the window
 EndFunc   ;==>aChild
-
-Func setWW($check)
-	Local $rw
-	If $check = 0 Then ; if we turned word wrap on
-		$rw = _GUICtrlRichEdit_GetText($pEditWindow) ; get the data in the window
-		_GUICtrlRichEdit_Destroy($pEditWindow) ; delete the edit control
-		$pEditWindow = _GUICtrlRichEdit_Create($rw, 0, 0, 600, 495, BitOR($ES_AUTOVSCROLL, $ES_WANTRETURN, $WS_VSCROLL)) ; create the edit with the word wrap ability
-		If Not IsArray($fontBox) Then ; if the font has not been set
-			_GUICtrlRichEdit_SetFont($pEditWindow, $iFontSize, $sFontName) ; set the default font
-		Else
-			Switch $fontBox[1]
-				Case 2
-					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
-				Case 4
-					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'un+')
-				Case 8
-					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
-			EndSwitch
-			_GUICtrlRichEdit_SetFont($pEditWindow, $iFontSize, $sFontName) ; set the current font
-		EndIf
-		ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490) ; click the window, so that it is focused at the end of the string
-	Else
-		$rw = _GUICtrlRichEdit_GetText($pEditWindow) ; get the data in the window
-		_GUICtrlRichEdit_Destroy($pEditWindow) ; delete the edit control
-		$pEditWindow = _GUICtrlRichEdit_Create($rw, 0, 0, 600, 495) ; create the edit window without word wrap
-		If Not IsArray($fontBox) Then ; if the font has not been set
-			_GUICtrlRichEdit_SetFont($pEditWindow, $iFontSize, $sFontName) ; set the default font
-		Else
-			Switch $fontBox[1]
-				Case 2
-					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
-				Case 4
-					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'un+')
-				Case 8
-					_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
-			EndSwitch
-			_GUICtrlRichEdit_SetFont($pEditWindow, $iFontSize, $sFontName) ; set the current font
-		EndIf
-		ControlClick($pWnd, $rw, $pEditWindow, "", 1, 595, 490) ; click the window, so that it is focused at the end of the string
-	EndIf
-EndFunc   ;==>setWW
 
 Func chkSel()
 	Local $gs, $gc, $getState, $readWin, $strMid
@@ -520,6 +507,7 @@ Func timeDate()
 EndFunc   ;==>timeDate
 
 Func fontGUI()
+	Local $scAtt
 	If UBound($fontBox) <> 0 Then ; if the array of font values has been made
 		$sFontName = $fontBox[2] ; set the font name
 		$iFontSize = $fontBox[3] ; set the font size
@@ -542,11 +530,14 @@ Func fontGUI()
 		EndIf
 		Switch $fontBox[1]
 			Case 2
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
+				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
+				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 			Case 4
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'un+')
+				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+un')
+				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 			Case 8
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
+				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+st')
+				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 		EndSwitch
 		$iBufferedfSize = $iFontSize
 		_GUICtrlRichEdit_SetCharColor($pEditWindow, $fontBox[5]) ; set the font color
@@ -561,11 +552,14 @@ Func fontGUI()
 		MsgBox(0, "", $fontBox[1])
 		Switch $fontBox[1]
 			Case 2
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'it+')
+				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
+				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 			Case 4
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'un+')
+				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+un')
+				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 			Case 8
-				_GUICtrlRichEdit_SetCharAttributes($pEditWindow, 'st+')
+				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+st')
+				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 		EndSwitch
 		$colorSet = _GUICtrlRichEdit_SetCharColor($pEditWindow, $fontBox[5]) ; set the font color
 	EndIf
@@ -653,6 +647,7 @@ Func Save()
 			$cn = StringSplit($fn[$i], ".") ; split the file name
 			$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 			$saveCounter += 1 ; increment the save counter
+			addRecent($fs) ; add it to the recent files
 			Return ; get out
 		EndIf
 		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
@@ -662,19 +657,22 @@ Func Save()
 		$cn = StringSplit($fn[$i], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
+		addRecent($fs)
 		Return ; get out
 	EndIf
 	If StringInStr($fn[$oIndex], "rtf") Then
-		_GUICtrlRichEdit_StreamToFile($pEditWindow, $fs)
-		$cn = StringSplit($fn[$i], ".") ; split the file name
+		_GUICtrlRichEdit_StreamToFile($pEditWindow, $fn[$oIndex])
+		$cn = StringSplit($fn[$oIndex], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
+		addRecent($fn[$oIndex])
 		Return ; get out
 	EndIf
 	$fo = FileOpen($fn[$oIndex], 2) ; if we've already saved before, open the file and set it to overwrite current contents
 	If $fo = -1 Then Return MsgBox(0, "error", "Could not create file") ; if it didn't work tell us and get out
 	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
 	FileClose($fn[$oIndex]) ; close the file we specified
+	addRecent($fn[$oIndex])
 EndFunc   ;==>Save
 
 Func Help()
@@ -690,11 +688,6 @@ Func Quit()
 	$wgt = WinGetTitle($pWnd, "") ; get the title of the window
 	$title = StringSplit($wgt, " - ") ; split the window title
 	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
-		If $WWcounter <> 1 Then
-			IniWrite($iniPath, "Settings", "WordWrap", "On")
-		Else
-			IniWrite($iniPath, "Settings", "WordWrap", "Off")
-		EndIf
 		Exit ; get out
 	ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
 		$fOp = FileOpen($fn[$oIndex]) ; open the already opened file
@@ -703,11 +696,6 @@ Func Quit()
 			$saveCounter += 1 ; increment the save counter
 			Save() ; call the save function
 			FileClose($fOp) ; close the file
-			If $WWcounter <> 1 Then
-				IniWrite($iniPath, "Settings", "WordWrap", "On")
-			Else
-				IniWrite($iniPath, "Settings", "WordWrap", "Off")
-			EndIf
 			Exit ; exit the script
 		EndIf
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
@@ -728,11 +716,6 @@ Func Quit()
 		ElseIf $mBox = 2 Then
 			Return
 		EndIf
-	EndIf
-	If $WWcounter <> 1 Then
-		IniWrite($iniPath, "Settings", "WordWrap", "On")
-	Else
-		IniWrite($iniPath, "Settings", "WordWrap", "Off")
 	EndIf
 	Exit ; get out
 EndFunc   ;==>Quit
