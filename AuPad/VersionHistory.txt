@@ -49,7 +49,6 @@
 - Added background color support
 - Added stream rtf from file support
 - Added stream rtf to file support
-- Added print preview
 - Added recent files to menu item
 - Added AutoIt syntax highlighting; thanks goes to Beege for RESH UDF
 - Took out word wrap function and menu item as RichEdit is word wrapped already
