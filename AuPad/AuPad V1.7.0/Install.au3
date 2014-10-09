@@ -58,6 +58,11 @@ If $copyUDF = 0 Then
 	MsgBox(0, "Install", "Could not complete install. Exiting...")
 EndIf
 
+$copyUDF = FileCopy(@WorkingDir & "\RESH.au3", @ProgramFilesDir & "\AutoIt3\Include", 1)
+If $copyUDF = 0 Then
+	MsgBox(0, "Error", "Could not put RESH.au3 into your include folder")
+	MsgBox(0, "Install", "Could not complete install. Exiting...")
+EndIf
 
 $msgbx = MsgBox(4, "Desktop shortcut", "Would you like to create a shortcut on the desktop?")
 If $msgbx = 6 Then
