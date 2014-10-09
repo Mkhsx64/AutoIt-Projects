@@ -33,7 +33,7 @@
 - Added ini file for settings saved
 - Added setting in ini for word wrap
 
----==== 1.8.0 ====---
+---==== 1.7.0 ====---
 
 - Added cancel button when quitting
 - Took out extra include
