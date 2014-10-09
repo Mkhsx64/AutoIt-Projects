@@ -54,4 +54,3 @@
 - Took out word wrap function and menu item as RichEdit is word wrapped already
 - Took out ini for the word wrap, but want to be very portable anyway
 - Added check for character attributes change
-- Added au3 file type for open and save dialog boxes
