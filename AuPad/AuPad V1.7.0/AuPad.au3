@@ -350,8 +350,8 @@ Func chkTxt()
 EndFunc   ;==>chkTxt
 
 Func chkUndo()
-	Local $cUndo = _GUICtrlRichEdit_CanRedo($pEditWindow)
-	If $cUndo = True Then GUICtrlSetState($eUndo, 64)
+	Local $cUndo = _GUICtrlRichEdit_CanRedo($pEditWindow) ; check if there has been any undo
+	If $cUndo = True Then GUICtrlSetState($eUndo, 64) ; if yes set the state of the control
 EndFunc   ;==>chkUndo
 
 ;Thanks Water - http://www.autoitscript.com/forum/topic/137364-the-number-of-words-in-the-text/?p=961616
@@ -517,7 +517,7 @@ Func fontGUI()
 	Else
 		$fontBox = _ChooseFont() ; call the _ChooseFont function without any params
 	EndIf
-	If UBound($fontBox) = 0 Then Return ; if they closed the font box and made no selections get out
+ 	If UBound($fontBox) = 0 Then Return ; if they closed the font box and made no selections get out
 	If $fontBox[1] <> 0 Then
 		_GUICtrlRichEdit_SetFont($pEditWindow, $fontBox[3], $fontBox[2]) ; set the new font
 		If $iFontSize > 10 Then
@@ -525,14 +525,15 @@ Func fontGUI()
 		Else
 			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iDefaultSize - $iFontSize)
 		EndIf
-		Switch $fontBox[1]
-			Case 2
+		$fbS = $fontbox[1]
+		Switch $fbS
+			Case '2'
 				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
 				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
-			Case 4
+			Case '4'
 				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+un')
 				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
-			Case 8
+			Case '8'
 				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+st')
 				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 		EndSwitch
@@ -546,15 +547,15 @@ Func fontGUI()
 		Else
 			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iBufferedfSize - $iFontSize)
 		EndIf
-		MsgBox(0, "", $fontBox[1])
-		Switch $fontBox[1]
-			Case 2
+		$fbS = $fontbox[1]
+		Switch $fbS
+			Case '2'
 				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
 				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
-			Case 4
+			Case '4'
 				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+un')
 				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
-			Case 8
+			Case '8'
 				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+st')
 				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
 		EndSwitch
@@ -710,8 +711,8 @@ Func Quit()
 		If $mBox = 6 Then ; if we said yes
 			$saveCounter = 0 ; reset the save counter
 			Save() ; call the save function
-		ElseIf $mBox = 2 Then
-			Return
+		ElseIf $mBox = 2 Then ; if they hit cancel
+			Return ; get out
 		EndIf
 	EndIf
 	Exit ; get out
