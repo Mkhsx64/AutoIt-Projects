@@ -57,7 +57,6 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$forSyn, $synAu3
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
-Local $iniPath = @ProgramFilesDir & "\AuPad\Settings.ini"
 
 ; child gui vars
 Local $abChild, $fCount = 0, $sFontName, _
@@ -119,8 +118,8 @@ While 1
 				Case $eTD
 					timeDate() ; call the timeDate function when the time/date option is selected
 				Case $forBkClr
-					$cColor = _ChooseColor(0)
-					$tryColor = _GUICtrlRichEdit_SetBkColor($pEditWindow, $cColor)
+					$cColor = _ChooseColor(0) ; call the color dialog
+					$tryColor = _GUICtrlRichEdit_SetBkColor($pEditWindow, $cColor) ; set the background color
 				Case $eFind
 					_WinAPI_FindTextDlg($pEditWindow) ; open the find text dialog
 				Case $eReplace
@@ -141,11 +140,11 @@ While 1
 					$sLower = StringLower($lpRead) ; make the entire text lowercase
 					GUICtrlSetData($pEditWindow, $sLower) ; set the string
 				Case $synAu3
-					If $alrCount = 0 Then
-						$alrCount = AdlibRegister("au3Syn", 1000)
+					If $alrCount = 0 Then ; if the Adlib is off
+						$alrCount = AdlibRegister("au3Syn", 1000) ; turn it on
 					Else
-						AdlibUnRegister("au3Syn")
-						$alrCount = 0
+						AdlibUnRegister("au3Syn") ; turn it off
+						$alrCount = 0 ; set the Adlib variable off
 					EndIf
 				Case $fSave
 					Save() ; call the save function when the save menu option is selected
