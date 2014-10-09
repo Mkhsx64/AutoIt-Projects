@@ -76,13 +76,13 @@ If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico') ; if the script isn'
 
 _GUICtrlRichEdit_SetFont($pEditWindow, Default, "Arial") ; set the default font
 _GUICtrlRichEdit_ChangeFontSize($pEditWindow, 10) ; set the default font size
-$sFontName = 'Arial'
-$iFontSize = 10
-$iDefaultSize = 10
+$sFontName = 'Arial' ; font name
+$iFontSize = 10 ; font size
+$iDefaultSize = 10 ; default size
 
 $aRecent[0][0] = 0 ; start the recent files counter
 
-GUICtrlSetState($eRedo, 128)
+GUICtrlSetState($eRedo, 128) ; set the state of the redo menu item
 
 $hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
 
@@ -210,7 +210,7 @@ Func GUI()
 	$eTab = GUICtrlCreateMenuItem("Tab" & @TAB & "Tab", $EditM, 11) ; create the tab second level menu item
 	$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 12) ; create the second level select all menu item
 	$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 13) ; create the second level time/date menu item
-	GUICtrlCreateMenuItem("", $EditM, 14)
+	GUICtrlCreateMenuItem("", $EditM, 14) ; create line
 	$eWC = GUICtrlCreateMenuItem("Word Count" & @TAB & "Ctrl + W", $EditM, 15) ; create the second level word count menu item
 	$eLC = GUICtrlCreateMenuItem("Line Count" & @TAB & "Ctrl + L", $EditM, 16) ; create the second level line count menu item
 	GUICtrlCreateMenuItem("", $EditM, 17) ; create line
