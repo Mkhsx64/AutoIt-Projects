@@ -6,7 +6,14 @@
 #include <File.au3>
 
 
-Global $g_File_Formats[1000]
+Global $spltStr, $spltCount
 
+Global $g_File_Paths = _FO_FileSearch('C:\'), $i
 
-Global $g_File_Paths = _FO_FileSearch('C:\')
+For $i = 0 To UBound($g_File_Paths) - 1 Step 1
+	$spltStr = StringSplit($g_File_Paths[$i], "\")
+	$spltCount = $spltStr[0]
+	$g_File_Paths[$i] = $spltStr[$spltCount]
+Next
+
+Global $g_Paths = _ArrayUnique($g_File_Paths)
