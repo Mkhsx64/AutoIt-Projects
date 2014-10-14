@@ -36,11 +36,13 @@ Global $g_Paths
 ; ===============================================================================================================
 Func _FF_Init()
 	Local $spltStr, $spltCount, $fileSplt, _
-	$g_File_Paths = _FO_FileSearch('C:\'), $i
-	For $i = 0 To UBound($g_File_Paths) - 1 Step 1
+	$g_File_Paths = _FO_FileSearch('C:\'), $uCount, $i
+	$uCount = UBound($g_File_Paths) - 1
+	For $i = 0 To $uCount Step 1
 		$spltStr = StringSplit($g_File_Paths[$i], "\")
 		$spltCount = $spltStr[0]
 		$fileSplt = StringSplit($spltStr[$spltCount], ".")
+		If @error Then _ArrayDelete($g_File_Paths, $i)
 		$spltCount = $fileSplt[0]
 		$g_File_Paths[$i] = $fileSplt[$spltCount]
 	Next
