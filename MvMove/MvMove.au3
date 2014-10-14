@@ -15,13 +15,14 @@
 #include <GUIConstants.au3>
 #include <Constants.au3>
 #include <File.au3>
-
+#include 'aFileFormats.au3'
 ;; Variables ;;
 
 Local $pWnd, $msg
 
 ;; Main Line ;;
-
+_FF_Init()
+_ArrayDisplay($g_Paths)
 GUI()
 
 While 1
