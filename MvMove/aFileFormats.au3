@@ -3,7 +3,7 @@
 ; Title .........: aFileFormats
 ; AutoIt Version : 3.3.12.0
 ; Language ..... : English
-; Description ...: Function that gets file extensions
+; Description ...: File functionality for searching system
 ; Author(s) .....: MikahS
 ; ===============================================================================================================================
 #include-once
