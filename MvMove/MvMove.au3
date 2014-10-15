@@ -26,7 +26,7 @@ Local $pWnd, $msg, $f_Paths, $p_Add_Button, _
 ;; Main Line ;;
 
 _FF_Init($f_Paths)
-GUI()
+_GUI()
 
 While 1
 	$msg = GUIGetMsg()
@@ -40,12 +40,12 @@ WEnd
 
 ;; Functions ;;
 
-Func GUI()
+Func _GUI()
 	$pWnd = GUICreate("Search Files & Folders", 600, 500, -1, -1, -1)
 	$p_Combo = GUICtrlCreateCombo("", 5, 7)
 	GUICtrlSetData($p_Combo, _ArrayToString($f_Paths, "|"))
 	$p_Add_Button = GUICtrlCreateButton("Add", 210, 5)
-	$p_Add_Box = GUICtrlCreateListView("Extensions", 400, 5, 120, 400)
+	$p_Add_Box = GUICtrlCreateListView("Extensions", 400, 5, 120, 100)
 	GUISetState()
 EndFunc   ;==>GUI
 
