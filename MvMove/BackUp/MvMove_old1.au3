@@ -15,13 +15,11 @@
 #include <GUIConstants.au3>
 #include <Constants.au3>
 #include <File.au3>
-#include <GuiListView.au3>
 #include 'aFileFormats.au3'
-
 ;; Variables ;;
 
 Local $pWnd, $msg, $f_Paths, $p_Add_Button, _
-		$p_Add_Box, $p_Combo
+$p_Add_Box
 
 ;; Main Line ;;
 
@@ -42,15 +40,13 @@ WEnd
 
 Func GUI()
 	$pWnd = GUICreate("Search Files & Folders", 600, 500, -1, -1, -1)
-	$p_Combo = GUICtrlCreateCombo("", 5, 7)
-	GUICtrlSetData($p_Combo, _ArrayToString($f_Paths, "|"))
-	$p_Add_Button = GUICtrlCreateButton("Add", 210, 5)
-	$p_Add_Box = GUICtrlCreateListView("Extensions", 400, 5, 120, 400)
+	$g_combo = GUICtrlCreateCombo("", 5, 5)
+	GUICtrlSetData($g_combo, _ArrayToString($f_Paths, "|"))
+	$p_Add_Button = GUICtrlCreateButton("Add", 100, 5)
+	$p_Add_Box = GUICtrlCreateListView("", 400, 5)
 	GUISetState()
-EndFunc   ;==>GUI
+EndFunc
 
 Func _addSel()
-	Local $l_getSel
-	$l_getSel = GUICtrlRead($p_Combo)
-	_GUICtrlListView_AddItem($p_Add_Box, $l_getSel)
-EndFunc   ;==>_addSel
+
+EndFunc
