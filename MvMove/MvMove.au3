@@ -18,11 +18,10 @@
 #include 'aFileFormats.au3'
 ;; Variables ;;
 
-Local $pWnd, $msg
+Local $pWnd, $msg, $f_Paths
 
 ;; Main Line ;;
-_FF_Init()
-_ArrayDisplay($g_Paths)
+_FF_Init($f_Paths)
 GUI()
 
 While 1
@@ -37,5 +36,7 @@ WEnd
 
 Func GUI()
 	$pWnd = GUICreate("Search Files & Folders", 600, 500, -1, -1, -1)
+	$g_combo = GUICtrlCreateCombo("", 5, 5)
+	GUICtrlSetData($g_combo, _ArrayToString($f_Paths, "|"))
 	GUISetState()
 EndFunc

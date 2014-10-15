@@ -19,6 +19,7 @@
 
 #Region Global Variables
 ; #VARIABLES# ===================================================================================================================
+Global $g_Paths
 ; ===============================================================================================================================
 #EndRegion Global Variables
 
@@ -33,29 +34,30 @@
 ; Author.........:	MikahS
 ; Remarks........:	None
 ; ===============================================================================================================
-Func _FF_Init(ByRef $g_Paths)
-	Local $l_spltStr, $l_spltCount, $l_fileSplt, _
-			$l_File_Paths = _FO_FileSearch('C:\'), $l_uCount, _
-			$l_i, $l_Unique_Paths
-	$l_uCount = UBound($l_File_Paths) - 1
-	For $l_i = 0 To $l_uCount Step 1
-		$l_spltStr = StringSplit($l_File_Paths[$l_i], "\")
-		$l_spltCount = $l_spltStr[0]
-		$l_fileSplt = StringSplit($l_spltStr[$l_spltCount], ".")
+Func _FF_Init()
+	Local $spltStr, $spltCount, $fileSplt, _
+	$g_File_Paths = _FO_FileSearch('C:\'), $uCount, _
+	$i, $g_Unique_Paths
+	$uCount = UBound($g_File_Paths) - 1
+	For $i = 0 To $uCount Step 1
+		$spltStr = StringSplit($g_File_Paths[$i], "\")
+		$spltCount = $spltStr[0]
+		$fileSplt = StringSplit($spltStr[$spltCount], ".")
 		If @error Then
-			$l_File_Paths[$l_i] = ""
+			$g_File_Paths[$i] = ""
 			ContinueLoop
 		EndIf
-		$l_spltCount = $l_fileSplt[0]
-		$l_File_Paths[$l_i] = $l_fileSplt[$l_spltCount]
-		If StringLen($l_fileSplt[$l_spltCount]) > 30 Then
-			$l_File_Paths[$l_i] = ""
+		$spltCount = $fileSplt[0]
+		$g_File_Paths[$i] = $fileSplt[$spltCount]
+		If StringLen($fileSplt[$spltCount]) > 30 Then
+			$g_File_Paths[$i] = ""
 			ContinueLoop
 		EndIf
 	Next
-	$g_Paths = _ArrayUnique($l_File_Paths)
+	$g_Unique_Paths = _ArrayUnique($g_File_Paths)
+	$g_Paths = _ArraySort($g_Paths)
 	If @error Then Return 0
-	Return _ArrayDelete($g_Paths, 1)
-EndFunc   ;==>_FF_Init
+	Return $g_Paths
+EndFunc   ;==>MM_Init
 
 #EndRegion Public Functions
