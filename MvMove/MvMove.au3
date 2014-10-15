@@ -21,7 +21,8 @@
 ;; Variables ;;
 
 Local $pWnd, $msg, $f_Paths, $p_Add_Button, _
-		$p_Add_Box, $p_Combo
+		$p_Add_Box, $p_Combo, $p_Delete_All, _
+		$p_Delete_Sel
 
 ;; Main Line ;;
 
@@ -35,6 +36,10 @@ While 1
 			Exit
 		Case $p_Add_Button
 			_addSel()
+		Case $p_Delete_All
+			_GUICtrlListView_DeleteAllItems($p_Add_Box)
+		Case $p_Delete_Sel
+			_GUICtrlListView_DeleteItemsSelected($p_Add_Box)
 	EndSwitch
 WEnd
 
@@ -45,7 +50,9 @@ Func _GUI()
 	$p_Combo = GUICtrlCreateCombo("", 5, 7)
 	GUICtrlSetData($p_Combo, _ArrayToString($f_Paths, "|"))
 	$p_Add_Button = GUICtrlCreateButton("Add", 210, 5)
-	$p_Add_Box = GUICtrlCreateListView("Extensions", 400, 5, 120, 100)
+	$p_Add_Box = GUICtrlCreateListView("Extensions", 250, 5, 120, 100)
+	$p_Delete_Sel = GUICtrlCreateButton("Delete Selected", 375, 5)
+	$p_Delete_All = GUICtrlCreateButton("Clear All", 413, 35)
 	GUISetState()
 EndFunc   ;==>GUI
 
@@ -54,3 +61,5 @@ Func _addSel()
 	$l_getSel = GUICtrlRead($p_Combo)
 	_GUICtrlListView_AddItem($p_Add_Box, $l_getSel)
 EndFunc   ;==>_addSel
+
+
