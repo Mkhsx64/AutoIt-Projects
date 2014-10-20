@@ -22,7 +22,7 @@
 
 Local $pWnd, $msg, $f_Paths, $p_Add_Button, _
 		$p_Add_Box, $p_Combo, $p_Delete_All, _
-		$p_Delete_Sel
+		$p_Delete_Sel, $p_Search_Button
 
 ;; Main Line ;;
 
@@ -46,13 +46,14 @@ WEnd
 ;; Functions ;;
 
 Func _GUI()
-	$pWnd = GUICreate("Search Files & Folders", 600, 500, -1, -1, -1)
+	$pWnd = GUICreate("Search Files & Folders", 600, 300, -1, -1, -1)
 	$p_Combo = GUICtrlCreateCombo("", 5, 7)
 	GUICtrlSetData($p_Combo, _ArrayToString($f_Paths, "|"))
 	$p_Add_Button = GUICtrlCreateButton("Add", 210, 5)
 	$p_Add_Box = GUICtrlCreateListView("Extensions", 250, 5, 120, 100)
 	$p_Delete_Sel = GUICtrlCreateButton("Delete Selected", 375, 5)
 	$p_Delete_All = GUICtrlCreateButton("Clear All", 413, 35)
+	$p_Search_Button = GUICtrlCreateButton("Search", 417, 65)
 	GUISetState()
 EndFunc   ;==>GUI
 
