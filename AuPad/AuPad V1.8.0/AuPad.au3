@@ -136,13 +136,13 @@ While 1
 					$lCount = _GUICtrlRichEdit_GetLineCount($pEditWindow) ; get the line count from the edit control
 					MsgBox(0, "Line Count", $lCount) ; tell us
 				Case $eSU
-					$lpRead = GUICtrlRead($pEditWindow) ; read the edit control
+					$lpRead = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
 					$sUpper = StringUpper($lpRead) ; make the entire text uppercase
-					GUICtrlSetData($pEditWindow, $sUpper) ; set the string
+					_GUICtrlRichEdit_SetText($pEditWindow, $sUpper) ; set the string
 				Case $eSL
-					$lpRead = GUICtrlRead($pEditWindow) ; read the edit control
+					$lpRead = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
 					$sLower = StringLower($lpRead) ; make the entire text lowercase
-					GUICtrlSetData($pEditWindow, $sLower) ; set the string
+					_GUICtrlRichEdit_SetText($pEditWindow, $sLower) ; set the string
 				Case $synAu3
 					If $alrCount = 0 Then ; if the Adlib is off
 						$alrCount = AdlibRegister("au3Syn", 1000) ; turn it on
