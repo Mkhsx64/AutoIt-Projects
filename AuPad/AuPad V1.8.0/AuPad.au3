@@ -638,7 +638,7 @@ Func Open()
 	$saveCounter += 1 ; increment the save counter
 	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
 	FileClose($fileOpen) ; close the file
-	addRecent($fileOpenD)
+	addRecent($fileOpenD) ; add the file opened to the recent list
 EndFunc   ;==>Open
 
 Func Save()
