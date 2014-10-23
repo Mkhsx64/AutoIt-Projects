@@ -478,9 +478,7 @@ EndFunc   ;==>Print
 
 ; Thanks to AZJIO for idea
 Func Tab()
-	Local $rwin
-	$rwin = _GUICtrlRichEdit_GetText($pEditWindow) ; read the text in the window already
-	_GUICtrlRichEdit_SetText($pEditWindow, $rwin & "        ") ; add a tab into the window after the text
+	_GUICtrlRichEdit_AppendText($pEditWindow, "    ") ; tab at curser position
 EndFunc   ;==>Tab
 
 Func Copy()
