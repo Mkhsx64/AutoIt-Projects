@@ -730,6 +730,8 @@ Func Quit()
 	Exit ; get out
 EndFunc   ;==>Quit
 
+; Resize functionality taken from Melba23's post -- http://www.autoitscript.com/forum/topic/165178-auto-resizing-of-listview-in-gui-window/?p=1205827
+;====================================================
 Func WM_SIZE($hWnd, $msg, $wParam, $lParam)
 	_Resize_RichEdit()
 	Return $GUI_RUNDEFMSG
@@ -749,4 +751,4 @@ Func _Resize_RichEdit()
 	$aRet = ControlGetPos($pWnd, "", $cLabel_1)
 	WinMove($pEditWindow, "", $aRet[0], $aRet[1], $aRet[2], $aRet[3])
 EndFunc   ;==>_Resize_RichEdit
-;========RESIZE FUNCTIONALITY THANKS TO MELBA
+;======================================================
