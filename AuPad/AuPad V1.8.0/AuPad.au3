@@ -478,7 +478,7 @@ EndFunc   ;==>Print
 
 ; Thanks to AZJIO for idea
 Func Tab()
-	_GUICtrlRichEdit_AppendText($pEditWindow, "    ") ; tab at curser position
+	_GUICtrlRichEdit_InsertText($pEditWindow, "    ") ; tab at curser position
 EndFunc   ;==>Tab
 
 Func Copy()
@@ -498,7 +498,7 @@ Func Paste()
 	$g = ClipGet() ; get the string from the clipboard
 	If @error Then Return ; if @error is set get out
 	$r = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
-	$p = _GUICtrlRichEdit_SetText($pEditWindow, $g) ; set the string into the edit control
+	$p = _GUICtrlRichEdit_InsertText($pEditWindow, $g) ; set the string into the edit control
 EndFunc   ;==>Paste
 
 Func timeDate()
@@ -507,9 +507,9 @@ Func timeDate()
 	If @HOUR >= 12 Then ; if it is after 11:59 AM
 		$h = @HOUR - 12 ; set it to the windows standard notepad hour notation
 		$s = Int($h) ; turn the string into an integer
-		$p = _GUICtrlRichEdit_SetText($pEditWindow, $r & $s & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
+		$p = _GUICtrlRichEdit_InsertText($pEditWindow, $s & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
 	Else ; otherwise if it is in the AM
-		$p = _GUICtrlRichEdit_SetText($pEditWindow, $r & @HOUR & ":" & @MIN & " AM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
+		$p = _GUICtrlRichEdit_InsertText($pEditWindow, @HOUR & ":" & @MIN & " AM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
 	EndIf
 EndFunc   ;==>timeDate
 
