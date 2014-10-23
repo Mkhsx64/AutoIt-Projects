@@ -54,7 +54,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$iBufferedfSize = "", $eRedo, _
 		$forBkClr, $alrCount = 0, _
 		$printDLL = "printmg.dll", _
-		$forSyn, $synAu3, $cLabel_1
+		$forSyn, $synAu3
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -172,7 +172,7 @@ While 1
 			EndSwitch
 			If $bSysMsg Then
 				$bSysMsg = False
-				_Resize_RichEdit()
+				_Resize_ListViews()
 			EndIf
 		Case $abChild
 			Switch $msg[0]
@@ -252,7 +252,7 @@ Func au3Syn()
 	$gRTFcode = _RESH_GenerateRTFCode(_GUICtrlRichEdit_GetText($pEditWindow), $pEditWindow) ; generate the au3 code from the rtf text
 	Local $aColorTable[13]
 	Local Enum $iMacros, $iStrings, $iSpecial, $iComments, $iVariables, $iOperators, $iNumbers, $iKeywords, _
-			$iUDFs, $iSendKeys, $iFunctions, $iPreProc, $iComObjects
+				$iUDFs, $iSendKeys, $iFunctions, $iPreProc, $iComObjects
 	;notice values can be either 0x or #
 	$aColorTable[$iMacros] = '#808000'
 	$aColorTable[$iStrings] = 0xFF0000
@@ -529,7 +529,7 @@ Func fontGUI()
 	Else
 		$fontBox = _ChooseFont() ; call the _ChooseFont function without any params
 	EndIf
-	If UBound($fontBox) = 0 Then Return ; if they closed the font box and made no selections get out
+ 	If UBound($fontBox) = 0 Then Return ; if they closed the font box and made no selections get out
 	If $fontBox[1] <> 0 Then
 		_GUICtrlRichEdit_SetFont($pEditWindow, $fontBox[3], $fontBox[2]) ; set the new font
 		If $iFontSize > 10 Then
@@ -537,7 +537,7 @@ Func fontGUI()
 		Else
 			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iDefaultSize - $iFontSize)
 		EndIf
-		$fbS = $fontBox[1]
+		$fbS = $fontbox[1]
 		Switch $fbS
 			Case '2'
 				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
@@ -559,7 +559,7 @@ Func fontGUI()
 		Else
 			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iBufferedfSize - $iFontSize)
 		EndIf
-		$fbS = $fontBox[1]
+		$fbS = $fontbox[1]
 		Switch $fbS
 			Case '2'
 				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
@@ -746,7 +746,11 @@ EndFunc   ;==>_WM_SYSCOMMAND
 
 Func _Resize_RichEdit()
 	Local $aRet
-	$aRet = ControlGetPos($pWnd, "", $cLabel_1)
-	WinMove($pEditWindow, "", $aRet[0], $aRet[1], $aRet[2], $aRet[3])
-EndFunc   ;==>_Resize_RichEdit
+	$aRet = ControlGetPos($GUIhandle, "", $cLabel_1)
+	WinMove($List1, "", $aRet[0], $aRet[1], $aRet[2], $aRet[3])
+	$aRet = ControlGetPos($GUIhandle, "", $cLabel_2)
+	WinMove($List2, "", $aRet[0], $aRet[1], $aRet[2], $aRet[3])
+	$aRet = ControlGetPos($GUIhandle, "", $cLabel_3)
+	WinMove($List3, "", $aRet[0], $aRet[1], $aRet[2], $aRet[3])
+EndFunc   ;==>_Resize_ListViews
 ;========RESIZE FUNCTIONALITY THANKS TO MELBA
