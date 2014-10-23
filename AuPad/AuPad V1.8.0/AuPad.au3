@@ -494,10 +494,9 @@ Func Copy()
 EndFunc   ;==>Copy
 
 Func Paste()
-	Local $g, $p, $r
+	Local $g, $p
 	$g = ClipGet() ; get the string from the clipboard
 	If @error Then Return ; if @error is set get out
-	$r = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
 	$p = _GUICtrlRichEdit_InsertText($pEditWindow, $g) ; set the string into the edit control
 EndFunc   ;==>Paste
 
