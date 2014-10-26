@@ -273,6 +273,10 @@ Func __RESH_ReplaceRichEditTags(ByRef $sCode)
 	If $g_RESH_VIEW_TIMES Then ConsoleWrite('ReplaceRichEditTags = ' & TimerDiff($time) & @LF)
 EndFunc   ;==>__RESH_ReplaceRichEditTags
 
+;=========================================
+;==== Author: Beege ======================
+;=== Modified: MikahS ====================
+;=========================================
 Func __RESH_ReplaceCommentBlocks(ByRef $sCode, $sUpdateFunction = 0)
 	Local $time = TimerInit()
 
@@ -290,6 +294,7 @@ Func __RESH_ReplaceCommentBlocks(ByRef $sCode, $sUpdateFunction = 0)
 			Do
 				$sCB &= $aCode[$iLine] & @CR
 				$iLine += 1
+				If $iLine = UBound($aCode) - 1 Then ExitLoop
 			Until StringRegExp($aCode[$iLine], "(?i)\A[^'"";]*(#ce|#comments-end)")
 			$sCB &= $aCode[$iLine]
 
@@ -307,7 +312,7 @@ Func __RESH_ReplaceCommentBlocks(ByRef $sCode, $sUpdateFunction = 0)
 		EndIf
 		$iLine += 1
 	WEnd
-	If $iLine <= UBound($aCode) Then $sCode &= $aCode[$iLine] & @CR
+	If $iLine <= UBound($aCode) - 1 Then $sCode &= $aCode[$iLine] & @CR
 
 	If $g_RESH_VIEW_TIMES Then ConsoleWrite('ReplaceCommentBlocks = ' & TimerDiff($time) & @LF)
 EndFunc   ;==>__RESH_ReplaceCommentBlocks
