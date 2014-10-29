@@ -64,3 +64,4 @@
 - Fixed recent files
 
 - Fixed time/date at cursor position
+- Fixed RESH.au3 comment block functionality (added check in Do..While loop & added -1 to Ubound call)
