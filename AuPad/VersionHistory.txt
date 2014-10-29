@@ -54,3 +54,13 @@
 - Took out word wrap function and menu item as RichEdit is word wrapped already
 - Took out ini for the word wrap, but want to be very portable anyway
 - Added check for character attributes change
+
+---==== 1.8.0 ====---
+
+- Fixed upper, lower, tab
+
+- Fixed resizing of window and rich edit control
+
+- Fixed recent files
+
+- Fixed time/date at cursor position
