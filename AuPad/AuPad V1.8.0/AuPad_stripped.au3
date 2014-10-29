@@ -156,9 +156,14 @@ Global Const $WS_CAPTION = 0x00C00000
 Global Const $WS_OVERLAPPEDWINDOW = BitOR($WS_CAPTION, $WS_MAXIMIZEBOX, $WS_MINIMIZEBOX, $WS_OVERLAPPED, $WS_SYSMENU, $WS_THICKFRAME)
 Global Const $WS_POPUP = 0x80000000
 Global Const $WS_EX_ACCEPTFILES = 0x00000010
+Global Const $WM_SIZE = 0x0005
+Global Const $WM_SYSCOMMAND = 0x0112
 Global Const $WM_DROPFILES = 0x0233
 Global Const $GUI_EVENT_CLOSE = -3
+Global Const $GUI_RUNDEFMSG = 'GUI_RUNDEFMSG'
+Global Const $GUI_DISABLE = 128
 Global Const $GUI_DOCKAUTO = 0x0001
+Global Const $GUI_BKCOLOR_TRANSPARENT = -2
 Global Const $FO_READ = 0
 Global Const $FO_OVERWRITE = 2
 Global Const $SE_PRIVILEGE_ENABLED = 0x00000002
@@ -776,6 +781,11 @@ _SendMessage($hRichEdit, $__RICHEDITCONSTANT_WM_SETFONT, _WinAPI_GetStockObject(
 _GUICtrlRichEdit_AppendText($hRichEdit, $sText)
 Return $hRichEdit
 EndFunc
+Func _GUICtrlRichEdit_Deselect($hWnd)
+If Not _WinAPI_IsClassName($hWnd, $__g_sRTFClassName) Then Return SetError(101, 0, False)
+_SendMessage($hWnd, $EM_SETSEL, -1, 0)
+Return True
+EndFunc
 Func _GUICtrlRichEdit_GetText($hWnd, $bCrToCrLf = False, $iCodePage = 0, $sReplChar = "")
 If Not _WinAPI_IsClassName($hWnd, $__g_sRTFClassName) Then Return SetError(101, 0, "")
 If Not IsBool($bCrToCrLf) Then Return SetError(102, 0, "")
@@ -834,6 +844,23 @@ EndFunc
 Func _GUICtrlRichEdit_GotoCharPos($hWnd, $iCharPos)
 _GUICtrlRichEdit_SetSel($hWnd, $iCharPos, $iCharPos)
 If @error Then Return SetError(@error, 0, False)
+Return True
+EndFunc
+Func _GUICtrlRichEdit_InsertText($hWnd, $sText)
+If Not _WinAPI_IsClassName($hWnd, $__g_sRTFClassName) Then Return SetError(101, 0, False)
+If $sText = "" Then Return SetError(102, 0, False)
+Local $tSetText = DllStructCreate($tagSETTEXTEX)
+DllStructSetData($tSetText, 1, $ST_SELECTION)
+_GUICtrlRichEdit_Deselect($hWnd)
+Local $iRet
+If StringLeft($sText, 5) <> "{\rtf" And StringLeft($sText, 5) <> "{urtf" Then
+DllStructSetData($tSetText, 2, $CP_UNICODE)
+$iRet = _SendMessage($hWnd, $EM_SETTEXTEX, $tSetText, $sText, 0, "struct*", "wstr")
+Else
+DllStructSetData($tSetText, 2, $CP_ACP)
+$iRet = _SendMessage($hWnd, $EM_SETTEXTEX, $tSetText, $sText, 0, "struct*", "STR")
+EndIf
+If Not $iRet Then Return SetError(103, 0, False)
 Return True
 EndFunc
 Func _GUICtrlRichEdit_IsTextSelected($hWnd)
@@ -1449,6 +1476,7 @@ $sCB = ''
 Do
 $sCB &= $aCode[$iLine] & @CR
 $iLine += 1
+If $iLine = UBound($aCode) - 1 Then ExitLoop
 Until StringRegExp($aCode[$iLine], "(?i)\A[^'"";]*(#ce|#comments-end)")
 $sCB &= $aCode[$iLine]
 While StringInStr($sCode, $g_aUniqStrings[$iIdx])
@@ -1462,7 +1490,7 @@ $sCode &= $aCode[$iLine] & @CR
 EndIf
 $iLine += 1
 WEnd
-If $iLine <= UBound($aCode) Then $sCode &= $aCode[$iLine] & @CR
+If $iLine <= UBound($aCode) - 1 Then $sCode &= $aCode[$iLine] & @CR
 If $g_RESH_VIEW_TIMES Then ConsoleWrite('ReplaceCommentBlocks = ' & TimerDiff($time) & @LF)
 EndFunc
 Func __RESH_MarkQuotedStrings(ByRef $sCode, $sUpdateFunction = 0)
@@ -1809,7 +1837,7 @@ If @error = 0 Then Return $vDllAns[0]
 SetError(1)
 Return -1
 EndFunc
-Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC, $eLC, $lCount, $eSU, $eSL, $lpRead, $sUpper, $sLower, $wwINIvalue, $aRecent[10][4], $fAR, $iDefaultSize, $iBufferedfSize = "", $eRedo, $forBkClr, $alrCount = 0, $printDLL = "printmg.dll", $forSyn, $synAu3
+Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC, $eLC, $lCount, $eSU, $eSL, $lpRead, $sUpper, $sLower, $wwINIvalue, $aRecent[10][4], $fAR, $iDefaultSize, $iBufferedfSize = "", $eRedo, $forBkClr, $alrCount = 0, $printDLL = "printmg.dll", $forSyn, $synAu3, $cLabel_1
 Local $tLimit = 1000000
 Local $abChild, $fCount = 0, $sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru, $fColor, $cColor
 AdlibRegister("chkSel", 1000)
@@ -1824,6 +1852,9 @@ _GUICtrlRichEdit_ChangeFontSize($pEditWindow, 10)
 $sFontName = 'Arial'
 $iFontSize = 10
 $iDefaultSize = 10
+Local $bSysMsg = False
+GUIRegisterMsg($WM_SIZE, "WM_SIZE")
+GUIRegisterMsg($WM_SYSCOMMAND, "_WM_SYSCOMMAND")
 $aRecent[0][0] = 0
 GUICtrlSetState($eRedo, 128)
 $hp = _PrintDLLStart($mmssgg, $printDLL)
@@ -1866,13 +1897,13 @@ Case $eLC
 $lCount = _GUICtrlRichEdit_GetLineCount($pEditWindow)
 MsgBox(0, "Line Count", $lCount)
 Case $eSU
-$lpRead = GUICtrlRead($pEditWindow)
+$lpRead = _GUICtrlRichEdit_GetText($pEditWindow)
 $sUpper = StringUpper($lpRead)
-GUICtrlSetData($pEditWindow, $sUpper)
+_GUICtrlRichEdit_SetText($pEditWindow, $sUpper)
 Case $eSL
-$lpRead = GUICtrlRead($pEditWindow)
+$lpRead = _GUICtrlRichEdit_GetText($pEditWindow)
 $sLower = StringLower($lpRead)
-GUICtrlSetData($pEditWindow, $sLower)
+_GUICtrlRichEdit_SetText($pEditWindow, $sLower)
 Case $synAu3
 If $alrCount = 0 Then
 $alrCount = AdlibRegister("au3Syn", 1000)
@@ -1900,6 +1931,10 @@ fontGUI()
 Case $hVHelp
 Help()
 EndSwitch
+If $bSysMsg Then
+$bSysMsg = False
+_Resize_RichEdit()
+EndIf
 Case $abChild
 Switch $msg[0]
 Case $GUI_EVENT_CLOSE
@@ -1912,6 +1947,10 @@ Func GUI()
 Local $FileM, $EditM, $FormatM, $ViewM, $HelpM, $textl
 $pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES)
 $pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
+$cLabel_1 = GUICtrlCreateLabel("", 0, 0, 600, 480)
+GUICtrlSetState($cLabel_1, $GUI_DISABLE)
+GUICtrlSetResizing($cLabel_1, $GUI_DOCKAUTO)
+GUICtrlSetBkColor($cLabel_1, $GUI_BKCOLOR_TRANSPARENT)
 _GUICtrlRichEdit_SetLimitOnText($pEditWindow, $tLimit)
 GUICtrlSetResizing($pEditWindow, $GUI_DOCKAUTO)
 $FileM = GUICtrlCreateMenu("File")
@@ -2160,9 +2199,7 @@ _PrintEndPrint($hp)
 _PrintDLLClose($hp)
 EndFunc
 Func Tab()
-Local $rwin
-$rwin = _GUICtrlRichEdit_GetText($pEditWindow)
-_GUICtrlRichEdit_SetText($pEditWindow, $rwin & "        ")
+_GUICtrlRichEdit_InsertText($pEditWindow, "    ")
 EndFunc
 Func Copy()
 Local $gt, $st, $ct
@@ -2176,11 +2213,10 @@ $ct = ClipPut($st)
 If $ct = 0 Then MsgBox(0, "error", "Could not copy selected text")
 EndFunc
 Func Paste()
-Local $g, $p, $r
+Local $g, $p
 $g = ClipGet()
 If @error Then Return
-$r = _GUICtrlRichEdit_GetText($pEditWindow)
-$p = _GUICtrlRichEdit_SetText($pEditWindow, $g)
+$p = _GUICtrlRichEdit_InsertText($pEditWindow, $g)
 EndFunc
 Func timeDate()
 Local $r, $p, $h, $s
@@ -2188,9 +2224,9 @@ $r = _GUICtrlRichEdit_GetText($pEditWindow)
 If @HOUR >= 12 Then
 $h = @HOUR - 12
 $s = Int($h)
-$p = _GUICtrlRichEdit_SetText($pEditWindow, $r & $s & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR)
+$p = _GUICtrlRichEdit_InsertText($pEditWindow, $s & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR)
 Else
-$p = _GUICtrlRichEdit_SetText($pEditWindow, $r & @HOUR & ":" & @MIN & " AM " & @MON & "/" & @MDAY & "/" & @YEAR)
+$p = _GUICtrlRichEdit_InsertText($pEditWindow, @HOUR & ":" & @MIN & " AM " & @MON & "/" & @MDAY & "/" & @YEAR)
 EndIf
 EndFunc
 Func fontGUI()
@@ -2215,7 +2251,7 @@ _GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iDefaultSize)
 Else
 _GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iDefaultSize - $iFontSize)
 EndIf
-$fbS = $fontbox[1]
+$fbS = $fontBox[1]
 Switch $fbS
 Case '2'
 $scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
@@ -2237,7 +2273,7 @@ _GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iBufferedfSize)
 Else
 _GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iBufferedfSize - $iFontSize)
 EndIf
-$fbS = $fontbox[1]
+$fbS = $fontBox[1]
 Switch $fbS
 Case '2'
 $scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
@@ -2316,6 +2352,7 @@ _GUICtrlRichEdit_SetText($pEditWindow, $fileRead)
 $saveCounter += 1
 $fn[$oIndex] = $fileOpenD
 FileClose($fileOpen)
+addRecent($fileOpenD)
 EndFunc
 Func Save()
 Local $r, $sd, $cn, $i, $chkExt
@@ -2399,4 +2436,21 @@ Return
 EndIf
 EndIf
 Exit
+EndFunc
+Func WM_SIZE($hWnd, $msg, $wParam, $lParam)
+_Resize_RichEdit()
+Return $GUI_RUNDEFMSG
+EndFunc
+Func _WM_SYSCOMMAND($hWnd, $msg, $wParam, $lParam)
+Const $SC_MAXIMIZE = 0xF030
+Const $SC_RESTORE = 0xF120
+Switch $wParam
+Case $SC_MAXIMIZE, $SC_RESTORE
+$bSysMsg = True
+EndSwitch
+EndFunc
+Func _Resize_RichEdit()
+Local $aRet
+$aRet = ControlGetPos($pWnd, "", $cLabel_1)
+WinMove($pEditWindow, "", $aRet[0], $aRet[1], $aRet[2], $aRet[3])
 EndFunc

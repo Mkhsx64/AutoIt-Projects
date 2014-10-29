@@ -19,7 +19,6 @@ EndIf
 #include <WindowsConstants.au3>
 #include <SendMessage.au3>
 #include <Constants.au3>
-#include <ProgressGUI.au3>
 
 Local $Result = "", $ProcessID = -1, $sKey = "", $ProgHandle = "", $MonHandle = ""
 Local $dir = @ProgramFilesDir & "\AuPad", $msgbx
@@ -31,20 +30,16 @@ $CopyFile[1] = "aupad.ico"
 $CopyFile[2] = "PrintMG.dll"
 
 ; Create program folder if it does not exit
-$ProgressHandle = ProgressGUI("Creating Aupad Program Folder")
 DirCreate($dir)
 $Result = DirGetSize($dir)
-GUIDelete($ProgressHandle)
 If $Result = -1 Then
 	MsgBox(0, "error", "Unable To Create ArchAngel Program Folder")
 EndIf
 
 ; Copy files
 For $I = 0 To UBound($CopyFile) - 1
-	$ProgressHandle = ProgressGUI("Copying " & $CopyFile[$I])
 	$Result = FileCopy(@WorkingDir & "\" & $CopyFile[$I], $dir & "\" & $CopyFile[$I], 1)
 	Sleep(2000)
-	GUIDelete($ProgressHandle)
 	If $Result = 0 Then
 		MsgBox(0, "Error", "Unable To Copy " & $dir & "\" & $CopyFile[$I])
 		MsgBox(0, "Install", "Could not complete install. Exiting...")
