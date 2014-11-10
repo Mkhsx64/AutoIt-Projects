@@ -502,6 +502,8 @@ Func Quit()
 	Exit ; get out
 EndFunc   ;==>Quit
 
+; Thanks to funkey for this function - http://www.autoitscript.com/forum/topic/140024-english-msgbox-button-texts-for-everyone/
+;================================================================================================
 Func _MsgBoxEnglish($flag, $title, $text, $timeout = 0, $hwnd = 0)
  Local $hProcMsgBox = DllCallbackRegister("CbtHookProcMsgBox", "int", "int;int;int")
  Local $TIDMsgBox = _WinAPI_GetCurrentThreadId()
@@ -540,3 +542,4 @@ Func _WinAPI_SetDlgItemText($hDlg, $nIDDlgItem, $lpString)
    "str", $lpString)
  Return $aRet[0]
 EndFunc   ;==>_WinAPI_SetDlgItemText
+;================================================================================================
