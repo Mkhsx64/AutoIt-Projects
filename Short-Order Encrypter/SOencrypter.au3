@@ -1,4 +1,5 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_UseX64=N ; must run as x86 for drag and drop support
 #AutoIt3Wrapper_Icon=encKey.ico
 #AutoIt3Wrapper_Outfile=
 #AutoIt3Wrapper_Res_Comment=Short-Order Encrypter
