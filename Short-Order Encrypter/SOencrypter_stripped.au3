@@ -281,9 +281,11 @@ EndFunc
 Func __Crypt_ContextSet($hCryptContext)
 $__g_aCryptInternalData[2] = $hCryptContext
 EndFunc
-Opt("MustDeclareVars", 1)
-Local $hGUI, $msg = 0, $hInput, $iButton, $hDecode, $dButton, $aChkBx[8], $cValue, $iChild = 9999, $iMsg, $iPswd, $iMsgBox, $iPswdBox, $iSubmit = 9999, $iChild2 = 9999, $cButton = 9999, $eButton = 9999, $iEdit, $dChild = 9999, $dMsgBox, $dPswdBox, $dSubmit = 9999, $dMsg, $dPswd, $iFileGetB, $dFileGetB, $fChildi = 9999, $iFilePass, $iFilePassBox, $iPassSubmit, $fcPath, $ED = ""
+Global Const $WS_EX_ACCEPTFILES = 0x00000010
+Global Const $WM_DROPFILES = 0x0233
+Local $hGUI, $msg = 0, $hInput, $iButton, $hDecode, $dButton, $aChkBx[8], $cValue, $iChild = 9999, $iMsg, $iPswd, $iMsgBox, $iPswdBox, $iSubmit = 9999, $iChild2 = 9999, $cButton = 9999, $eButton = 9999, $iEdit, $dChild = 9999, $dMsgBox, $dPswdBox, $dSubmit = 9999, $dMsg, $dPswd, $iFileGetB, $dFileGetB, $fChildi = 9999, $iFilePass, $iFilePassBox, $iPassSubmit, $fcPath, $ED = "", $inputBox = -1
 GUI()
+GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES")
 While 1
 $msg = GUIGetMsg(1)
 Switch $msg[1]
@@ -350,7 +352,7 @@ EndSwitch
 EndSwitch
 WEnd
 Func GUI()
-$hGUI = GUICreate("Short-Order Encrypter", 300, 200)
+$hGUI = GUICreate("Short-Order Encrypter", 300, 200, Default, Default, Default, $WS_EX_ACCEPTFILES)
 GUICtrlCreateLabel("Encrypt a Message or a File!", 75, 10)
 GUICtrlCreateLabel("This is a simple input and output encryption program. You will", 5, 30)
 GUICtrlCreateLabel("select which method of encryption, then input your", 32, 43)
@@ -558,6 +560,53 @@ $fChildi = GUICreate("I need a password", 200, 100, -1, -1, -1, -1, $hGUI)
 $iFilePassBox = GUICtrlCreateInput("", 5, 5, 190, 60)
 $iPassSubmit = GUICtrlCreateButton("Run", 80, 70)
 GUISetState()
+EndFunc
+Func WM_DROPFILES($hWnd, $iMsg, $wParam, $lParam)
+#forceref $iMsg, $lParam
+If $hWnd = $hGUI Then
+$sDroppedFiles = _DragQueryFile($wParam)
+If @error Or StringInStr(FileGetAttrib($sDroppedFiles), "D") Then
+_MessageBeep(48)
+Return 1
+EndIf
+_DragFinish($wParam)
+_getInput($sDroppedFiles)
+Return 1
+EndIf
+_MessageBeep(48)
+Return 1
+EndFunc
+Func _DragQueryFile($hDrop, $iIndex = 0)
+Local $aCall = DllCall("shell32.dll", "dword", "DragQueryFileW", "handle", $hDrop, "dword", $iIndex, "wstr", "", "dword", 32767)
+If @error Or Not $aCall[0] Then Return MsgBox(0, "", "error")
+Return $aCall[3]
+EndFunc
+Func _DragFinish($hDrop)
+DllCall("shell32.dll", "none", "DragFinish", "handle", $hDrop)
+If @error Then Return MsgBox(0, "", "error in _DragFinish: " & @error)
+EndFunc
+Func _MessageBeep($iType)
+DllCall("user32.dll", "int", "MessageBeep", "dword", $iType)
+If @error Then Return MsgBox(0, "", "error in _MessageBeep: " & @error)
+EndFunc
+Func _getInput($droppedPath)
+$ifCharSet = FileGetEncoding($droppedPath)
+$msgBox = MsgBox(3, "Dropped File", "Yes: Encrypt ; No: Decrypt ; Cancel: Exit")
+If $msgBox = 6 Then
+$ED = "E"
+$inputBox = InputBox("Encryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of encryption you would like to use.")
+$cValue = Int(StringStripWS($inputBox, 8))
+$fcPath = $droppedPath
+iPswdBox($ED)
+ElseIf $msgBox = 7 Then
+$ED = "D"
+$inputBox = InputBox("Decryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of decryption you would like to use.")
+$cValue = Int(StringStripWS($inputBox, 8))
+$fcPath = $droppedPath
+iPswdBox($ED)
+Else
+Return
+EndIf
 EndFunc
 Func fileCrypt($Path, $Pass, $cFlag, $encORdec)
 Local $fFlag[8], $sPath, $fEcrypt, $fDcrypt, $aError, $getNameA, $gotName, $iN, $sis
