@@ -16,3 +16,9 @@
 ----==== 1.5.0.0 ====----
 
 -added drag and drop support for encrypting and decrypting files
+
+----==== 1.6.0.0 ====----
+
+-Fixed drag & drop support on x64 systems
+-Added _MsgBoxEnglish function which allows changing of the button text for drag & drop
+-Added repaint of GUI window if canceled during drag & drop dialog

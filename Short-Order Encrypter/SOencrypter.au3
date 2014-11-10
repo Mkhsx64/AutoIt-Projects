@@ -1,9 +1,10 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
+#AutoIt3Wrapper_UseX64=N
 #AutoIt3Wrapper_Icon=encKey.ico
 #AutoIt3Wrapper_Outfile=
 #AutoIt3Wrapper_Res_Comment=Short-Order Encrypter
 #AutoIt3Wrapper_Res_Description=Will encrypt and decrypt messages and files.
-#AutoIt3Wrapper_Res_Fileversion=1.5.0
+#AutoIt3Wrapper_Res_Fileversion=1.6.0
 #AutoIt3Wrapper_Run_Au3Stripper=y
 #Au3Stripper_Parameters=/so
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
@@ -21,7 +22,7 @@
 #include <GUIConstantsEx.au3>
 #include <Crypt.au3>
 #include <GUIConstants.au3>
-
+#include <WinAPI.au3>
 
 ; vars
 Local $hGUI, $msg = 0, $hInput, $iButton, $hDecode, $dButton, _
@@ -370,20 +371,29 @@ EndFunc   ;==>_MessageBeep
 Func _getInput($droppedPath)
 	Local $i, $iPath, $fName
 	$ifCharSet = FileGetEncoding($droppedPath) ; get file encoding
-	$msgBox = MsgBox(3, "Dropped File", "Yes: Encrypt ; No: Decrypt ; Cancel: Exit")
+	$msgBox = _MsgBoxEnglish(3, "Drag & Drop", "Would you like to encrypt or decrypt file?")
 	If $msgBox = 6 Then
 		$ED = "E"
 		$inputBox = InputBox("Encryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of encryption you would like to use.")
+		If @error = 1 Then
+			GUI()
+			Return
+		EndIf
 		$cValue = Int(StringStripWS($inputBox, 8))
 		$fcPath = $droppedPath
 		iPswdBox($ED)
 	ElseIf $msgBox = 7 Then
 		$ED = "D"
 		$inputBox = InputBox("Decryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of decryption you would like to use.")
+		If @error = 1 Then
+			GUI()
+			Return
+		EndIf
 		$cValue = Int(StringStripWS($inputBox, 8))
 		$fcPath = $droppedPath
 		iPswdBox($ED)
 	Else
+		GUI()
 		Return
 	EndIf
 EndFunc   ;==>_OpenFile
@@ -492,4 +502,41 @@ Func Quit()
 	Exit ; get out
 EndFunc   ;==>Quit
 
-
+Func _MsgBoxEnglish($flag, $title, $text, $timeout = 0, $hwnd = 0)
+ Local $hProcMsgBox = DllCallbackRegister("CbtHookProcMsgBox", "int", "int;int;int")
+ Local $TIDMsgBox = _WinAPI_GetCurrentThreadId()
+ $hHookMsgBox = _WinAPI_SetWindowsHookEx($WH_CBT, DllCallbackGetPtr($hProcMsgBox), 0, $TIDMsgBox)
+ Local $iRet = MsgBox($flag, $title, $text, $timeout, $hwnd)
+ _WinAPI_UnhookWindowsHookEx($hHookMsgBox)
+ DllCallbackFree($hProcMsgBox)
+ Return $iRet
+EndFunc   ;==>_MsgBoxEnglish
+Func CbtHookProcMsgBox($nCode, $wParam, $lParam, $hHookMsgBox)
+ Local $RET = 0, $hBitmap = 0, $xWnd = 0
+ Local $sButtonText
+ If $nCode < 0 Then
+  $RET = _WinAPI_CallNextHookEx($hHookMsgBox, $nCode, $wParam, $lParam)
+  Return $RET
+ EndIf
+ Switch $nCode
+  Case 5 ;5=HCBT_ACTIVATE
+   _WinAPI_SetDlgItemText($wParam, 1, "Ok")
+   _WinAPI_SetDlgItemText($wParam, 2, "Cancel")
+   _WinAPI_SetDlgItemText($wParam, 3, "&Abort")
+   _WinAPI_SetDlgItemText($wParam, 4, "&Retry")
+   _WinAPI_SetDlgItemText($wParam, 5, "&Ignore")
+   _WinAPI_SetDlgItemText($wParam, 6, "&Encrypt")
+   _WinAPI_SetDlgItemText($wParam, 7, "&Decrypt")
+   _WinAPI_SetDlgItemText($wParam, 8, "Help")
+   _WinAPI_SetDlgItemText($wParam, 10, "&Try Again")
+   _WinAPI_SetDlgItemText($wParam, 11, "&Continue")
+ EndSwitch
+ Return
+EndFunc   ;==>CbtHookProcMsgBox
+Func _WinAPI_SetDlgItemText($hDlg, $nIDDlgItem, $lpString)
+ Local $aRet = DllCall('user32.dll', "int", "SetDlgItemText", _
+   "hwnd", $hDlg, _
+   "int", $nIDDlgItem, _
+   "str", $lpString)
+ Return $aRet[0]
+EndFunc   ;==>_WinAPI_SetDlgItemText

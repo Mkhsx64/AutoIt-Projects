@@ -283,6 +283,37 @@ $__g_aCryptInternalData[2] = $hCryptContext
 EndFunc
 Global Const $WS_EX_ACCEPTFILES = 0x00000010
 Global Const $WM_DROPFILES = 0x0233
+Global Const $tagRECT = "struct;long Left;long Top;long Right;long Bottom;endstruct"
+Global Const $tagREBARBANDINFO = "uint cbSize;uint fMask;uint fStyle;dword clrFore;dword clrBack;ptr lpText;uint cch;" & "int iImage;hwnd hwndChild;uint cxMinChild;uint cyMinChild;uint cx;handle hbmBack;uint wID;uint cyChild;uint cyMaxChild;" & "uint cyIntegral;uint cxIdeal;lparam lParam;uint cxHeader" &((@OSVersion = "WIN_XP") ? "" : ";" & $tagRECT & ";uint uChevronState")
+Global Const $HGDI_ERROR = Ptr(-1)
+Global Const $INVALID_HANDLE_VALUE = Ptr(-1)
+Global Const $WH_CBT = 5
+Global Const $KF_EXTENDED = 0x0100
+Global Const $KF_ALTDOWN = 0x2000
+Global Const $KF_UP = 0x8000
+Global Const $LLKHF_EXTENDED = BitShift($KF_EXTENDED, 8)
+Global Const $LLKHF_ALTDOWN = BitShift($KF_ALTDOWN, 8)
+Global Const $LLKHF_UP = BitShift($KF_UP, 8)
+Func _WinAPI_CallNextHookEx($hHk, $iCode, $wParam, $lParam)
+Local $aResult = DllCall("user32.dll", "lresult", "CallNextHookEx", "handle", $hHk, "int", $iCode, "wparam", $wParam, "lparam", $lParam)
+If @error Then Return SetError(@error, @extended, -1)
+Return $aResult[0]
+EndFunc
+Func _WinAPI_GetCurrentThreadId()
+Local $aResult = DllCall("kernel32.dll", "dword", "GetCurrentThreadId")
+If @error Then Return SetError(@error, @extended, 0)
+Return $aResult[0]
+EndFunc
+Func _WinAPI_SetWindowsHookEx($idHook, $pFn, $hMod, $iThreadId = 0)
+Local $aResult = DllCall("user32.dll", "handle", "SetWindowsHookEx", "int", $idHook, "ptr", $pFn, "handle", $hMod, "dword", $iThreadId)
+If @error Then Return SetError(@error, @extended, 0)
+Return $aResult[0]
+EndFunc
+Func _WinAPI_UnhookWindowsHookEx($hHk)
+Local $aResult = DllCall("user32.dll", "bool", "UnhookWindowsHookEx", "handle", $hHk)
+If @error Then Return SetError(@error, @extended, False)
+Return $aResult[0]
+EndFunc
 Local $hGUI, $msg = 0, $hInput, $iButton, $hDecode, $dButton, $aChkBx[8], $cValue, $iChild = 9999, $iMsg, $iPswd, $iMsgBox, $iPswdBox, $iSubmit = 9999, $iChild2 = 9999, $cButton = 9999, $eButton = 9999, $iEdit, $dChild = 9999, $dMsgBox, $dPswdBox, $dSubmit = 9999, $dMsg, $dPswd, $iFileGetB, $dFileGetB, $fChildi = 9999, $iFilePass, $iFilePassBox, $iPassSubmit, $fcPath, $ED = "", $inputBox = -1
 GUI()
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES")
@@ -591,20 +622,29 @@ If @error Then Return MsgBox(0, "", "error in _MessageBeep: " & @error)
 EndFunc
 Func _getInput($droppedPath)
 $ifCharSet = FileGetEncoding($droppedPath)
-$msgBox = MsgBox(3, "Dropped File", "Yes: Encrypt ; No: Decrypt ; Cancel: Exit")
+$msgBox = _MsgBoxEnglish(3, "Drag & Drop", "Would you like to encrypt or decrypt file?")
 If $msgBox = 6 Then
 $ED = "E"
 $inputBox = InputBox("Encryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of encryption you would like to use.")
+If @error = 1 Then
+GUI()
+Return
+EndIf
 $cValue = Int(StringStripWS($inputBox, 8))
 $fcPath = $droppedPath
 iPswdBox($ED)
 ElseIf $msgBox = 7 Then
 $ED = "D"
 $inputBox = InputBox("Decryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of decryption you would like to use.")
+If @error = 1 Then
+GUI()
+Return
+EndIf
 $cValue = Int(StringStripWS($inputBox, 8))
 $fcPath = $droppedPath
 iPswdBox($ED)
 Else
+GUI()
 Return
 EndIf
 EndFunc
@@ -707,4 +747,38 @@ EndSwitch
 EndFunc
 Func Quit()
 Exit
+EndFunc
+Func _MsgBoxEnglish($flag, $title, $text, $timeout = 0, $hwnd = 0)
+Local $hProcMsgBox = DllCallbackRegister("CbtHookProcMsgBox", "int", "int;int;int")
+Local $TIDMsgBox = _WinAPI_GetCurrentThreadId()
+$hHookMsgBox = _WinAPI_SetWindowsHookEx($WH_CBT, DllCallbackGetPtr($hProcMsgBox), 0, $TIDMsgBox)
+Local $iRet = MsgBox($flag, $title, $text, $timeout, $hwnd)
+_WinAPI_UnhookWindowsHookEx($hHookMsgBox)
+DllCallbackFree($hProcMsgBox)
+Return $iRet
+EndFunc
+Func CbtHookProcMsgBox($nCode, $wParam, $lParam, $hHookMsgBox)
+Local $RET = 0, $hBitmap = 0, $xWnd = 0
+If $nCode < 0 Then
+$RET = _WinAPI_CallNextHookEx($hHookMsgBox, $nCode, $wParam, $lParam)
+Return $RET
+EndIf
+Switch $nCode
+Case 5
+_WinAPI_SetDlgItemText($wParam, 1, "Ok")
+_WinAPI_SetDlgItemText($wParam, 2, "Cancel")
+_WinAPI_SetDlgItemText($wParam, 3, "&Abort")
+_WinAPI_SetDlgItemText($wParam, 4, "&Retry")
+_WinAPI_SetDlgItemText($wParam, 5, "&Ignore")
+_WinAPI_SetDlgItemText($wParam, 6, "&Encrypt")
+_WinAPI_SetDlgItemText($wParam, 7, "&Decrypt")
+_WinAPI_SetDlgItemText($wParam, 8, "Help")
+_WinAPI_SetDlgItemText($wParam, 10, "&Try Again")
+_WinAPI_SetDlgItemText($wParam, 11, "&Continue")
+EndSwitch
+Return
+EndFunc
+Func _WinAPI_SetDlgItemText($hDlg, $nIDDlgItem, $lpString)
+Local $aRet = DllCall('user32.dll', "int", "SetDlgItemText", "hwnd", $hDlg, "int", $nIDDlgItem, "str", $lpString)
+Return $aRet[0]
 EndFunc
