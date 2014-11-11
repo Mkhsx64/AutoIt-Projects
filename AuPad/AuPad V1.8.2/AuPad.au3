@@ -50,11 +50,12 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$eWC, $eLC, $lCount, $eSU, _
 		$eSL, $lpRead, $sUpper, _
 		$sLower, $wwINIvalue, _
-		$aRecent[10][4], $fAR, $iDefaultSize, _
+		$aRecent[100][4], $fAR, $iDefaultSize, _
 		$iBufferedfSize = "", $eRedo, _
 		$forBkClr, $alrCount = 0, _
 		$printDLL = "printmg.dll", _
-		$forSyn, $synAu3, $cLabel_1
+		$forSyn, $synAu3, $cLabel_1, _
+		$iEnd, $iStart, $iNumRecent = 0
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -97,6 +98,9 @@ Local $aAccelKeys[16][16] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES") ; register GUI msg for drop files
+
+$iStart = $aRecent[1][0]
+$iEnd = $iStart + $iNumRecent
 
 While 1
 	$msg = GUIGetMsg(1) ; make a 2D array for GUI events
@@ -167,6 +171,10 @@ While 1
 					fontGUI() ; if we select the font menu option call the fontGUI function
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
+				Case $iStart To $iEnd
+					For $i = 0 To $iEnd Step 1
+						If $msg[0] = $aRecent[$i][1] And FileExists($aRecent[$i][3]) Then _OpenFile($aRecent[$i][3])
+					Next
 			EndSwitch
 			If $bSysMsg Then
 				$bSysMsg = False
@@ -284,6 +292,8 @@ Func setNew()
 		If $mBox = 6 Then ; if we said yes
 			$saveCounter = 0 ; reset the save counter
 			Save() ; call the save function
+		ElseIf $mBox = 2 Then
+			Return
 		EndIf
 		_GUICtrlRichEdit_SetText($pEditWindow, "") ; reset the text in the edit control
 	EndIf
@@ -291,19 +301,57 @@ Func setNew()
 	If $title = "" Then MsgBox(0, "error", "Could not set window title...", 10) ; if the title equals nothing tell us
 EndFunc   ;==>setNew
 
-Func addRecent($path)
-	Local $i
-	For $i = 1 To $aRecent[0][0] Step 1 ; we need to check if we called it on the same recent path
-		If $aRecent[$i][3] = $path Then Return ; if we did get out
+;~ Func addRecent($path)
+;~ 	Local $i
+;~ 	For $i = 0 To $aRecent[0][0] Step 1 ; we need to check if we called it on the same recent path
+;~ 		If $aRecent[$i][3] = $path Then Return ; if we did get out
+;~ 	Next
+;~ 	MsgBox(0, "", $path)
+;~ 	If $aRecent[0][0] = 9 Then
+;~ 		_ArrayDelete($aRecent, 1) ; if we are at the end of the list delete the first added
+;~ 	EndIf
+;~ 	For $i = 0 To $aRecent[0][0] Step 1 ; from 1 to the number of items we have
+;~ 		$aRecent[$i][1] = GUICtrlCreateMenuItem($path, $fAR, $i) ; create the menu item
+;~ 		$aRecent[$i][2] = ControlGetHandle($path, "", $aRecent[$i][1]) ; get the handle
+;~ 		$aRecent[$i][3] = $path ; put the path in the array
+;~ 	Next
+;~ 	$aRecent[0][0] += 1 ; increment the counter
+;~ 	$iStart = $aRecent[0][1]
+;~ 	$iEnd = $aRecent[0][0]
+;~ EndFunc   ;==>addRecent
+
+Func addRecent($sPath)
+	Local $c = 0
+	For $i = 1 To $aRecent[0][0]
+		If $aRecent[$i][2] = $sPath Then
+			$c = $aRecent[$i][3]
+			GUICtrlDelete($aRecent[$i][0])
+			$aRecent[$i][0] = GUICtrlCreateMenuItem($aRecent[$i][1], $fAR, 0)
+			For $j = 1 To $aRecent[0][0]
+				If $aRecent[$j][3] < $c Then $aRecent[$j][3] += 1
+			Next
+			$aRecent[$i][3] = 1
+			Return
+		EndIf
 	Next
-	If $aRecent[0][0] = 9 Then _ArrayDelete($aRecent, 1) ; if we are at the end of the list delete the first added
-	$aRecent[0][0] += 1 ; increment the counter
-	For $i = 1 To $aRecent[0][0] Step 1 ; from 1 to the number of items we have
-		$aRecent[$i][1] = GUICtrlCreateMenuItem($path, $fAR, $i) ; create the menu item
-		$aRecent[$i][2] = ControlGetHandle($path, "", $aRecent[$i][1]) ; get the handle
-		$aRecent[$i][3] = $path ; put the path in the array
+	For $i = 1 To $aRecent[0][0]
+		$aRecent[$i][3] += 1
+		If $aRecent[$i][3] > $iNumRecent Then
+			$aRecent[$i][3] = 1
+			$c = $i
+			GUICtrlDelete($aRecent[$i][0])
+		EndIf
 	Next
-EndFunc   ;==>addRecent
+	If $aRecent[0][0] < $iNumRecent Then
+		$c = $aRecent[0][0] + 1
+		ReDim $aRecent[$c + 1][4]
+		$aRecent[0][0] = $c
+	EndIf
+	$aRecent[$c][1] = StringRegExpReplace($sPath, '^(.{3,11}\\|.{11})(.*)(\\.{6,27}|.{27})$', '\1...\3')
+	$aRecent[$c][2] = $sPath
+	$aRecent[$c][0] = GUICtrlCreateMenuItem($aRecent[$c][1], $fAR, 0)
+	$aRecent[$c][3] = 1
+EndFunc
 
 Func aChild()
 	Local $authLabel, $nameLabel
@@ -440,6 +488,8 @@ Func _OpenFile($droppedPath)
 	$fName = StringSplit($iPath[$i], ".") ; split the string by "."
 	WinSetTitle($pWnd, '', $fName[1] & ' - ' & "AuPad") ; set the window title
 	_GUICtrlRichEdit_SetModified($pEditWindow, False) ; set the modify flag
+	addRecent($droppedPath)
+	$iNumRecent += 1
 EndFunc   ;==>_OpenFile
 ;======================================================
 
@@ -637,6 +687,7 @@ Func Open()
 	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
 	FileClose($fileOpen) ; close the file
 	addRecent($fileOpenD) ; add the file opened to the recent list
+	$iNumRecent += 1
 EndFunc   ;==>Open
 
 Func Save()
@@ -654,6 +705,7 @@ Func Save()
 			$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 			$saveCounter += 1 ; increment the save counter
 			addRecent($fs) ; add it to the recent files
+			$iNumRecent += 1
 			Return ; get out
 		EndIf
 		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
@@ -664,6 +716,7 @@ Func Save()
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
 		addRecent($fs) ; add the path to the recent files list
+		$iNumRecent += 1
 		Return ; get out
 	EndIf
 	If StringInStr($fn[$oIndex], "rtf") Then
@@ -672,6 +725,7 @@ Func Save()
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
 		addRecent($fn[$oIndex]) ; add the path to the recent files list
+		$iNumRecent += 1
 		Return ; get out
 	EndIf
 	$fo = FileOpen($fn[$oIndex], 2) ; if we've already saved before, open the file and set it to overwrite current contents
@@ -679,6 +733,7 @@ Func Save()
 	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
 	FileClose($fn[$oIndex]) ; close the file we specified
 	addRecent($fn[$oIndex]) ; add the path to the recent files list
+	$iNumRecent += 1
 EndFunc   ;==>Save
 
 Func Help()

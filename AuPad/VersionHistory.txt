@@ -67,3 +67,4 @@
 
 - Took out HotkeySets and made GUI accelerator keys (F2 (about), F5 (time/date))
 - Fixed Au3 syntax highlighting setting caret position
+- Added cancel to New file dialog
