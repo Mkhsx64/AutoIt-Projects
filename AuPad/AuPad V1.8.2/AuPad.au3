@@ -68,9 +68,6 @@ AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
 AdlibRegister("chkUndo", 1000) ; check if there has been any undo actions
 
-HotKeySet("{F5}", "timeDate") ; if the user hits the F5 key, then run the timeDate function
-HotKeySet("{F2}", "Help") ; if the user hits the F2 key, then run the Help function
-
 GUI() ; create the window
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico') ; if the script isn't compiled then set the icon
 
@@ -90,11 +87,12 @@ GUICtrlSetState($eRedo, 128) ; set the state of the redo menu item
 
 $hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
 
-Local $aAccelKeys[14][14] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
+Local $aAccelKeys[16][16] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
 		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], _
 		["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], _
-		["^+s", $fSaveAs], ["^r", $eRedo]]
+		["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], _
+		["{F2}", $hAA]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 

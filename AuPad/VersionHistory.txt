@@ -58,10 +58,11 @@
 ---==== 1.8.0 ====---
 
 - Fixed upper, lower, tab
-
 - Fixed resizing of window and rich edit control
-
 - Fixed recent files
-
 - Fixed time/date at cursor position
 - Fixed RESH.au3 comment block functionality (added check in Do..While loop & added -1 to Ubound call)
+
+---==== 1.8.2 ====---
+
+-Took out HotkeySets and made GUI accelerator keys (F2 (about), F5 (time/date))
