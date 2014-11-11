@@ -267,8 +267,8 @@ Func au3Syn()
 	$aColorTable[$iComObjects] = 0x993399
 	_RESH_SetColorTable($aColorTable)
 	If @error Then MsgBox(0, 'ERROR', 'Error setting new color table!')
-	_GUICtrlRichEdit_SetText($pEditWindow, $gRTFcode) ; set the au3 code into the rich edit
-	_GUICtrlRichEdit_GotoCharPos($pEditWindow, -1) ; go to the last character position
+	$gSel = _GUICtrlRichEdit_GetSel($pEditWindow)
+	_GUICtrlRichEdit_SetText($pEditWindow, $gRTFcode) ; set the au3 code into the rich edit\
 	If Not IsArray($gSel) Then Return ; get out if we don't need to select anything
 	_GUICtrlRichEdit_SetSel($pEditWindow, $gSel[0], $gSel[1]) ; set the selection if there was anything selected
 EndFunc   ;==>au3Syn
