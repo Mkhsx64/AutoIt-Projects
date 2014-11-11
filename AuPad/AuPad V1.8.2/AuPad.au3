@@ -55,7 +55,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$forBkClr, $alrCount = 0, _
 		$printDLL = "printmg.dll", _
 		$forSyn, $synAu3, $cLabel_1, _
-		$iEnd, $iStart, $iNumRecent = 0
+		$iEnd, $iStart, $iNumRecent = 5
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -98,9 +98,6 @@ Local $aAccelKeys[16][16] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES") ; register GUI msg for drop files
-
-$iStart = $aRecent[1][0]
-$iEnd = $iStart + $iNumRecent
 
 While 1
 	$msg = GUIGetMsg(1) ; make a 2D array for GUI events
@@ -172,9 +169,13 @@ While 1
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
 				Case $iStart To $iEnd
-					For $i = 0 To $iEnd Step 1
-						If $msg[0] = $aRecent[$i][1] And FileExists($aRecent[$i][3]) Then _OpenFile($aRecent[$i][3])
+					For $i = 0 To $aRecent[0][0]
+						If $msg[0] = $aRecent[$i][0] Then
+							_OpenFile($aRecent[$i][2])
+							MsgBox(0, "", $aRecent[$i][2])
+						EndIf
 					Next
+					MsgBox(0, "", "just here")
 			EndSwitch
 			If $bSysMsg Then
 				$bSysMsg = False
@@ -322,15 +323,17 @@ EndFunc   ;==>setNew
 
 Func addRecent($sPath)
 	Local $c = 0
+	$iStart = GUICtrlCreateDummy()
 	For $i = 1 To $aRecent[0][0]
 		If $aRecent[$i][2] = $sPath Then
 			$c = $aRecent[$i][3]
 			GUICtrlDelete($aRecent[$i][0])
-			$aRecent[$i][0] = GUICtrlCreateMenuItem($aRecent[$i][1], $fAR, 0)
+			$aRecent[$i][0] = GUICtrlCreateMenuItem($aRecent[$i][1], $fAR, $i)
 			For $j = 1 To $aRecent[0][0]
 				If $aRecent[$j][3] < $c Then $aRecent[$j][3] += 1
 			Next
 			$aRecent[$i][3] = 1
+			$iEnd = GUICtrlCreateDummy()
 			Return
 		EndIf
 	Next
@@ -349,8 +352,9 @@ Func addRecent($sPath)
 	EndIf
 	$aRecent[$c][1] = StringRegExpReplace($sPath, '^(.{3,11}\\|.{11})(.*)(\\.{6,27}|.{27})$', '\1...\3')
 	$aRecent[$c][2] = $sPath
-	$aRecent[$c][0] = GUICtrlCreateMenuItem($aRecent[$c][1], $fAR, 0)
+	$aRecent[$c][0] = GUICtrlCreateMenuItem($aRecent[$c][1], $fAR, $i)
 	$aRecent[$c][3] = 1
+	$iEnd = GUICtrlCreateDummy()
 EndFunc
 
 Func aChild()
