@@ -65,4 +65,5 @@
 
 ---==== 1.8.2 ====---
 
--Took out HotkeySets and made GUI accelerator keys (F2 (about), F5 (time/date))
+- Took out HotkeySets and made GUI accelerator keys (F2 (about), F5 (time/date))
+- Fixed Au3 syntax highlighting setting caret position
