@@ -323,8 +323,8 @@ EndFunc   ;==>setNew
 
 Func addRecent($sPath)
 	Local $c = 0
-	$iStart = GUICtrlCreateDummy()
 	For $i = 1 To $aRecent[0][0]
+		$iStart = GUICtrlCreateDummy()
 		If $aRecent[$i][2] = $sPath Then
 			$c = $aRecent[$i][3]
 			GUICtrlDelete($aRecent[$i][0])
@@ -350,6 +350,7 @@ Func addRecent($sPath)
 		ReDim $aRecent[$c + 1][4]
 		$aRecent[0][0] = $c
 	EndIf
+	$iStart = GUICtrlCreateDummy()
 	$aRecent[$c][1] = StringRegExpReplace($sPath, '^(.{3,11}\\|.{11})(.*)(\\.{6,27}|.{27})$', '\1...\3')
 	$aRecent[$c][2] = $sPath
 	$aRecent[$c][0] = GUICtrlCreateMenuItem($aRecent[$c][1], $fAR, $c)
