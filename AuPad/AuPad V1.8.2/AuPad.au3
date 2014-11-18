@@ -56,7 +56,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$printDLL = "printmg.dll", _
 		$forSyn, $synAu3, $cLabel_1, _
 		$iEnd, $iStart, $iNumRecent = 5, _
-		$au3Buffer = ""
+		$au3Buffer = 0
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -254,8 +254,10 @@ EndFunc   ;==>GUI
 ; This is the ASM RESH library - included in zip file
 ;========================================================
 Func au3Syn()
-	Local $gRTFcode, $gSel
+	Local $gRTFcode, $gSel, $quotes
 	If _GUICtrlRichEdit_GetTextLength($pEditWindow) = $au3Buffer Then Return
+	$quotes = StringReplace(_GUICtrlRichEdit_GetText($pEditWindow), '"', '')
+	If Not IsInt(@extended/2) Then Return
 	$gSel = _GUICtrlRichEdit_GetSel($pEditWindow)
 	$gRTFcode = _RESH_SyntaxHighlight($pEditWindow) ; generate the au3 code from the rtf text
 	Local $aColorTable[13]
@@ -279,7 +281,7 @@ Func au3Syn()
 	If @error Then MsgBox(0, 'ERROR', 'Error setting new color table!')
 	$au3Buffer = _GUICtrlRichEdit_GetTextLength($pEditWindow)
 	If Not IsArray($gSel) Then Return ; get out if we don't need to select anything
-	_GUICtrlRichEdit_SetSel($pEditWindow, $gSel[0], $gSel[1]) ; set the selection if there was anything selected
+	_GUICtrlRichEdit_SetSel($pEditWindow, $gSel[0], $gSel[1], True) ; set the selection if there was anything selected
 EndFunc   ;==>au3Syn
 ;========================================================
 
