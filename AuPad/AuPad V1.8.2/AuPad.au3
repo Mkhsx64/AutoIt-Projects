@@ -302,25 +302,6 @@ Func setNew()
 	If $title = "" Then MsgBox(0, "error", "Could not set window title...", 10) ; if the title equals nothing tell us
 EndFunc   ;==>setNew
 
-;~ Func addRecent($path)
-;~ 	Local $i
-;~ 	For $i = 0 To $aRecent[0][0] Step 1 ; we need to check if we called it on the same recent path
-;~ 		If $aRecent[$i][3] = $path Then Return ; if we did get out
-;~ 	Next
-;~ 	MsgBox(0, "", $path)
-;~ 	If $aRecent[0][0] = 9 Then
-;~ 		_ArrayDelete($aRecent, 1) ; if we are at the end of the list delete the first added
-;~ 	EndIf
-;~ 	For $i = 0 To $aRecent[0][0] Step 1 ; from 1 to the number of items we have
-;~ 		$aRecent[$i][1] = GUICtrlCreateMenuItem($path, $fAR, $i) ; create the menu item
-;~ 		$aRecent[$i][2] = ControlGetHandle($path, "", $aRecent[$i][1]) ; get the handle
-;~ 		$aRecent[$i][3] = $path ; put the path in the array
-;~ 	Next
-;~ 	$aRecent[0][0] += 1 ; increment the counter
-;~ 	$iStart = $aRecent[0][1]
-;~ 	$iEnd = $aRecent[0][0]
-;~ EndFunc   ;==>addRecent
-
 Func addRecent($sPath)
 	Local $c = 0
 	For $i = 1 To $aRecent[0][0]
@@ -350,7 +331,6 @@ Func addRecent($sPath)
 		ReDim $aRecent[$c + 1][4]
 		$aRecent[0][0] = $c
 	EndIf
-	$iStart = GUICtrlCreateDummy()
 	$aRecent[$c][1] = StringRegExpReplace($sPath, '^(.{3,11}\\|.{11})(.*)(\\.{6,27}|.{27})$', '\1...\3')
 	$aRecent[$c][2] = $sPath
 	$aRecent[$c][0] = GUICtrlCreateMenuItem($aRecent[$c][1], $fAR, $c)
