@@ -305,7 +305,7 @@ Func setNew()
 EndFunc   ;==>setNew
 
 Func addRecent($sPath)
-	Local $c = 0
+	Local $c = 0, $i = 1
 	For $i = 1 To $aRecent[0][0]
 		$iStart = GUICtrlCreateDummy()
 		If $aRecent[$i][2] = $sPath Then
