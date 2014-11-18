@@ -55,7 +55,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$forBkClr, $alrCount = 0, _
 		$printDLL = "printmg.dll", _
 		$forSyn, $synAu3, $cLabel_1, _
-		$iEnd, $iStart, $iNumRecent = 5
+		$iEnd, $iStart, $iNumRecent = 5, _
+		$au3Buffer = ""
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -172,10 +173,8 @@ While 1
 					For $i = 0 To $aRecent[0][0]
 						If $msg[0] = $aRecent[$i][0] Then
 							_OpenFile($aRecent[$i][2])
-							MsgBox(0, "", $aRecent[$i][2])
 						EndIf
 					Next
-					MsgBox(0, "", "just here")
 			EndSwitch
 			If $bSysMsg Then
 				$bSysMsg = False
@@ -256,7 +255,9 @@ EndFunc   ;==>GUI
 ;========================================================
 Func au3Syn()
 	Local $gRTFcode, $gSel
-	$gRTFcode = _RESH_GenerateRTFCode(_GUICtrlRichEdit_GetText($pEditWindow), $pEditWindow) ; generate the au3 code from the rtf text
+	If _GUICtrlRichEdit_GetTextLength($pEditWindow) = $au3Buffer Then Return
+	$gSel = _GUICtrlRichEdit_GetSel($pEditWindow)
+	$gRTFcode = _RESH_SyntaxHighlight($pEditWindow) ; generate the au3 code from the rtf text
 	Local $aColorTable[13]
 	Local Enum $iMacros, $iStrings, $iSpecial, $iComments, $iVariables, $iOperators, $iNumbers, $iKeywords, _
 			$iUDFs, $iSendKeys, $iFunctions, $iPreProc, $iComObjects
@@ -276,8 +277,7 @@ Func au3Syn()
 	$aColorTable[$iComObjects] = 0x993399
 	_RESH_SetColorTable($aColorTable)
 	If @error Then MsgBox(0, 'ERROR', 'Error setting new color table!')
-	$gSel = _GUICtrlRichEdit_GetSel($pEditWindow)
-	_GUICtrlRichEdit_SetText($pEditWindow, $gRTFcode) ; set the au3 code into the rich edit\
+	$au3Buffer = _GUICtrlRichEdit_GetTextLength($pEditWindow)
 	If Not IsArray($gSel) Then Return ; get out if we don't need to select anything
 	_GUICtrlRichEdit_SetSel($pEditWindow, $gSel[0], $gSel[1]) ; set the selection if there was anything selected
 EndFunc   ;==>au3Syn
