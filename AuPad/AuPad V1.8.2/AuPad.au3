@@ -306,16 +306,16 @@ EndFunc   ;==>setNew
 
 Func addRecent($sPath)
 	Local $c = 0, $i = 1
-	For $i = 1 To $aRecent[0][0]
-		$iStart = GUICtrlCreateDummy()
-		If $aRecent[$i][2] = $sPath Then
-			$c = $aRecent[$i][3]
-			GUICtrlDelete($aRecent[$i][0])
-			$aRecent[$i][0] = GUICtrlCreateMenuItem($aRecent[$i][1], $fAR, $i)
-			For $j = 1 To $aRecent[0][0]
-				If $aRecent[$j][3] < $c Then $aRecent[$j][3] += 1
+	For $i = 1 To $aRecent[0][0] ; 1 to the number of recent files
+		$iStart = GUICtrlCreateDummy() ; create the starting dummy control
+		If $aRecent[$i][2] = $sPath Then ; if the paths are equal
+			$c = $aRecent[$i][3] ; store the number
+			GUICtrlDelete($aRecent[$i][0])  ; delete the existing
+			$aRecent[$i][0] = GUICtrlCreateMenuItem($aRecent[$i][1], $fAR, $i) ; set the menu item
+			For $j = 1 To $aRecent[0][0] ; start j at 1 to number of recent files
+				If $aRecent[$j][3] < $c Then $aRecent[$j][3] += 1 ; if the number is less then c then add one
 			Next
-			$aRecent[$i][3] = 1
+			$aRecent[$i][3] = 1 ; reset the 4th array value for that recent file
 			Return
 		EndIf
 	Next
