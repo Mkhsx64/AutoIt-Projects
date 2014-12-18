@@ -316,7 +316,6 @@ Func addRecent($sPath)
 				If $aRecent[$j][3] < $c Then $aRecent[$j][3] += 1
 			Next
 			$aRecent[$i][3] = 1
-			$iEnd = GUICtrlCreateDummy()
 			Return
 		EndIf
 	Next
