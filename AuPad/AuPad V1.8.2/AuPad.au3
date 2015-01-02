@@ -176,9 +176,9 @@ While 1
 						EndIf
 					Next
 			EndSwitch
-			If $bSysMsg Then
-				$bSysMsg = False
-				_Resize_RichEdit()
+			If $bSysMsg Then ; if the flag has been set
+				$bSysMsg = False ; reset the flag
+				_Resize_RichEdit() ; resize the rich edit control
 			EndIf
 		Case $abChild
 			Switch $msg[0]
