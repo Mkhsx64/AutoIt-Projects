@@ -70,4 +70,5 @@
 - Added cancel to New file dialog
 - Switched to ASM RESH UDF by Beege (thanks!)
 - Added check when Syntax Highlighting to not highlight if there has not been any more user interaction. Cutting down a ton of processing.
-- Added check for quotes, due to problem with RESH - It will crash the entire program when trying to syntax highlight an unterminated quote
+- Added check for quotes, due to problem with RESH - It will crash the entire program when trying to syntax highlight an unterminated quote.
+- Commented out Addrecent as problems with messageloop and GUI dummy
