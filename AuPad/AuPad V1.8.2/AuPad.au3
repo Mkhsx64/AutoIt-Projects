@@ -94,7 +94,7 @@ Local $aAccelKeys[16][16] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], _
 		["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], _
 		["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], _
-		["{F2}", $hAA]]
+		["{F2}", $hVHelp]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
