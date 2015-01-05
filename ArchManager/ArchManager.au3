@@ -15,14 +15,19 @@
 ;==========================================================
 ;Contacts, Demos, customers, marketing, send e-mails
 
-
-
-Global $GUI[1]
+Global $GUI[2], $msg
 
 _mainGUI()
 
 While 1
-
+	$msg = GUIGetMsg(1)
+	Switch $msg[1]
+		Case $GUI[1]
+			Switch $msg[0]
+				Case $GUI_EVENT_CLOSE
+					Exit
+			EndSwitch
+	EndSwitch
 WEnd
 
 
