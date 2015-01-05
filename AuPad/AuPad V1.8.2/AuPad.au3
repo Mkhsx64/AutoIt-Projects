@@ -169,12 +169,12 @@ While 1
 					fontGUI() ; if we select the font menu option call the fontGUI function
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
-				Case $iStart To $iEnd
-					For $i = 0 To $aRecent[0][0] ; loop through all the recent added files
-						If $msg[0] = $aRecent[$i][0] Then ; if the msg is the same as one in the recent files array
-							_OpenFile($aRecent[$i][2]) ; open the file
-						EndIf
-					Next
+;~ 				Case $iStart To $iEnd
+;~ 					For $i = 0 To $aRecent[0][0] ; loop through all the recent added files
+;~ 						If $msg[0] = $aRecent[$i][0] Then ; if the msg is the same as one in the recent files array
+;~ 							_OpenFile($aRecent[$i][2]) ; open the file
+;~ 						EndIf
+;~ 					Next
 			EndSwitch
 			If $bSysMsg Then ; if the flag has been set
 				$bSysMsg = False ; reset the flag
@@ -210,8 +210,8 @@ Func GUI()
 	GUICtrlCreateMenuItem("", $FileM, 4) ; create line
 	$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 5) ; create second level menu item print ^ file
 	GUICtrlCreateMenuItem("", $FileM, 6) ; create line
-	$fAR = GUICtrlCreateMenu("Recent Files", $FileM, 7) ; create the menu item for recent files
-	GUICtrlCreateMenuItem("", $FileM, 8) ; create line
+;~ 	$fAR = GUICtrlCreateMenu("Recent Files", $FileM, 7) ; create the menu item for recent files
+;~ 	GUICtrlCreateMenuItem("", $FileM, 8) ; create line
 	$fExit = GUICtrlCreateMenuItem("Exit" & @TAB & "ESC", $FileM, 9) ; create second level menu item exit ^ file
 	$EditM = GUICtrlCreateMenu("Edit") ; create the first level edit menu item
 	$eUndo = GUICtrlCreateMenuItem("Undo" & @TAB & "Ctrl + Z", $EditM, 0) ; create the second level undo menu item
@@ -304,40 +304,40 @@ Func setNew()
 	If $title = "" Then MsgBox(0, "error", "Could not set window title...", 10) ; if the title equals nothing tell us
 EndFunc   ;==>setNew
 
-Func addRecent($sPath)
-	Local $c = 0, $i = 1
-	For $i = 1 To $aRecent[0][0] ; 1 to the number of recent files
-		$iStart = GUICtrlCreateDummy() ; create the starting dummy control
-		If $aRecent[$i][2] = $sPath Then ; if the paths are equal
-			$c = $aRecent[$i][3] ; store the number
-			GUICtrlDelete($aRecent[$i][0])  ; delete the existing
-			$aRecent[$i][0] = GUICtrlCreateMenuItem($aRecent[$i][1], $fAR, $i) ; set the menu item
-			For $j = 1 To $aRecent[0][0] ; start j at 1 to number of recent files
-				If $aRecent[$j][3] < $c Then $aRecent[$j][3] += 1 ; if the number is less then c then add one
-			Next
-			$aRecent[$i][3] = 1 ; reset the 4th array value for that recent file
-			Return
-		EndIf
-	Next
-	For $i = 1 To $aRecent[0][0]
-		$aRecent[$i][3] += 1
-		If $aRecent[$i][3] > $iNumRecent Then
-			$aRecent[$i][3] = 1
-			$c = $i
-			GUICtrlDelete($aRecent[$i][0])
-		EndIf
-	Next
-	If $aRecent[0][0] < $iNumRecent Then
-		$c = $aRecent[0][0] + 1
-		ReDim $aRecent[$c + 1][4]
-		$aRecent[0][0] = $c
-	EndIf
-	$aRecent[$c][1] = StringRegExpReplace($sPath, '^(.{3,11}\\|.{11})(.*)(\\.{6,27}|.{27})$', '\1...\3')
-	$aRecent[$c][2] = $sPath
-	$aRecent[$c][0] = GUICtrlCreateMenuItem($aRecent[$c][1], $fAR, $c)
-	$aRecent[$c][3] = 1
-	$iEnd = GUICtrlCreateDummy()
-EndFunc
+;~ Func addRecent($sPath)
+;~ 	Local $c = 0, $i = 1
+;~ 	For $i = 1 To $aRecent[0][0] ; 1 to the number of recent files
+;~ 		$iStart = GUICtrlCreateDummy() ; create the starting dummy control
+;~ 		If $aRecent[$i][2] = $sPath Then ; if the paths are equal
+;~ 			$c = $aRecent[$i][3] ; store the number
+;~ 			GUICtrlDelete($aRecent[$i][0])  ; delete the existing
+;~ 			$aRecent[$i][0] = GUICtrlCreateMenuItem($aRecent[$i][1], $fAR, $i) ; set the menu item
+;~ 			For $j = 1 To $aRecent[0][0] ; start j at 1 to number of recent files
+;~ 				If $aRecent[$j][3] < $c Then $aRecent[$j][3] += 1 ; if the number is less then c then add one
+;~ 			Next
+;~ 			$aRecent[$i][3] = 1 ; reset the 4th array value for that recent file
+;~ 			Return
+;~ 		EndIf
+;~ 	Next
+;~ 	For $i = 1 To $aRecent[0][0]
+;~ 		$aRecent[$i][3] += 1
+;~ 		If $aRecent[$i][3] > $iNumRecent Then
+;~ 			$aRecent[$i][3] = 1
+;~ 			$c = $i
+;~ 			GUICtrlDelete($aRecent[$i][0])
+;~ 		EndIf
+;~ 	Next
+;~ 	If $aRecent[0][0] < $iNumRecent Then
+;~ 		$c = $aRecent[0][0] + 1
+;~ 		ReDim $aRecent[$c + 1][4]
+;~ 		$aRecent[0][0] = $c
+;~ 	EndIf
+;~ 	$aRecent[$c][1] = StringRegExpReplace($sPath, '^(.{3,11}\\|.{11})(.*)(\\.{6,27}|.{27})$', '\1...\3')
+;~ 	$aRecent[$c][2] = $sPath
+;~ 	$aRecent[$c][0] = GUICtrlCreateMenuItem($aRecent[$c][1], $fAR, $c)
+;~ 	$aRecent[$c][3] = 1
+;~ 	$iEnd = GUICtrlCreateDummy()
+;~ EndFunc
 
 Func aChild()
 	Local $authLabel, $nameLabel
@@ -474,7 +474,7 @@ Func _OpenFile($droppedPath)
 	$fName = StringSplit($iPath[$i], ".") ; split the string by "."
 	WinSetTitle($pWnd, '', $fName[1] & ' - ' & "AuPad") ; set the window title
 	_GUICtrlRichEdit_SetModified($pEditWindow, False) ; set the modify flag
-	addRecent($droppedPath)
+;~ 	addRecent($droppedPath)
 	$iNumRecent += 1
 EndFunc   ;==>_OpenFile
 ;======================================================
@@ -672,7 +672,7 @@ Func Open()
 	$saveCounter += 1 ; increment the save counter
 	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
 	FileClose($fileOpen) ; close the file
-	addRecent($fileOpenD) ; add the file opened to the recent list
+;~ 	addRecent($fileOpenD) ; add the file opened to the recent list
 	$iNumRecent += 1
 EndFunc   ;==>Open
 
@@ -690,7 +690,7 @@ Func Save()
 			$cn = StringSplit($fn[$i], ".") ; split the file name
 			$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 			$saveCounter += 1 ; increment the save counter
-			addRecent($fs) ; add it to the recent files
+;~ 			addRecent($fs) ; add it to the recent files
 			$iNumRecent += 1
 			Return ; get out
 		EndIf
@@ -701,7 +701,7 @@ Func Save()
 		$cn = StringSplit($fn[$i], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
-		addRecent($fs) ; add the path to the recent files list
+;~ 		addRecent($fs) ; add the path to the recent files list
 		$iNumRecent += 1
 		Return ; get out
 	EndIf
@@ -710,7 +710,7 @@ Func Save()
 		$cn = StringSplit($fn[$oIndex], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
-		addRecent($fn[$oIndex]) ; add the path to the recent files list
+;~ 		addRecent($fn[$oIndex]) ; add the path to the recent files list
 		$iNumRecent += 1
 		Return ; get out
 	EndIf
@@ -718,7 +718,7 @@ Func Save()
 	If $fo = -1 Then Return MsgBox(0, "error", "Could not create file") ; if it didn't work tell us and get out
 	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
 	FileClose($fn[$oIndex]) ; close the file we specified
-	addRecent($fn[$oIndex]) ; add the path to the recent files list
+;~ 	addRecent($fn[$oIndex]) ; add the path to the recent files list
 	$iNumRecent += 1
 EndFunc   ;==>Save
 
