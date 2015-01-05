@@ -19,3 +19,13 @@
 
 Global $GUI[1]
 
+_mainGUI()
+
+While 1
+
+WEnd
+
+
+Func _mainGUI()
+
+EndFunc
