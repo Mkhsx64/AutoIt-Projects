@@ -8,6 +8,8 @@
 #Au3Stripper_Parameters=/so
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
 
+#include <GUIConstants.au3>
+
 ;==========================================================
 ;=-----ArchManager----------------------------------------=
 ;=-----Author: MikahS-------------------------------------=
@@ -32,5 +34,7 @@ WEnd
 
 
 Func _mainGUI()
-
+	$GUI[0] = 1
+	$GUI[1] = GUICreate("ArchManager", 1200, 800)
+	GUISetState()
 EndFunc
