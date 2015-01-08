@@ -46,14 +46,14 @@ WEnd
 
 Func _mainGUI()
 	$GUI[0] = 1
-	$GUI[1] = GUICreate("ArchManager", 600, 400, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW))
-	GUICtrlCreateLabel("ArchAngel II Contact/Demo/Marketing Management App", 145, 25)
+	$GUI[1] = GUICreate("ArchManager", 500, 350, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW))
+	GUICtrlCreateLabel("ArchAngel II Contact/Demo/Marketing Management App", 110, 25)
 	GUICtrlSetResizing(-1, $GUI_DOCKTOP + $GUI_DOCKSIZE + $GUI_DOCKHCENTER)
 	$main_Buttons[0] = 5
-;~ 	$main_Buttons[1] = GUICtrlCreateLabel("Contacts", 15, 15)
-;~ 	$main_Buttons = GUICtrlCreateLabel("Demos",
-;~ 	$main_Buttons = GUICtrlCreateLabel("Customers",
-;~ 	$main_Buttons = GUICtrlCreateLabel("Marketing",
-;~ 	$main_Buttons = GUICtrlCreateLabel("E-Mails",
+	$main_Buttons[1] = GUICtrlCreateButton("Contacts", 60, 80, 70, 50)
+;~ 	$main_Buttons[2] = GUICtrlCreateButton("Demos",
+;~ 	$main_Buttons[3] = GUICtrlCreateButton("Customers",
+;~ 	$main_Buttons[4] = GUICtrlCreateButton("Marketing",
+;~ 	$main_Buttons[5] = GUICtrlCreateButton("E-Mails",
 	GUISetState()
 EndFunc
