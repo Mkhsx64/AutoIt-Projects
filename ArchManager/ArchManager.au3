@@ -21,8 +21,8 @@ Global $GUI[2], $msg, $SplashMessage = "Welcome to ArchManager!", $pi
 
 ;========== Progress Window
 ProgressOn("ArchManager", $SplashMessage, "0%")
-For $pi = 1 To 100 Step 10
-	Sleep(800)
+For $pi = 0 To 100 Step 15
+	Sleep(200)
 	$SplashMessage = "Loading.."
 	ProgressSet($pi, $SplashMessage & " " & $pi & "%")
 Next
