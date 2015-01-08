@@ -17,7 +17,15 @@
 ;==========================================================
 ;Contacts, Demos, customers, marketing, send e-mails
 
-Global $GUI[2], $msg
+Global $GUI[2], $msg, $SplashMessage = "Welcome to ArchManager!", $si
+
+SplashTextOn("ArchManager", $SplashMessage, 250, 45, -1, -1, 0, "Comic Sans MS")
+For $si = 1 To 100 Step 1
+	$SplashMessage = "Loading.. " & $si & "%" & @CRLF
+	SplashTextOn("ArchManager", $SplashMessage, 250, 45, -1, -1, 0, "Comic Sans MS")
+	Sleep(100)
+Next
+SplashOff()
 
 _mainGUI()
 
@@ -34,7 +42,9 @@ WEnd
 
 
 Func _mainGUI()
+	Local
 	$GUI[0] = 1
-	$GUI[1] = GUICreate("ArchManager", 1200, 800)
+	$GUI[1] = GUICreate("ArchManager", 600, 400)
+
 	GUISetState()
 EndFunc
