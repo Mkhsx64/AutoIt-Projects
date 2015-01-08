@@ -51,7 +51,7 @@ Func _mainGUI()
 	GUICtrlSetResizing(-1, $GUI_DOCKTOP + $GUI_DOCKSIZE + $GUI_DOCKHCENTER)
 	$main_Buttons[0] = 5
 	$main_Buttons[1] = GUICtrlCreateButton("Contacts", 60, 80, 70, 50)
-;~ 	$main_Buttons[2] = GUICtrlCreateButton("Demos",
+	$main_Buttons[2] = GUICtrlCreateButton("Demos", 60, 150, 70, 50)
 ;~ 	$main_Buttons[3] = GUICtrlCreateButton("Customers",
 ;~ 	$main_Buttons[4] = GUICtrlCreateButton("Marketing",
 ;~ 	$main_Buttons[5] = GUICtrlCreateButton("E-Mails",
