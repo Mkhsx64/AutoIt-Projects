@@ -17,9 +17,10 @@
 ;==========================================================
 ;Contacts, Demos, customers, marketing, send e-mails
 
-Global $GUI[2], $msg, $SplashMessage = "Welcome to ArchManager!", $pi
+Global $GUI[2], $msg
 
 ;========== Progress Window
+Global $SplashMessage = "Welcome to ArchManager!", $pi
 ProgressOn("ArchManager", $SplashMessage, "0%")
 For $pi = 0 To 100 Step 20
 	Sleep(200)
