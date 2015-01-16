@@ -39,6 +39,16 @@ While 1
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					Exit
+				Case $main_Buttons[1]
+					;placeholder
+				Case $main_Buttons[2]
+					;placeholder
+				Case $main_Buttons[3]
+					;placeholder
+				Case $main_Buttons[4]
+					;placeholder
+				Case $main_Buttons[5]
+					;placeholder
 			EndSwitch
 	EndSwitch
 WEnd
