@@ -26,6 +26,7 @@
 #include <GuiRichEdit.au3>
 #include <Misc.au3>
 #include <Color.au3>
+#include <Au3SyntaxHighlight.au3> ; thanks goes to MrCreatoR
 #include <File.au3>
 #include <RESH.au3> ; thanks goes to Brian J Christy (Beege)
 #include <WinAPIFiles.au3>
@@ -56,7 +57,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$printDLL = "printmg.dll", _
 		$forSyn, $synAu3, $cLabel_1, _
 		$iEnd, $iStart, $iNumRecent = 5, _
-		$au3Buffer = 0, $synHTML
+		$au3Buffer = 0
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -149,13 +150,6 @@ While 1
 					Else
 						AdlibUnRegister("au3Syn") ; turn it off
 						$au3Count = 0 ; set the Adlib variable off
-					EndIf
-				Case $synHTML
-					If $htmlCount = 0 Then ; if the Adlib is off
-						$htmlCount = AdlibRegister("htmlSyn", 1000) ; turn it on
-					Else
-						AdlibUnRegister("htmlSyn") ; turn it off
-						$htmlCount = 0 ; set the Adlib variable off
 					EndIf
 				Case $fSave
 					Save() ; call the save function when the save menu option is selected
