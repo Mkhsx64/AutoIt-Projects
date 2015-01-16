@@ -52,11 +52,11 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$sLower, $wwINIvalue, _
 		$aRecent[100][4], $fAR, $iDefaultSize, _
 		$iBufferedfSize = "", $eRedo, _
-		$forBkClr, $alrCount = 0, _
+		$forBkClr, $au3Count = 0, _
 		$printDLL = "printmg.dll", _
 		$forSyn, $synAu3, $cLabel_1, _
 		$iEnd, $iStart, $iNumRecent = 5, _
-		$au3Buffer = 0
+		$au3Buffer = 0, $synHTML
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -144,11 +144,18 @@ While 1
 					$sLower = StringLower($lpRead) ; make the entire text lowercase
 					_GUICtrlRichEdit_SetText($pEditWindow, $sLower) ; set the string
 				Case $synAu3
-					If $alrCount = 0 Then ; if the Adlib is off
-						$alrCount = AdlibRegister("au3Syn", 1000) ; turn it on
+					If $au3Count = 0 Then ; if the Adlib is off
+						$au3Count = AdlibRegister("au3Syn", 1000) ; turn it on
 					Else
 						AdlibUnRegister("au3Syn") ; turn it off
-						$alrCount = 0 ; set the Adlib variable off
+						$au3Count = 0 ; set the Adlib variable off
+					EndIf
+				Case $synHTML
+					If $htmlCount = 0 Then ; if the Adlib is off
+						$htmlCount = AdlibRegister("htmlSyn", 1000) ; turn it on
+					Else
+						AdlibUnRegister("htmlSyn") ; turn it off
+						$htmlCount = 0 ; set the Adlib variable off
 					EndIf
 				Case $fSave
 					Save() ; call the save function when the save menu option is selected
