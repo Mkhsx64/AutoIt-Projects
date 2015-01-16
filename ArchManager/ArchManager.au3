@@ -17,7 +17,7 @@
 ;==========================================================
 ;Contacts, Demos, customers, marketing, send e-mails
 
-Global $GUI[2], $msg, $main_Buttons[5]
+Global $GUI[2], $msg, $main_Buttons[6]
 
 ;========== Progress Window
 Global $SplashMessage = "Welcome to ArchManager!", $pi
@@ -46,14 +46,14 @@ WEnd
 
 Func _mainGUI()
 	$GUI[0] = 1
-	$GUI[1] = GUICreate("ArchManager", 500, 350, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW))
+	$GUI[1] = GUICreate("ArchManager", 500, 250, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW))
 	GUICtrlCreateLabel("ArchAngel II Contact/Demo/Marketing Management App", 110, 25)
 	GUICtrlSetResizing(-1, $GUI_DOCKTOP + $GUI_DOCKSIZE + $GUI_DOCKHCENTER)
 	$main_Buttons[0] = 5
 	$main_Buttons[1] = GUICtrlCreateButton("Contacts", 60, 80, 70, 50)
 	$main_Buttons[2] = GUICtrlCreateButton("Demos", 60, 150, 70, 50)
-;~ 	$main_Buttons[3] = GUICtrlCreateButton("Customers",
-;~ 	$main_Buttons[4] = GUICtrlCreateButton("Marketing",
-;~ 	$main_Buttons[5] = GUICtrlCreateButton("E-Mails",
+	$main_Buttons[3] = GUICtrlCreateButton("Customers", 205, 115, 70, 50)
+	$main_Buttons[4] = GUICtrlCreateButton("Marketing", 350, 80, 70, 50)
+	$main_Buttons[5] = GUICtrlCreateButton("E-Mails", 350, 150, 70, 50)
 	GUISetState()
 EndFunc
