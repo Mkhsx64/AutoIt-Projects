@@ -26,7 +26,6 @@
 #include <GuiRichEdit.au3>
 #include <Misc.au3>
 #include <Color.au3>
-#include <Au3SyntaxHighlight.au3> ; thanks goes to MrCreatoR
 #include <File.au3>
 #include <RESH.au3> ; thanks goes to Brian J Christy (Beege)
 #include <WinAPIFiles.au3>
