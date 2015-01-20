@@ -75,3 +75,5 @@
 - F2 was fixed to bring up help instead of about AuPad.
 
 ---==== 1.8.4 ====---
+
+https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
