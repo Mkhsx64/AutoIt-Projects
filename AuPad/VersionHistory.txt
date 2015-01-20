@@ -73,3 +73,5 @@
 - Added check for quotes, due to problem with RESH - It will crash the entire program when trying to syntax highlight an unterminated quote.
 - Commented out Addrecent as problems with messageloop and GUI dummy creation
 - F2 was fixed to bring up help instead of about AuPad.
+
+---==== 1.8.4 ====---
