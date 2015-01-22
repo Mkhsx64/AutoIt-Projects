@@ -251,7 +251,7 @@ Func GUI()
 EndFunc   ;==>GUI
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
-; This is the ASM RESH library - included in zip file
+; This is the ASM RESH library - included in the zip file
 ;========================================================
 Func au3Syn()
 	Local $gRTFcode, $gSel, $quotes
