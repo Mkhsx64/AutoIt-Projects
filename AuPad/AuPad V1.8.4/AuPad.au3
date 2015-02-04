@@ -673,7 +673,7 @@ Func Open()
 	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
 	FileClose($fileOpen) ; close the file
 ;~ 	addRecent($fileOpenD) ; add the file opened to the recent list
-	$iNumRecent += 1
+	$iNumRecent += 1 ; increment the recent counter
 EndFunc   ;==>Open
 
 Func Save()
@@ -691,7 +691,7 @@ Func Save()
 			$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 			$saveCounter += 1 ; increment the save counter
 ;~ 			addRecent($fs) ; add it to the recent files
-			$iNumRecent += 1
+;~ 			$iNumRecent += 1 ; increment the recent counter
 			Return ; get out
 		EndIf
 		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
@@ -702,7 +702,7 @@ Func Save()
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
 ;~ 		addRecent($fs) ; add the path to the recent files list
-		$iNumRecent += 1
+;~ 		$iNumRecent += 1 ; increment the recent counter
 		Return ; get out
 	EndIf
 	If StringInStr($fn[$oIndex], "rtf") Then
@@ -711,7 +711,7 @@ Func Save()
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
 ;~ 		addRecent($fn[$oIndex]) ; add the path to the recent files list
-		$iNumRecent += 1
+;~ 		$iNumRecent += 1 ; increment the recent counter
 		Return ; get out
 	EndIf
 	$fo = FileOpen($fn[$oIndex], 2) ; if we've already saved before, open the file and set it to overwrite current contents
@@ -719,7 +719,7 @@ Func Save()
 	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
 	FileClose($fn[$oIndex]) ; close the file we specified
 ;~ 	addRecent($fn[$oIndex]) ; add the path to the recent files list
-	$iNumRecent += 1
+;~ 	$iNumRecent += 1 ; increment the recent counter
 EndFunc   ;==>Save
 
 Func Help()
