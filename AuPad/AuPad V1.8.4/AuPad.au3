@@ -350,6 +350,8 @@ Func aChild()
 	GUICtrlSetFont(-1, 7, 500) ; set the font
 	GUICtrlCreateLabel("Made completely with AutoIt", 15, 100) ; set the label description 2
 	GUICtrlSetFont(-1, 7, 500) ; set the font
+	GUICtrlCreateLabel("Version: 3.3.12.0", 42, 120) ; set the label description 3
+	GUICtrlSetFont(-1, 7, 500) ; set the font
 	GUISetState() ; show the window
 EndFunc   ;==>aChild
 
