@@ -40,15 +40,15 @@ While 1
 				Case $GUI_EVENT_CLOSE
 					Exit
 				Case $main_Buttons[1]
-					;placeholder
+					;contacts
 				Case $main_Buttons[2]
-					;placeholder
+					;demos
 				Case $main_Buttons[3]
-					;placeholder
+					;customers
 				Case $main_Buttons[4]
-					;placeholder
+					;marketing
 				Case $main_Buttons[5]
-					;placeholder
+					;emails
 			EndSwitch
 	EndSwitch
 WEnd
