@@ -56,8 +56,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$printDLL = "printmg.dll", _
 		$synAu3, $cLabel_1, _
 		$iEnd, $iStart, $iNumRecent = 5, _
-		$au3Buffer = 0, $mQuote, $mCode, _
-		$mLink
+		$au3Buffer = 0, $mCombo[3]
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -240,10 +239,10 @@ Func GUI()
 	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 1) ; create the second level background color menu item
 	$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 2) ; create the second level syntax highlighting menu
 	$synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn) ; create the third level menu item for autoit syntax highlighting
-	$forTags = GUICtrlCreateMenu("Tags") ; create the first level tags menu item
-	$mQuote = GUICtrlCreateMenuItem("Quote", $forTags, 0) ; create the second level quote menu item
-	$mCode = GUICtrlCreateMenuItem("Code", $forTags, 1) ; create the second level code menu item
-	$mLink = GUICtrlCreateMenuItem("Link", $forTags, 2) ;create the second level link menu item
+	$forTags = GUICtrlCreateMenu("Tags", $FormatM, 3) ; create the first level tags menu item
+	$mCombo[0] = GUICtrlCreateMenuItem("Quote", $forTags, 0) ; create the second level quote menu item
+	$mCombo[1] = GUICtrlCreateMenuItem("Code", $forTags, 1) ; create the second level code menu item
+	$mCombo[2] = GUICtrlCreateMenuItem("Link", $forTags, 2) ;create the second level link menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
