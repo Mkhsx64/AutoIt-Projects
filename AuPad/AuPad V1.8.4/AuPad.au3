@@ -194,7 +194,7 @@ WEnd
 
 Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
-			$HelpM, $textl, $forSyn
+			$HelpM, $textl, $forSyn, $forTags
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
 	$cLabel_1 = GUICtrlCreateLabel("", 0, 0, 600, 480)
@@ -240,7 +240,10 @@ Func GUI()
 	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 1) ; create the second level background color menu item
 	$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 2) ; create the second level syntax highlighting menu
 	$synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn) ; create the third level menu item for autoit syntax highlighting
-
+	$forTags = GUICtrlCreateMenu("Tags") ; create the first level tags menu item
+	$mQuote = GUICtrlCreateMenuItem("Quote", $forTags, 0) ; create the second level quote menu item
+	$mCode = GUICtrlCreateMenuItem("Code", $forTags, 1) ; create the second level code menu item
+	$mLink = GUICtrlCreateMenuItem("Link", $forTags, 2) ;create the second level link menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
