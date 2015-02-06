@@ -56,7 +56,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$printDLL = "printmg.dll", _
 		$forSyn, $synAu3, $cLabel_1, _
 		$iEnd, $iStart, $iNumRecent = 5, _
-		$au3Buffer = 0
+		$au3Buffer = 0, $mQuote, $mCode, _
+		$mLink
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
