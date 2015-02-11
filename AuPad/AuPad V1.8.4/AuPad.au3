@@ -31,6 +31,7 @@
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
 #include <printMGv2.au3> ; printing support from martin's print UDF
+#include <String.au3>
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fSave, $fSaveAs, $fontBox, _
@@ -57,7 +58,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$synAu3, $cLabel_1, _
 		$iEnd, $iStart, $iNumRecent = 5, _
 		$au3Buffer = 0, $mCombo[3], _
-		$tagContainer
+		$tagContainer, $taggedStr, _
+		$taggedStrEx, $taggedLen
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -171,21 +173,35 @@ While 1
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
 				Case $mCombo[0]
-					$tagContainer = _GUICtrlRichEdit_GetSelText($pEditWindow)
-					If @error Then
+					$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow)
+					If $tagContainer[1] = $tagContainer[0] Then
 						_GUICtrlRichEdit_InsertText($pEditWindow, "[Quote][/Quote]")
+						ContinueLoop
 					EndIf
-
+					$taggedLen = StringLen(_GUICtrlRichEdit_GetText($pEditWindow))
+					$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[Quote]", $tagContainer[0])
+					$taggedStrEx = _StringInsert($taggedStr, "[/Quote]", $tagContainer[1] + 7)
+					_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx)
 				Case $mCombo[1]
-					$tagContainer = _GUICtrlRichEdit_GetSelText($pEditWindow)
-					If @error Then
+					$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow)
+					If $tagContainer[1] = $tagContainer[0] Then
 						_GUICtrlRichEdit_InsertText($pEditWindow, "[AutoIt][/AutoIt]")
+						ContinueLoop
 					EndIf
+					$taggedLen = Number(StringLen(_GUICtrlRichEdit_GetText($pEditWindow))) - $tagContainer[1]
+					$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[AutoIt]", $tagContainer[0])
+					$taggedStrEx = _StringInsert($taggedStr, "[/AutoIt]", $tagContainer[1] + 8)
+					_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx)
 				Case $mCombo[2]
-					$tagContainer = _GUICtrlRichEdit_GetSelText($pEditWindow)
-					If @error Then
+					$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow)
+					If $tagContainer[1] = $tagContainer[0] Then
 						_GUICtrlRichEdit_InsertText($pEditWindow, "[href=''][/href]")
+						ContinueLoop
 					EndIf
+					$taggedLen = Number(StringLen(_GUICtrlRichEdit_GetText($pEditWindow))) - $tagContainer[1]
+					$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[href='']", $tagContainer[0])
+					$taggedStrEx = _StringInsert($taggedStr, "[/href]", $tagContainer[1] + 9)
+					_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx)
 ;~ 				Case $iStart To $iEnd
 ;~ 					For $i = 0 To $aRecent[0][0] ; loop through all the recent added files
 ;~ 						If $msg[0] = $aRecent[$i][0] Then ; if the msg is the same as one in the recent files array
