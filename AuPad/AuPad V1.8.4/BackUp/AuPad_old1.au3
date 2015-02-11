@@ -71,7 +71,7 @@ Local $abChild, $fCount = 0, $sFontName, _
 
 ;compile gui child vars
 Local $cChild, $cLabel[5], $cInput[3], _
-		$cButton[7]
+	$cButton[7]
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -296,7 +296,7 @@ Func au3Syn()
 	Local $gRTFcode, $gSel, $quotes
 	If _GUICtrlRichEdit_GetTextLength($pEditWindow) = $au3Buffer Then Return
 	$quotes = StringReplace(_GUICtrlRichEdit_GetText($pEditWindow), '"', '')
-	If Not IsInt(@extended / 2) Then Return
+	If Not IsInt(@extended/2) Then Return
 	$gSel = _GUICtrlRichEdit_GetSel($pEditWindow)
 	$gRTFcode = _RESH_SyntaxHighlight($pEditWindow) ; generate the au3 code from the rtf text
 	Local $aColorTable[13]
