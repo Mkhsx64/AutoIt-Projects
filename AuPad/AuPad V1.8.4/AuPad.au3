@@ -56,7 +56,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$printDLL = "printmg.dll", _
 		$synAu3, $cLabel_1, _
 		$iEnd, $iStart, $iNumRecent = 5, _
-		$au3Buffer = 0, $mCombo[3]
+		$au3Buffer = 0, $mCombo[3], _
+		$tagContainer
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -169,6 +170,22 @@ While 1
 					fontGUI() ; if we select the font menu option call the fontGUI function
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
+				Case $mCombo[0]
+					$tagContainer = _GUICtrlRichEdit_GetSelText($pEditWindow)
+					If @error Then
+						_GUICtrlRichEdit_InsertText($pEditWindow, "[Quote][/Quote]")
+					EndIf
+
+				Case $mCombo[1]
+					$tagContainer = _GUICtrlRichEdit_GetSelText($pEditWindow)
+					If @error Then
+						_GUICtrlRichEdit_InsertText($pEditWindow, "[AutoIt][/AutoIt]")
+					EndIf
+				Case $mCombo[2]
+					$tagContainer = _GUICtrlRichEdit_GetSelText($pEditWindow)
+					If @error Then
+						_GUICtrlRichEdit_InsertText($pEditWindow, "[href=''][/href]")
+					EndIf
 ;~ 				Case $iStart To $iEnd
 ;~ 					For $i = 0 To $aRecent[0][0] ; loop through all the recent added files
 ;~ 						If $msg[0] = $aRecent[$i][0] Then ; if the msg is the same as one in the recent files array
