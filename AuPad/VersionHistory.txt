@@ -79,4 +79,5 @@
 https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 
 - added version developed in the about child window
-- added code tags quote, link, autoit (code).
+- added tags quote, link, autoit (code).
+- added GUI Accelerator keys for tags.

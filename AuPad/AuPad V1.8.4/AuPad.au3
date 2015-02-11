@@ -92,12 +92,13 @@ GUICtrlSetState($eRedo, 128) ; set the state of the redo menu item
 
 $hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
 
-Local $aAccelKeys[16][16] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
+Local $aAccelKeys[19][19] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
 		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], _
 		["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], _
 		["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], _
-		["{F2}", $hVHelp]]
+		["{F2}", $hVHelp], ["+c", $mCombo[1]], ["+l", $mCombo[2]], _
+		["+q", $mCombo[0]]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
