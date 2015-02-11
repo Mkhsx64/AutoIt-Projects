@@ -173,35 +173,32 @@ While 1
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
 				Case $mCombo[0]
-					$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow)
-					If $tagContainer[1] = $tagContainer[0] Then
-						_GUICtrlRichEdit_InsertText($pEditWindow, "[Quote][/Quote]")
-						ContinueLoop
+					$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the current selection if any
+					If $tagContainer[1] = $tagContainer[0] Then ; check if a selection has been made
+						_GUICtrlRichEdit_InsertText($pEditWindow, "[Quote][/Quote]") ; if it has not, insert at anchor
+						ContinueLoop ; return to our loop
 					EndIf
-					$taggedLen = StringLen(_GUICtrlRichEdit_GetText($pEditWindow))
-					$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[Quote]", $tagContainer[0])
-					$taggedStrEx = _StringInsert($taggedStr, "[/Quote]", $tagContainer[1] + 7)
-					_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx)
+					$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[Quote]", $tagContainer[0]) ; insert the first quote bracket
+					$taggedStrEx = _StringInsert($taggedStr, "[/Quote]", $tagContainer[1] + 7) ; insert the second quote bracket
+					_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx) ; set the text to the window
 				Case $mCombo[1]
-					$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow)
-					If $tagContainer[1] = $tagContainer[0] Then
-						_GUICtrlRichEdit_InsertText($pEditWindow, "[AutoIt][/AutoIt]")
-						ContinueLoop
+					$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the current selection if any
+					If $tagContainer[1] = $tagContainer[0] Then ; check if a selection has been made
+						_GUICtrlRichEdit_InsertText($pEditWindow, "[AutoIt][/AutoIt]") ; if it has not, insert at anchor
+						ContinueLoop ; return to our loop
 					EndIf
-					$taggedLen = Number(StringLen(_GUICtrlRichEdit_GetText($pEditWindow))) - $tagContainer[1]
-					$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[AutoIt]", $tagContainer[0])
-					$taggedStrEx = _StringInsert($taggedStr, "[/AutoIt]", $tagContainer[1] + 8)
-					_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx)
+					$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[AutoIt]", $tagContainer[0]) ; insert the first code bracket
+					$taggedStrEx = _StringInsert($taggedStr, "[/AutoIt]", $tagContainer[1] + 8) ; insert the second code bracket
+					_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx) ; set the text to the window
 				Case $mCombo[2]
-					$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow)
-					If $tagContainer[1] = $tagContainer[0] Then
-						_GUICtrlRichEdit_InsertText($pEditWindow, "[href=''][/href]")
-						ContinueLoop
+					$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the current selection if any
+					If $tagContainer[1] = $tagContainer[0] Then ; check if a selection has been made
+						_GUICtrlRichEdit_InsertText($pEditWindow, "[href=''][/href]") ; if it has not, insert at anchor
+						ContinueLoop ; return to our loop
 					EndIf
-					$taggedLen = Number(StringLen(_GUICtrlRichEdit_GetText($pEditWindow))) - $tagContainer[1]
-					$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[href='']", $tagContainer[0])
-					$taggedStrEx = _StringInsert($taggedStr, "[/href]", $tagContainer[1] + 9)
-					_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx)
+					$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[href='']", $tagContainer[0]) ; insert the first link bracket
+					$taggedStrEx = _StringInsert($taggedStr, "[/href]", $tagContainer[1] + 9) ; insert the second link bracket
+					_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx) ; set the text to the window
 ;~ 				Case $iStart To $iEnd
 ;~ 					For $i = 0 To $aRecent[0][0] ; loop through all the recent added files
 ;~ 						If $msg[0] = $aRecent[$i][0] Then ; if the msg is the same as one in the recent files array
