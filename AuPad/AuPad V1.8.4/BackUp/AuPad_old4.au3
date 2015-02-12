@@ -365,22 +365,22 @@ EndFunc   ;==>folderPath
 Func executeCompile()
 	Local $in_path, $out_path, $icon_file, _
 			$comprsion, $OSarch
-	$in_path = GUICtrlRead($cInput[1])
-	$out_path = GUICtrlRead($cInput[2])
-	$icon_file = GUICtrlRead($cInput[3])
-	$comprsion = GUICtrlRead($cCombo)
-	If GUICtrlGetState($x86) = $GUI_CHECKED Then
-		$OSarch = "/x86"
-	Else
-		$OSarch = "/x64"
-	EndIf
-	If $out_path = "" Then
-		ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & " /comp 4 /x64' )
-	ElseIf $out_path <> "" And $icon_file = "" Then
-		ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & '" /out "' & $out_path & "' /comp '" & $comprsion & "'" & $OSarch & "')
-	Else
-		ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & '" /out "' & $out_path & "'/icon '" & '"' & $icon_file & '" /comp ' " & $comprsion & " '" & $OSarch & "')
-	EndIf
+		$in_path = GUICtrlRead($cInput[1])
+		$out_path = GUICtrlRead($cInput[2])
+		$icon_file = GUICtrlRead($cInput[3])
+		$comprsion = GUICtrlRead($cCombo)
+		If GUICtrlGetState($x86) = $GUI_CHECKED Then
+			$OSarch = "/x86"
+		Else
+			$OSarch = "/x64"
+		EndIf
+		If $out_path = "" Then
+		ShellExecute( @ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & " /comp 4 /x64' )
+		ElseIf $out_path <> "" And $icon_file = "" Then
+		ShellExecute( @ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & '" /out "' & $out_path & "' /comp '" & $comprsion & "'" & $OSarch & "')
+		Else
+		ShellExecute( @ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & '" /out "' & $out_path & "'/icon '" & '"' & $icon_file & '" /comp '" & $comprsion & "'" & $OSarch & "')
+		EndIf
 EndFunc   ;==>executeCompile
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
