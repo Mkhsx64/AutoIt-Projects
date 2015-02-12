@@ -72,9 +72,10 @@ Local $abChild, $fCount = 0, $sFontName, _
 
 ;compile gui child vars
 Local $cChild, $cLabel[3], $cInput[2], _
-		$cButton[4], $cCombo, $x86, $x64
+		$cButton[5], $cCombo, $x86, $x64
 $cButton[2] = 99999
 $cButton[3] = 99999
+$cButton[4] = 99999
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -232,9 +233,11 @@ While 1
 				Case $cButton[3]
 					GUIDelete($cChild) ; if the cancel button has been pressed call the GUIDelete function
 				Case $cButton[1]
-					folderPath()
+					folderPath() ; open the save dialog and set the path
 				Case $cButton[2]
-					executeCompile()
+					executeCompile() ; compile the script
+				Case $cButton[4]
+					executeCompile("Yes") ; compile advanced
 			EndSwitch
 	EndSwitch
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
@@ -319,8 +322,9 @@ Func cGUI()
 	$cInput[1] = GUICtrlCreateInput(@ScriptDir & "\" & $winTitle, 35, 85, 275) ; create an input with the script dir and file
 	$cButton[1] = GUICtrlCreateButton("...", 315, 83, 35) ; create the /in file folder dialog
 	$cButton[2] = GUICtrlCreateButton("Compile", 260, 150) ; create the compile button
-	$cButton[3] = GUICtrlCreateButton("Cancel", 310, 150) ; cancel button works as exit
-	$cButton[0] = 3 ; we have 3 buttons
+	$cButton[3] = GUICtrlCreateButton("Cancel", 312, 150) ; cancel button works as exit
+	$cButton[4] = GUICtrlCreateButton("Advanced..", 190, 150) ; bring up Aut2exe window
+	$cButton[0] = 4 ; we have 4 buttons
 	$cLabel[0] = 2 ; 2 labels
 	$cInput[0] = 1 ; and 1 input
 	GUISetState() ; show the window
@@ -332,11 +336,15 @@ Func folderPath()
 	GUICtrlSetData($cInput[1], $dialogPath) ; set the path to the corresponding input
 EndFunc   ;==>folderPath
 
-Func executeCompile()
-	Local $in_path, $out_path, $icon_file, _
-			$comprsion, $OSarch
+Func executeCompile($advanced = "No")
+	Local $in_path
 	$in_path = GUICtrlRead($cInput[1]) ; read the input path
-	ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & '" /comp 4 /x64') ; compile the script
+	If $advanced = "Yes" Then
+		ShellExecute( @ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe') ; bring up the aut2exe dialog
+		GUIDelete($cChild) ; delete ours
+		Return ; get out
+	EndIf
+	ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & '" /comp 4') ; compile the script
 EndFunc   ;==>executeCompile
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
