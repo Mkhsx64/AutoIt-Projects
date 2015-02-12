@@ -80,5 +80,6 @@ https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 
 - added version developed in the about child window
 - added tags quote, link, autoit (code). (all thanks for the Idea from The Saint's webpad - http://www.autoitscript.com/forum/topic/153265-web-pad-update/?hl=+webpad
-
 - added GUI Accelerator keys for tags.
+- added compiler GUI.
+- added ability to compile au3 scripts.
