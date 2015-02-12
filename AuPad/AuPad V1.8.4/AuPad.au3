@@ -320,16 +320,38 @@ Func cGUI()
 	$cLabel[5] = GUICtrlCreateLabel("Compression rate:", 35, 208) ; label for compression
 	$cCombo = GUICtrlCreateCombo("1", 130, 205, 30) ; create the compression combo box
 	GUICtrlSetData($cCombo, "2|3|4", "4") ; set the combo data & default
-	$cLabel[6] = GUICtrlCreateLabel("OS Archetype (x86 by default):", 35, 238) ; create os archetype label
+	$cLabel[6] = GUICtrlCreateLabel("OS Archetype:", 35, 238) ; create os archetype label
 	$x86 = GUICtrlCreateRadio("x86", 35, 255, 60) ; x86 radio
-	GUICtrlSetState($x86, $GUI_CHECKED) ; set default
 	$x64 = GUICtrlCreateRadio("x64", 95, 255, 60) ; x64 radio
+	If @OSArch <> "X86" Then ; check the default os archetype
+		GUICtrlSetState($x64, $GUI_CHECKED) ; set default
+	Else
+		GUICtrlSetState($x86, $GUI_CHECKED) ; set default
+	EndIf
 	$cButton[1] = GUICtrlCreateButton("...", 315, 83, 35) ; create the /in file folder dialog
 	$cButton[2] = GUICtrlCreateButton("...", 315, 125, 35) ; create the /out file folder dialog
 	$cButton[3] = GUICtrlCreateButton("...", 315, 169, 35) ; create the icon file folder dialog
 	$cButton[4] = GUICtrlCreateButton("Compile", 260, 250) ; create the compile button
 	$cButton[5] = GUICtrlCreateButton("Cancel", 310, 250) ; cancel button works as exit
 	GUISetState() ; show the window
+EndFunc
+
+Func folderPath($setPath)
+	Local $dialogPath
+	Switch $setPath
+		Case "/in"
+			$dialogPath = FileOpenDialog("Open File", @ScriptDir, "Au3 Files(*.au3)|Text Files(*.txt)")
+			GUICtrlSetData($cInput[1], $dialogPath)
+			Return
+		Case "/out"
+			$dialogPath = FileSaveDialog("Save File", @ScriptDir, "EXE File(*.exe)")
+			GUICtrlSetData($cInput[2], $dialogPath)
+			Return
+		Case "icon"
+			$dialogPath = FileOpenDialog("Open File", @ScriptDir, "Icon Files(*.ico)|All Files(*.*)")
+			GUICtrlSetData($cInput[3], $dialogPath)
+			Return
+	EndSwitch
 EndFunc
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
