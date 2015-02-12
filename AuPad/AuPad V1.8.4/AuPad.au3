@@ -307,31 +307,29 @@ EndFunc   ;==>GUI
 
 Func cGUI()
 	Local $getTitle, $winTitle
-;~ 	$cChild, $cLabel[5], $cInput[3], _
-;~ 		$cButton[7]
-	$cChild = GUICreate("Compile Options", 400, 300, -1, -1)
-	$cLabel[1] = GUICtrlCreateLabel("Compile Au3 script with options.", 117, 25)
-	$cLabel[2] = GUICtrlCreateLabel("In file (script path already included)", 35, 67)
-	$getTitle = WinGetTitle($pWnd)
-	$winTitle = StringTrimRight($getTitle, 8)
-	$cInput[1] = GUICtrlCreateInput(@ScriptDir & "\" & $winTitle, 35, 85, 275)
-	$cLabel[3] = GUICtrlCreateLabel("Out file (blank=creation of .exe at script dir with same name)", 35, 110)
-	$cInput[2] = GUICtrlCreateInput("", 35, 127, 275)
-	$cLabel[4] = GUICtrlCreateLabel("Icon file (leave blank if none)", 35, 153)
-	$cInput[3] = GUICtrlCreateInput("", 35, 172, 275)
-	$cLabel[5] = GUICtrlCreateLabel("Compression rate:", 35, 208)
-	$cCombo = GUICtrlCreateCombo("1", 130, 205, 30)
-	GUICtrlSetData($cCombo, "2|3|4", "4")
-	$cLabel[6] = GUICtrlCreateLabel("OS Archetype (x86 by default):", 35, 238)
-	$x86 = GUICtrlCreateRadio("x86", 35, 255, 60)
-	GUICtrlSetState($x86, $GUI_CHECKED)
-	$x64 = GUICtrlCreateRadio("x64", 95, 255, 60)
-	$cButton[1] = GUICtrlCreateButton("...", 315, 83, 35)
-	$cButton[2] = GUICtrlCreateButton("...", 315, 125, 35)
-	$cButton[3] = GUICtrlCreateButton("...", 315, 169, 35)
-	$cButton[4] = GUICtrlCreateButton("Compile", 260, 250)
-	$cButton[5] = GUICtrlCreateButton("Cancel", 310, 250)
-	GUISetState()
+	$cChild = GUICreate("Compile Options", 400, 300, -1, -1) ; create the gui child window
+	$cLabel[1] = GUICtrlCreateLabel("Compile Au3 script with options.", 117, 25) ; create the label describing operation
+	$cLabel[2] = GUICtrlCreateLabel("In file (script path already included)", 35, 67) ; label for /in file
+	$getTitle = WinGetTitle($pWnd) ; get the full title
+	$winTitle = StringTrimRight($getTitle, 8) ; trim off the " - aupad"
+	$cInput[1] = GUICtrlCreateInput(@ScriptDir & "\" & $winTitle, 35, 85, 275) ; create an input with the script dir and file
+	$cLabel[3] = GUICtrlCreateLabel("Out file (blank=creation of .exe at script dir with same name)", 35, 110) ; create label for /out file
+	$cInput[2] = GUICtrlCreateInput("", 35, 127, 275) ; create input for /out file
+	$cLabel[4] = GUICtrlCreateLabel("Icon file (leave blank if none)", 35, 153) ; create label for icon label
+	$cInput[3] = GUICtrlCreateInput("", 35, 172, 275) ; input for icon
+	$cLabel[5] = GUICtrlCreateLabel("Compression rate:", 35, 208) ; label for compression
+	$cCombo = GUICtrlCreateCombo("1", 130, 205, 30) ; create the compression combo box
+	GUICtrlSetData($cCombo, "2|3|4", "4") ; set the combo data & default
+	$cLabel[6] = GUICtrlCreateLabel("OS Archetype (x86 by default):", 35, 238) ; create os archetype label
+	$x86 = GUICtrlCreateRadio("x86", 35, 255, 60) ; x86 radio
+	GUICtrlSetState($x86, $GUI_CHECKED) ; set default
+	$x64 = GUICtrlCreateRadio("x64", 95, 255, 60) ; x64 radio
+	$cButton[1] = GUICtrlCreateButton("...", 315, 83, 35) ; create the /in file folder dialog
+	$cButton[2] = GUICtrlCreateButton("...", 315, 125, 35) ; create the /out file folder dialog
+	$cButton[3] = GUICtrlCreateButton("...", 315, 169, 35) ; create the icon file folder dialog
+	$cButton[4] = GUICtrlCreateButton("Compile", 260, 250) ; create the compile button
+	$cButton[5] = GUICtrlCreateButton("Cancel", 310, 250) ; cancel button works as exit
+	GUISetState() ; show the window
 EndFunc
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
