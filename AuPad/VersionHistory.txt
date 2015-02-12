@@ -83,3 +83,4 @@ https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 - added GUI Accelerator keys for tags.
 - added compiler GUI.
 - added ability to compile au3 scripts.
+- ability to open aut2exe for more options.
