@@ -59,7 +59,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$iEnd, $iStart, $iNumRecent = 5, _
 		$au3Buffer = 0, $mCombo[3], _
 		$tagContainer, $taggedStr, _
-		$taggedStrEx, $taggedLen
+		$taggedStrEx, $taggedLen, _
+		$forComp
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -96,13 +97,13 @@ GUICtrlSetState($eRedo, 128) ; set the state of the redo menu item
 
 $hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
 
-Local $aAccelKeys[19][19] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
+Local $aAccelKeys[20][20] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
 		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], _
 		["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], _
 		["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], _
 		["{F2}", $hVHelp], ["+c", $mCombo[1]], ["+l", $mCombo[2]], _
-		["+q", $mCombo[0]]]
+		["+q", $mCombo[0]], ["{F7}", $forComp]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
@@ -158,6 +159,8 @@ While 1
 						AdlibUnRegister("au3Syn") ; turn it off
 						$au3Count = 0 ; set the Adlib variable off
 					EndIf
+				Case $forComp
+					cGUI() ; call the cGUI function when the compile option has been selected
 				Case $fSave
 					Save() ; call the save function when the save menu option is selected
 				Case $fSaveAs
@@ -275,13 +278,15 @@ Func GUI()
 	$eSU = GUICtrlCreateMenuItem("Uppercase Text" & @TAB & "Ctrl + Shft + U", $EditM, 18) ; create the second level uppercase text menu item
 	$eSL = GUICtrlCreateMenuItem("Lowercase Text" & @TAB & "Ctrl + Shft + L", $EditM, 19) ; create the second level lowercase text menu item
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
-	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 0) ; create the second level font menu item
-	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 1) ; create the second level background color menu item
-	GUICtrlCreateMenuItem("", $FormatM, 2) ; create line
-	$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 3) ; create the second level syntax highlighting menu
-	$synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn) ; create the third level menu item for autoit syntax highlighting
+	$forComp = GUICtrlCreateMenuItem("Compile" @TAB & "F7", $FormatM, 0) ; create the second level compile menu option
+	GUICtrlCreateMenuItem("", $FormatM, 1) ; create line
+	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 2) ; create the second level font menu item
+	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 3) ; create the second level background color menu item
 	GUICtrlCreateMenuItem("", $FormatM, 4) ; create line
-	$forTags = GUICtrlCreateMenu("Tags", $FormatM, 5) ; create the first level tags menu item
+	$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 5) ; create the second level syntax highlighting menu
+	$synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn) ; create the third level menu item for autoit syntax highlighting
+	GUICtrlCreateMenuItem("", $FormatM, 6) ; create line
+	$forTags = GUICtrlCreateMenu("Tags", $FormatM, 7) ; create the first level tags menu item
 	$mCombo[0] = GUICtrlCreateMenuItem("Quote", $forTags, 0) ; create the second level quote menu item
 	$mCombo[1] = GUICtrlCreateMenuItem("Code", $forTags, 1) ; create the second level code menu item
 	$mCombo[2] = GUICtrlCreateMenuItem("Link", $forTags, 2) ;create the second level link menu item
