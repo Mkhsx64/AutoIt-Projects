@@ -346,17 +346,17 @@ Func folderPath($setPath)
 	Local $dialogPath
 	Switch $setPath
 		Case "/in"
-			$dialogPath = FileOpenDialog("Open File", @ScriptDir, "Au3 Files(*.au3)|Text Files(*.txt)")
-			GUICtrlSetData($cInput[1], $dialogPath)
-			Return
+			$dialogPath = FileOpenDialog("Open File", @ScriptDir, "Au3 Files(*.au3)|Text Files(*.txt)") ; bring up an open dialog to pick the /in file
+			GUICtrlSetData($cInput[1], $dialogPath) ; set the path to the corresponding input
+			Return ; get out
 		Case "/out"
-			$dialogPath = FileSaveDialog("Save File", @ScriptDir, "EXE File(*.exe)")
-			GUICtrlSetData($cInput[2], $dialogPath)
-			Return
+			$dialogPath = FileSaveDialog("Save File", @ScriptDir, "EXE File(*.exe)") ; bring up the save dialog to specify where we are placing this
+			GUICtrlSetData($cInput[2], $dialogPath) ; set the path to the corresponding input
+			Return ; get out
 		Case "icon"
-			$dialogPath = FileOpenDialog("Open File", @ScriptDir, "Icon Files(*.ico)|All Files(*.*)")
-			GUICtrlSetData($cInput[3], $dialogPath)
-			Return
+			$dialogPath = FileOpenDialog("Open File", @ScriptDir, "Icon Files(*.ico)|All Files(*.*)") ; bring up an open dialog to pick the icon file
+			GUICtrlSetData($cInput[3], $dialogPath) ; set the path to the corresponding input
+			Return ; get out
 	EndSwitch
 EndFunc
 
