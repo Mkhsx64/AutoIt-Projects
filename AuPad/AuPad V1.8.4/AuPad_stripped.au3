@@ -1571,9 +1571,28 @@ If @error = 0 Then Return $vDllAns[0]
 SetError(1)
 Return -1
 EndFunc
-Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC, $eLC, $lCount, $eSU, $eSL, $lpRead, $sUpper, $sLower, $wwINIvalue, $aRecent[100][4], $fAR, $iDefaultSize, $iBufferedfSize = "", $eRedo, $forBkClr, $au3Count = 0, $printDLL = "printmg.dll", $forSyn, $synAu3, $cLabel_1, $iEnd, $iStart, $iNumRecent = 5, $au3Buffer = 0
+Func _StringInsert($sString, $sInsertString, $iPosition)
+$iPosition = Int($iPosition)
+Local $iLength = StringLen($sString)
+If Abs($iPosition) > $iLength Then
+Return SetError(1, 0, $sString)
+EndIf
+If Not IsString($sInsertString) Then $sInsertString = String($sInsertString)
+If Not IsString($sString) Then $sString = String($sString)
+$sInsertString = StringReplace($sInsertString, "\", "\\")
+If $iPosition >= 0 Then
+Return StringRegExpReplace($sString, "(?s)\A(.{" & $iPosition & "})(.*)\z", "${1}" & $sInsertString & "$2")
+Else
+Return StringRegExpReplace($sString, "(?s)\A(.*)(.{" & - $iPosition & "})\z", "${1}" & $sInsertString & "$2")
+EndIf
+EndFunc
+Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC, $eLC, $lCount, $eSU, $eSL, $lpRead, $sUpper, $sLower, $wwINIvalue, $aRecent[100][4], $fAR, $iDefaultSize, $iBufferedfSize = "", $eRedo, $forBkClr, $au3Count = 0, $printDLL = "printmg.dll", $synAu3, $cLabel_1, $iEnd, $iStart, $iNumRecent = 5, $au3Buffer = 0, $mCombo[3], $tagContainer, $taggedStr, $taggedStrEx, $taggedLen, $forComp
 Local $tLimit = 1000000
 Local $abChild, $fCount = 0, $sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru, $fColor, $cColor
+Local $cChild, $cLabel[3], $cInput[2], $cButton[5], $cCombo, $x86, $x64
+$cButton[2] = 99999
+$cButton[3] = 99999
+$cButton[4] = 99999
 AdlibRegister("chkSel", 1000)
 AdlibRegister("chkTxt", 1000)
 AdlibRegister("chkUndo", 1000)
@@ -1590,7 +1609,7 @@ GUIRegisterMsg($WM_SYSCOMMAND, "_WM_SYSCOMMAND")
 $aRecent[0][0] = 0
 GUICtrlSetState($eRedo, 128)
 $hp = _PrintDLLStart($mmssgg, $printDLL)
-Local $aAccelKeys[16][16] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], ["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], ["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], ["{F2}", $hVHelp]]
+Local $aAccelKeys[20][20] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], ["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], ["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], ["{F2}", $hVHelp], ["+c", $mCombo[1]], ["+l", $mCombo[2]], ["+q", $mCombo[0]], ["{F7}", $forComp]]
 GUISetAccelerators($aAccelKeys, $pWnd)
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES")
 While 1
@@ -1643,6 +1662,8 @@ Else
 AdlibUnRegister("au3Syn")
 $au3Count = 0
 EndIf
+Case $forComp
+cGUI()
 Case $fSave
 Save()
 Case $fSaveAs
@@ -1662,6 +1683,33 @@ Case $forFont
 fontGUI()
 Case $hVHelp
 Help()
+Case $mCombo[0]
+$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow)
+If $tagContainer[1] = $tagContainer[0] Then
+_GUICtrlRichEdit_InsertText($pEditWindow, "[Quote][/Quote]")
+ContinueLoop
+EndIf
+$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[Quote]", $tagContainer[0])
+$taggedStrEx = _StringInsert($taggedStr, "[/Quote]", $tagContainer[1] + 7)
+_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx)
+Case $mCombo[1]
+$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow)
+If $tagContainer[1] = $tagContainer[0] Then
+_GUICtrlRichEdit_InsertText($pEditWindow, "[AutoIt][/AutoIt]")
+ContinueLoop
+EndIf
+$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[AutoIt]", $tagContainer[0])
+$taggedStrEx = _StringInsert($taggedStr, "[/AutoIt]", $tagContainer[1] + 8)
+_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx)
+Case $mCombo[2]
+$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow)
+If $tagContainer[1] = $tagContainer[0] Then
+_GUICtrlRichEdit_InsertText($pEditWindow, "[href=''][/href]")
+ContinueLoop
+EndIf
+$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[href='']", $tagContainer[0])
+$taggedStrEx = _StringInsert($taggedStr, "[/href]", $tagContainer[1] + 9)
+_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx)
 EndSwitch
 If $bSysMsg Then
 $bSysMsg = False
@@ -1672,11 +1720,24 @@ Switch $msg[0]
 Case $GUI_EVENT_CLOSE
 GUIDelete($abChild)
 EndSwitch
+Case $cChild
+Switch $msg[0]
+Case $GUI_EVENT_CLOSE
+GUIDelete($cChild)
+Case $cButton[3]
+GUIDelete($cChild)
+Case $cButton[1]
+folderPath()
+Case $cButton[2]
+executeCompile()
+Case $cButton[4]
+executeCompile("Yes")
+EndSwitch
 EndSwitch
 Sleep(10)
 WEnd
 Func GUI()
-Local $FileM, $EditM, $FormatM, $ViewM, $HelpM, $textl
+Local $FileM, $EditM, $FormatM, $ViewM, $HelpM, $textl, $forSyn, $forTags
 $pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES)
 $pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 $cLabel_1 = GUICtrlCreateLabel("", 0, 0, 600, 480)
@@ -1716,10 +1777,18 @@ GUICtrlCreateMenuItem("", $EditM, 17)
 $eSU = GUICtrlCreateMenuItem("Uppercase Text" & @TAB & "Ctrl + Shft + U", $EditM, 18)
 $eSL = GUICtrlCreateMenuItem("Lowercase Text" & @TAB & "Ctrl + Shft + L", $EditM, 19)
 $FormatM = GUICtrlCreateMenu("Format")
-$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 0)
-$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 1)
-$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 2)
+$forComp = GUICtrlCreateMenuItem("Compile" & @TAB & "F7", $FormatM, 0)
+GUICtrlCreateMenuItem("", $FormatM, 1)
+$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 2)
+$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 3)
+GUICtrlCreateMenuItem("", $FormatM, 4)
+$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 5)
 $synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn)
+GUICtrlCreateMenuItem("", $FormatM, 6)
+$forTags = GUICtrlCreateMenu("Tags", $FormatM, 7)
+$mCombo[0] = GUICtrlCreateMenuItem("Quote", $forTags, 0)
+$mCombo[1] = GUICtrlCreateMenuItem("Code", $forTags, 1)
+$mCombo[2] = GUICtrlCreateMenuItem("Link", $forTags, 2)
 $ViewM = GUICtrlCreateMenu("View")
 $vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0)
 GUICtrlSetState($vStatus, 128)
@@ -1730,11 +1799,43 @@ $hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 2)
 setNew()
 GUISetState(@SW_SHOW)
 EndFunc
+Func cGUI()
+Local $getTitle, $winTitle
+$cChild = GUICreate("Compile Options", 400, 190, -1, -1)
+$cLabel[1] = GUICtrlCreateLabel("Compile Au3 script", 145, 25)
+$cLabel[2] = GUICtrlCreateLabel("In file (script path already included)", 35, 67)
+$getTitle = WinGetTitle($pWnd)
+$winTitle = StringTrimRight($getTitle, 8)
+$cInput[1] = GUICtrlCreateInput(@ScriptDir & "\" & $winTitle, 35, 85, 275)
+$cButton[1] = GUICtrlCreateButton("...", 315, 83, 35)
+$cButton[2] = GUICtrlCreateButton("Compile", 260, 150)
+$cButton[3] = GUICtrlCreateButton("Cancel", 312, 150)
+$cButton[4] = GUICtrlCreateButton("Advanced..", 190, 150)
+$cButton[0] = 4
+$cLabel[0] = 2
+$cInput[0] = 1
+GUISetState()
+EndFunc
+Func folderPath()
+Local $dialogPath
+$dialogPath = FileOpenDialog("Open File", @ScriptDir, "Au3 Files(*.au3)|Text Files(*.txt)")
+GUICtrlSetData($cInput[1], $dialogPath)
+EndFunc
+Func executeCompile($advanced = "No")
+Local $in_path
+$in_path = GUICtrlRead($cInput[1])
+If $advanced = "Yes" Then
+ShellExecute( @ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe')
+GUIDelete($cChild)
+Return
+EndIf
+ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & '" /comp 4')
+EndFunc
 Func au3Syn()
 Local $gRTFcode, $gSel, $quotes
 If _GUICtrlRichEdit_GetTextLength($pEditWindow) = $au3Buffer Then Return
 $quotes = StringReplace(_GUICtrlRichEdit_GetText($pEditWindow), '"', '')
-If Not IsInt(@extended/2) Then Return
+If Not IsInt(@extended / 2) Then Return
 $gSel = _GUICtrlRichEdit_GetSel($pEditWindow)
 $gRTFcode = _RESH_SyntaxHighlight($pEditWindow)
 Local $aColorTable[13]
@@ -1786,6 +1887,8 @@ GUICtrlSetFont(-1, 8, 500)
 GUICtrlCreateLabel("Just a simple notepad program", 10, 80)
 GUICtrlSetFont(-1, 7, 500)
 GUICtrlCreateLabel("Made completely with AutoIt", 15, 100)
+GUICtrlSetFont(-1, 7, 500)
+GUICtrlCreateLabel("Version: 3.3.12.0", 42, 120)
 GUICtrlSetFont(-1, 7, 500)
 GUISetState()
 EndFunc
@@ -2091,7 +2194,6 @@ _GUICtrlRichEdit_StreamToFile($pEditWindow, $fs)
 $cn = StringSplit($fn[$i], ".")
 $sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad")
 $saveCounter += 1
-$iNumRecent += 1
 Return
 EndIf
 $fo = FileOpen($fs, 1)
@@ -2101,7 +2203,6 @@ FileClose($fn[$i])
 $cn = StringSplit($fn[$i], ".")
 $sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad")
 $saveCounter += 1
-$iNumRecent += 1
 Return
 EndIf
 If StringInStr($fn[$oIndex], "rtf") Then
@@ -2109,14 +2210,12 @@ _GUICtrlRichEdit_StreamToFile($pEditWindow, $fn[$oIndex])
 $cn = StringSplit($fn[$oIndex], ".")
 $sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad")
 $saveCounter += 1
-$iNumRecent += 1
 Return
 EndIf
 $fo = FileOpen($fn[$oIndex], 2)
 If $fo = -1 Then Return MsgBox(0, "error", "Could not create file")
 $fw = FileWrite($fs, $r)
 FileClose($fn[$oIndex])
-$iNumRecent += 1
 EndFunc
 Func Help()
 WinActivate("Program Manager", "")
