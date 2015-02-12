@@ -361,9 +361,9 @@ Func folderPath($setPath)
 EndFunc   ;==>folderPath
 
 Func executeCompile()
-	Local $in_path, $out_path, $icon_file, _
-			$comprsion, $OSarch
-EndFunc   ;==>executeCompile
+Local $in_path, $out_path, $icon_file, _
+		$comprsion, $OSarch
+EndFunc
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
 ; This is the ASM RESH library - included in the zip file
