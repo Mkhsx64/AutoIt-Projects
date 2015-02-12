@@ -78,8 +78,7 @@ $cButton[5] = 99999
 ;======================
 ;compile execution variables
 Local $in_path, $out_path, $icon_file, _
-		$comprsion, $OSarch
-;=====
+$comprsion, $OSarch
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -345,7 +344,7 @@ Func cGUI()
 	$cButton[4] = GUICtrlCreateButton("Compile", 260, 250) ; create the compile button
 	$cButton[5] = GUICtrlCreateButton("Cancel", 310, 250) ; cancel button works as exit
 	GUISetState() ; show the window
-EndFunc   ;==>cGUI
+EndFunc
 
 Func folderPath($setPath)
 	Local $dialogPath
@@ -363,10 +362,6 @@ Func folderPath($setPath)
 			GUICtrlSetData($cInput[3], $dialogPath) ; set the path to the corresponding input
 			Return ; get out
 	EndSwitch
-EndFunc   ;==>folderPath
-
-Func executeCompile()
-
 EndFunc
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
