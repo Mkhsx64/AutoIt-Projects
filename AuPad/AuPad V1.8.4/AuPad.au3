@@ -277,9 +277,11 @@ Func GUI()
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
 	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 0) ; create the second level font menu item
 	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 1) ; create the second level background color menu item
-	$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 2) ; create the second level syntax highlighting menu
+	GUICtrlCreateMenuItem("", $FormatM, 2) ; create line
+	$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 3) ; create the second level syntax highlighting menu
 	$synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn) ; create the third level menu item for autoit syntax highlighting
-	$forTags = GUICtrlCreateMenu("Tags", $FormatM, 3) ; create the first level tags menu item
+	GUICtrlCreateMenuItem("", $FormatM, 4) ; create line
+	$forTags = GUICtrlCreateMenu("Tags", $FormatM, 5) ; create the first level tags menu item
 	$mCombo[0] = GUICtrlCreateMenuItem("Quote", $forTags, 0) ; create the second level quote menu item
 	$mCombo[1] = GUICtrlCreateMenuItem("Code", $forTags, 1) ; create the second level code menu item
 	$mCombo[2] = GUICtrlCreateMenuItem("Link", $forTags, 2) ;create the second level link menu item
@@ -295,10 +297,17 @@ Func GUI()
 EndFunc   ;==>GUI
 
 Func cGUI()
-	$cChild, $cLabel[5], $cInput[3], _
-		$cButton[7]
+	Local $getTitle, $winTitle
+;~ 	$cChild, $cLabel[5], $cInput[3], _
+;~ 		$cButton[7]
 	$cChild = GUICreate("Compile Options", 400, 300)
-
+	$cLabel[1] = GUICtrlCreateLabel("Compile Au3 script with options.", 180, 25)
+	$cLabel[2] = GUICtrlCreateLabel("In file (script path already included)", 45, 125)
+	$getTitle = WinGetTitle($pWnd)
+	$winTitle = StringTrimRight($getTitle, 8)
+	$cInput[1] = GUICtrlCreateInput(@ScriptDir & "\" & $winTitle, 45, 140, 275)
+	$cInput[2] = GUICtrlCreateInput("", 45, 180, 275)
+	GUISetState()
 EndFunc
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
