@@ -71,10 +71,10 @@ Local $abChild, $fCount = 0, $sFontName, _
 		$fColor, $cColor
 
 ;compile gui child vars
-Local $cChild, $cLabel[3], $cInput[2], _
-		$cButton[4], $cCombo, $x86, $x64
-$cButton[2] = 99999
-$cButton[3] = 99999
+Local $cChild, $cLabel[7], $cInput[4], _
+		$cButton[6], $cCombo, $x86, $x64
+$cButton[4] = 99999
+$cButton[5] = 99999
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -229,11 +229,15 @@ While 1
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($cChild) ; if the exit event is sent call the GUIDelete Function
-				Case $cButton[3]
+				Case $cButton[5]
 					GUIDelete($cChild) ; if the cancel button has been pressed call the GUIDelete function
 				Case $cButton[1]
-					folderPath()
+					folderPath("/in")
 				Case $cButton[2]
+					folderPath("/out")
+				Case $cButton[3]
+					folderPath("icon")
+				Case $cButton[4]
 					executeCompile()
 			EndSwitch
 	EndSwitch
@@ -311,32 +315,58 @@ EndFunc   ;==>GUI
 
 Func cGUI()
 	Local $getTitle, $winTitle
-	$cChild = GUICreate("Compile Options", 400, 190, -1, -1) ; create the gui child window
-	$cLabel[1] = GUICtrlCreateLabel("Compile Au3 script", 145, 25) ; create the label describing operation
+	$cChild = GUICreate("Compile Options", 400, 300, -1, -1) ; create the gui child window
+	$cLabel[1] = GUICtrlCreateLabel("Compile Au3 script with options.", 117, 25) ; create the label describing operation
 	$cLabel[2] = GUICtrlCreateLabel("In file (script path already included)", 35, 67) ; label for /in file
 	$getTitle = WinGetTitle($pWnd) ; get the full title
 	$winTitle = StringTrimRight($getTitle, 8) ; trim off the " - aupad"
 	$cInput[1] = GUICtrlCreateInput(@ScriptDir & "\" & $winTitle, 35, 85, 275) ; create an input with the script dir and file
+	$cLabel[3] = GUICtrlCreateLabel("Out file (blank=creation of .exe at script dir with same name)", 35, 110) ; create label for /out file
+	$cInput[2] = GUICtrlCreateInput("", 35, 127, 275) ; create input for /out file
+	$cLabel[4] = GUICtrlCreateLabel("Icon file (leave blank if none)", 35, 153) ; create label for icon label
+	$cInput[3] = GUICtrlCreateInput("", 35, 172, 275) ; input for icon
+	$cLabel[5] = GUICtrlCreateLabel("Compression rate:", 35, 208) ; label for compression
+	$cCombo = GUICtrlCreateCombo("1", 130, 205, 30) ; create the compression combo box
+	GUICtrlSetData($cCombo, "2|3|4", "4") ; set the combo data & default
+	$cLabel[6] = GUICtrlCreateLabel("OS Archetype:", 35, 238) ; create os archetype label
+	$x86 = GUICtrlCreateRadio("x86", 35, 255, 60) ; x86 radio
+	$x64 = GUICtrlCreateRadio("x64", 95, 255, 60) ; x64 radio
+	If @OSArch <> "X86" Then ; check the default os archetype
+		GUICtrlSetState($x64, $GUI_CHECKED) ; set default
+	Else
+		GUICtrlSetState($x86, $GUI_CHECKED) ; set default
+	EndIf
 	$cButton[1] = GUICtrlCreateButton("...", 315, 83, 35) ; create the /in file folder dialog
-	$cButton[2] = GUICtrlCreateButton("Compile", 260, 150) ; create the compile button
-	$cButton[3] = GUICtrlCreateButton("Cancel", 310, 150) ; cancel button works as exit
-	$cButton[0] = 3 ; we have 3 buttons
-	$cLabel[0] = 2 ; 2 labels
-	$cInput[0] = 1 ; and 1 input
+	$cButton[2] = GUICtrlCreateButton("...", 315, 125, 35) ; create the /out file folder dialog
+	$cButton[3] = GUICtrlCreateButton("...", 315, 169, 35) ; create the icon file folder dialog
+	$cButton[4] = GUICtrlCreateButton("Compile", 260, 250) ; create the compile button
+	$cButton[5] = GUICtrlCreateButton("Cancel", 310, 250) ; cancel button works as exit
 	GUISetState() ; show the window
 EndFunc   ;==>cGUI
 
-Func folderPath()
+Func folderPath($setPath)
 	Local $dialogPath
-	$dialogPath = FileOpenDialog("Open File", @ScriptDir, "Au3 Files(*.au3)|Text Files(*.txt)") ; bring up an open dialog to pick the /in file
-	GUICtrlSetData($cInput[1], $dialogPath) ; set the path to the corresponding input
+	Switch $setPath
+		Case "/in"
+			$dialogPath = FileOpenDialog("Open File", @ScriptDir, "Au3 Files(*.au3)|Text Files(*.txt)") ; bring up an open dialog to pick the /in file
+			GUICtrlSetData($cInput[1], $dialogPath) ; set the path to the corresponding input
+			Return ; get out
+		Case "/out"
+			$dialogPath = FileSaveDialog("Save File", @ScriptDir, "EXE File(*.exe)") ; bring up the save dialog to specify where we are placing this
+			GUICtrlSetData($cInput[2], $dialogPath) ; set the path to the corresponding input
+			Return ; get out
+		Case "icon"
+			$dialogPath = FileOpenDialog("Open File", @ScriptDir, "Icon Files(*.ico)|All Files(*.*)") ; bring up an open dialog to pick the icon file
+			GUICtrlSetData($cInput[3], $dialogPath) ; set the path to the corresponding input
+			Return ; get out
+	EndSwitch
 EndFunc   ;==>folderPath
 
 Func executeCompile()
 	Local $in_path, $out_path, $icon_file, _
 			$comprsion, $OSarch
-	$in_path = GUICtrlRead($cInput[1]) ; read the input path
-	ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & '" /comp 4 /x64') ; compile the script
+	$in_path = GUICtrlRead($cInput[1])
+		ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & '" /comp 4 /x64')
 EndFunc   ;==>executeCompile
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
