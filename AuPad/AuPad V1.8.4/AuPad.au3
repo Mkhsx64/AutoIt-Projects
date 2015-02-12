@@ -220,6 +220,11 @@ While 1
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
 			EndSwitch
+		Case $cChild
+			Switch $msg[0]
+				Case $GUI_EVENT_CLOSE
+					GUIDelete($cChild) ; if the exit event is sent call the GUIDelete Function
+			EndSwitch
 	EndSwitch
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
 WEnd
@@ -288,6 +293,13 @@ Func GUI()
 	setNew() ; set the window to have a new file
 	GUISetState(@SW_SHOW) ; show the window
 EndFunc   ;==>GUI
+
+Func cGUI()
+	$cChild, $cLabel[5], $cInput[3], _
+		$cButton[7]
+	$cChild = GUICreate("Compile Options", 400, 300)
+
+EndFunc
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
 ; This is the ASM RESH library - included in the zip file
