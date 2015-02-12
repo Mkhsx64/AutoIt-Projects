@@ -231,6 +231,12 @@ While 1
 					GUIDelete($cChild) ; if the exit event is sent call the GUIDelete Function
 				Case $cButton[5]
 					GUIDelete($cChild) ; if the cancel button has been pressed call the GUIDelete function
+				Case $cButton[1]
+					folderPath("/in")
+				Case $cButton[2]
+					folderPath("/out")
+				Case $cButton[3]
+					folderPath("icon")
 			EndSwitch
 	EndSwitch
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
