@@ -71,8 +71,10 @@ Local $abChild, $fCount = 0, $sFontName, _
 		$fColor, $cColor
 
 ;compile gui child vars
-Local $cChild, $cLabel[5], $cInput[3], _
-		$cButton[7]
+Local $cChild, $cLabel[7], $cInput[4], _
+		$cButton[6], $cCombo, $x86, $x64
+$cButton[4] = 99999
+$cButton[5] = 99999
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -227,6 +229,8 @@ While 1
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($cChild) ; if the exit event is sent call the GUIDelete Function
+				Case $cButton[5]
+					GUIDelete($cChild) ; if the cancel button has been pressed call the GUIDelete function
 			EndSwitch
 	EndSwitch
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
@@ -278,7 +282,7 @@ Func GUI()
 	$eSU = GUICtrlCreateMenuItem("Uppercase Text" & @TAB & "Ctrl + Shft + U", $EditM, 18) ; create the second level uppercase text menu item
 	$eSL = GUICtrlCreateMenuItem("Lowercase Text" & @TAB & "Ctrl + Shft + L", $EditM, 19) ; create the second level lowercase text menu item
 	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
-	$forComp = GUICtrlCreateMenuItem("Compile" @TAB & "F7", $FormatM, 0) ; create the second level compile menu option
+	$forComp = GUICtrlCreateMenuItem("Compile" & @TAB & "F7", $FormatM, 0) ; create the second level compile menu option
 	GUICtrlCreateMenuItem("", $FormatM, 1) ; create line
 	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 2) ; create the second level font menu item
 	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 3) ; create the second level background color menu item
@@ -305,13 +309,28 @@ Func cGUI()
 	Local $getTitle, $winTitle
 ;~ 	$cChild, $cLabel[5], $cInput[3], _
 ;~ 		$cButton[7]
-	$cChild = GUICreate("Compile Options", 400, 300)
-	$cLabel[1] = GUICtrlCreateLabel("Compile Au3 script with options.", 180, 25)
-	$cLabel[2] = GUICtrlCreateLabel("In file (script path already included)", 45, 125)
+	$cChild = GUICreate("Compile Options", 400, 300, -1, -1)
+	$cLabel[1] = GUICtrlCreateLabel("Compile Au3 script with options.", 117, 25)
+	$cLabel[2] = GUICtrlCreateLabel("In file (script path already included)", 35, 67)
 	$getTitle = WinGetTitle($pWnd)
 	$winTitle = StringTrimRight($getTitle, 8)
-	$cInput[1] = GUICtrlCreateInput(@ScriptDir & "\" & $winTitle, 45, 140, 275)
-	$cInput[2] = GUICtrlCreateInput("", 45, 180, 275)
+	$cInput[1] = GUICtrlCreateInput(@ScriptDir & "\" & $winTitle, 35, 85, 275)
+	$cLabel[3] = GUICtrlCreateLabel("Out file (blank=creation of .exe at script dir with same name)", 35, 110)
+	$cInput[2] = GUICtrlCreateInput("", 35, 127, 275)
+	$cLabel[4] = GUICtrlCreateLabel("Icon file (leave blank if none)", 35, 153)
+	$cInput[3] = GUICtrlCreateInput("", 35, 172, 275)
+	$cLabel[5] = GUICtrlCreateLabel("Compression rate:", 35, 208)
+	$cCombo = GUICtrlCreateCombo("1", 130, 205, 30)
+	GUICtrlSetData($cCombo, "2|3|4", "4")
+	$cLabel[6] = GUICtrlCreateLabel("OS Archetype (x86 by default):", 35, 238)
+	$x86 = GUICtrlCreateRadio("x86", 35, 255, 60)
+	GUICtrlSetState($x86, $GUI_CHECKED)
+	$x64 = GUICtrlCreateRadio("x64", 95, 255, 60)
+	$cButton[1] = GUICtrlCreateButton("...", 315, 83, 35)
+	$cButton[2] = GUICtrlCreateButton("...", 315, 125, 35)
+	$cButton[3] = GUICtrlCreateButton("...", 315, 169, 35)
+	$cButton[4] = GUICtrlCreateButton("Compile", 260, 250)
+	$cButton[5] = GUICtrlCreateButton("Cancel", 310, 250)
 	GUISetState()
 EndFunc
 
