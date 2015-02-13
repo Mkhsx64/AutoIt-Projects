@@ -298,9 +298,9 @@ Func GUI()
 	$synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn) ; create the third level menu item for autoit syntax highlighting
 	GUICtrlCreateMenuItem("", $FormatM, 6) ; create line
 	$forTags = GUICtrlCreateMenu("Tags", $FormatM, 7) ; create the first level tags menu item
-	$mCombo[0] = GUICtrlCreateMenuItem("Quote", $forTags, 0) ; create the second level quote menu item
-	$mCombo[1] = GUICtrlCreateMenuItem("Code", $forTags, 1) ; create the second level code menu item
-	$mCombo[2] = GUICtrlCreateMenuItem("Link", $forTags, 2) ;create the second level link menu item
+	$mCombo[0] = GUICtrlCreateMenuItem("Quote" & @TAB & "Shft + Q", $forTags, 0) ; create the second level quote menu item
+	$mCombo[1] = GUICtrlCreateMenuItem("Code" & @TAB & "Shft + C", $forTags, 1) ; create the second level code menu item
+	$mCombo[2] = GUICtrlCreateMenuItem("Link" & @TAB & "Shft + L", $forTags, 2) ;create the second level link menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
