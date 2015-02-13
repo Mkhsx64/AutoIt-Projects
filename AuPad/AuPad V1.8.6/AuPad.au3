@@ -409,7 +409,6 @@ EndFunc   ;==>setNew
 Func addRecent($sPath)
 	Local $c = 0, $i = 1
 	For $i = 1 To $aRecent[0][0] ; 1 to the number of recent files
-		$iStart = GUICtrlCreateDummy() ; create the starting dummy control
 		If $aRecent[$i][2] = $sPath Then ; if the paths are equal
 			$c = $aRecent[$i][3] ; store the number
 			GUICtrlDelete($aRecent[$i][0]) ; delete the existing
@@ -418,28 +417,25 @@ Func addRecent($sPath)
 				If $aRecent[$j][3] < $c Then $aRecent[$j][3] += 1 ; if the number is less then c then add one
 			Next
 			$aRecent[$i][3] = 1 ; reset the 4th array value for that recent file
-			$iEnd = GUICtrlCreateDummy()
 			Return
 		EndIf
 	Next
 	For $i = 1 To $aRecent[0][0]
-		$aRecent[$i][3] += 1
+		$aRecent[$i][3] += 1 ; add 1
 		If $aRecent[$i][3] > $iNumRecent Then
-			$aRecent[$i][3] = 1
+			$aRecent[$i][3] = 1 ; set the value
 			$c = $i
-			GUICtrlDelete($aRecent[$i][0])
+			GUICtrlDelete($aRecent[$i][0]) ; delete the menu item
 		EndIf
 	Next
 	If $aRecent[0][0] < $iNumRecent Then
-		$c = $aRecent[0][0] + 1
-;~ 		ReDim $aRecent[$c + 1][4]
-		$aRecent[0][0] = $c
+		$c = $aRecent[0][0] + 1 ; set c
+		$aRecent[0][0] = $c ; set the array value
 	EndIf
-	$aRecent[$c][1] = StringRegExpReplace($sPath, '^(.{3,11}\\|.{11})(.*)(\\.{6,27}|.{27})$', '\1...\3')
-	$aRecent[$c][2] = $sPath
-	$aRecent[$c][0] = GUICtrlCreateMenuItem($aRecent[$c][1], $fAR, $c)
-	$aRecent[$c][3] = 1
-	$iEnd = GUICtrlCreateDummy()
+	$aRecent[$c][1] = StringRegExpReplace($sPath, '^(.{3,11}\\|.{11})(.*)(\\.{6,27}|.{27})$', '\1...\3') ; replace path
+	$aRecent[$c][2] = $sPath ; set the path
+	$aRecent[$c][0] = GUICtrlCreateMenuItem($aRecent[$c][1], $fAR, $c) ; create the menu item
+	$aRecent[$c][3] = 1 ; set 3rd value
 EndFunc   ;==>addRecent
 
 Func aChild()
