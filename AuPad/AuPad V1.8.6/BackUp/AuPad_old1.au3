@@ -51,7 +51,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$eWC, $eLC, $lCount, $eSU, _
 		$eSL, $lpRead, $sUpper, _
 		$sLower, $wwINIvalue, _
-		$aRecent[10][4], $fAR, $iDefaultSize, _
+		$aRecent[100][4], $fAR, $iDefaultSize, _
 		$iBufferedfSize = "", $eRedo, _
 		$forBkClr, $au3Count = 0, _
 		$printDLL = "printmg.dll", _
@@ -89,11 +89,6 @@ _GUICtrlRichEdit_ChangeFontSize($pEditWindow, 10) ; set the default font size
 $sFontName = 'Arial' ; font name
 $iFontSize = 10 ; font size
 $iDefaultSize = 10 ; default size
-
-Local $r
-For $r = 1 To 9
-	$aRecent[$r][0] = 99999
-Next
 
 Local $bSysMsg = False
 GUIRegisterMsg($WM_SIZE, "WM_SIZE")
@@ -215,12 +210,12 @@ While 1
 					$taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[href='']", $tagContainer[0]) ; insert the first link bracket
 					$taggedStrEx = _StringInsert($taggedStr, "[/href]", $tagContainer[1] + 9) ; insert the second link bracket
 					_GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx) ; set the text to the window
-				Case $aRecent[1][0] To $aRecent[9][0]
-					For $i = 0 To $aRecent[0][0] ; loop through all the recent added files
-						If $msg[0] = $aRecent[$i][0] Then ; if the msg is the same as one in the recent files array
-							_OpenFile($aRecent[$i][2]) ; open the file
-						EndIf
-					Next
+;~ 				Case $iStart To $iEnd
+;~ 					For $i = 0 To $aRecent[0][0] ; loop through all the recent added files
+;~ 						If $msg[0] = $aRecent[$i][0] Then ; if the msg is the same as one in the recent files array
+;~ 							_OpenFile($aRecent[$i][2]) ; open the file
+;~ 						EndIf
+;~ 					Next
 			EndSwitch
 			If $bSysMsg Then ; if the flag has been set
 				$bSysMsg = False ; reset the flag
@@ -345,7 +340,7 @@ Func executeCompile($advanced = "No")
 	Local $in_path
 	$in_path = GUICtrlRead($cInput[1]) ; read the input path
 	If $advanced = "Yes" Then
-		ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe') ; bring up the aut2exe dialog
+		ShellExecute( @ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe') ; bring up the aut2exe dialog
 		GUIDelete($cChild) ; delete ours
 		Return ; get out
 	EndIf
@@ -412,13 +407,12 @@ Func addRecent($sPath)
 		$iStart = GUICtrlCreateDummy() ; create the starting dummy control
 		If $aRecent[$i][2] = $sPath Then ; if the paths are equal
 			$c = $aRecent[$i][3] ; store the number
-			GUICtrlDelete($aRecent[$i][0]) ; delete the existing
+			GUICtrlDelete($aRecent[$i][0])  ; delete the existing
 			$aRecent[$i][0] = GUICtrlCreateMenuItem($aRecent[$i][1], $fAR, $i) ; set the menu item
 			For $j = 1 To $aRecent[0][0] ; start j at 1 to number of recent files
 				If $aRecent[$j][3] < $c Then $aRecent[$j][3] += 1 ; if the number is less then c then add one
 			Next
 			$aRecent[$i][3] = 1 ; reset the 4th array value for that recent file
-			$iEnd = GUICtrlCreateDummy()
 			Return
 		EndIf
 	Next
@@ -432,7 +426,7 @@ Func addRecent($sPath)
 	Next
 	If $aRecent[0][0] < $iNumRecent Then
 		$c = $aRecent[0][0] + 1
-;~ 		ReDim $aRecent[$c + 1][4]
+		ReDim $aRecent[$c + 1][4]
 		$aRecent[0][0] = $c
 	EndIf
 	$aRecent[$c][1] = StringRegExpReplace($sPath, '^(.{3,11}\\|.{11})(.*)(\\.{6,27}|.{27})$', '\1...\3')
@@ -440,7 +434,7 @@ Func addRecent($sPath)
 	$aRecent[$c][0] = GUICtrlCreateMenuItem($aRecent[$c][1], $fAR, $c)
 	$aRecent[$c][3] = 1
 	$iEnd = GUICtrlCreateDummy()
-EndFunc   ;==>addRecent
+EndFunc
 
 Func aChild()
 	Local $authLabel, $nameLabel
@@ -579,7 +573,7 @@ Func _OpenFile($droppedPath)
 	$fName = StringSplit($iPath[$i], ".") ; split the string by "."
 	WinSetTitle($pWnd, '', $fName[1] & ' - ' & "AuPad") ; set the window title
 	_GUICtrlRichEdit_SetModified($pEditWindow, False) ; set the modify flag
-	addRecent($droppedPath)
+;~ 	addRecent($droppedPath)
 	$iNumRecent += 1
 EndFunc   ;==>_OpenFile
 ;======================================================
@@ -777,7 +771,7 @@ Func Open()
 	$saveCounter += 1 ; increment the save counter
 	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
 	FileClose($fileOpen) ; close the file
-	addRecent($fileOpenD) ; add the file opened to the recent list
+;~ 	addRecent($fileOpenD) ; add the file opened to the recent list
 	$iNumRecent += 1 ; increment the recent counter
 EndFunc   ;==>Open
 
@@ -795,8 +789,8 @@ Func Save()
 			$cn = StringSplit($fn[$i], ".") ; split the file name
 			$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 			$saveCounter += 1 ; increment the save counter
-			addRecent($fs) ; add it to the recent files
-			$iNumRecent += 1 ; increment the recent counter
+;~ 			addRecent($fs) ; add it to the recent files
+;~ 			$iNumRecent += 1 ; increment the recent counter
 			Return ; get out
 		EndIf
 		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
@@ -806,8 +800,8 @@ Func Save()
 		$cn = StringSplit($fn[$i], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
-		addRecent($fs) ; add the path to the recent files list
-		$iNumRecent += 1 ; increment the recent counter
+;~ 		addRecent($fs) ; add the path to the recent files list
+;~ 		$iNumRecent += 1 ; increment the recent counter
 		Return ; get out
 	EndIf
 	If StringInStr($fn[$oIndex], "rtf") Then
@@ -815,16 +809,16 @@ Func Save()
 		$cn = StringSplit($fn[$oIndex], ".") ; split the file name
 		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 		$saveCounter += 1 ; increment the save counter
-		addRecent($fn[$oIndex]) ; add the path to the recent files list
-		$iNumRecent += 1 ; increment the recent counter
+;~ 		addRecent($fn[$oIndex]) ; add the path to the recent files list
+;~ 		$iNumRecent += 1 ; increment the recent counter
 		Return ; get out
 	EndIf
 	$fo = FileOpen($fn[$oIndex], 2) ; if we've already saved before, open the file and set it to overwrite current contents
 	If $fo = -1 Then Return MsgBox(0, "error", "Could not create file") ; if it didn't work tell us and get out
 	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
 	FileClose($fn[$oIndex]) ; close the file we specified
-	addRecent($fn[$oIndex]) ; add the path to the recent files list
-	$iNumRecent += 1 ; increment the recent counter
+;~ 	addRecent($fn[$oIndex]) ; add the path to the recent files list
+;~ 	$iNumRecent += 1 ; increment the recent counter
 EndFunc   ;==>Save
 
 Func Help()

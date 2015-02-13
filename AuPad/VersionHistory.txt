@@ -84,3 +84,8 @@ https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 - added compiler GUI.
 - added ability to compile au3 scripts.
 - ability to open aut2exe for more options.
+
+---==== 1.8.6 ====---
+
+- fixed tag labels to show gui accelerator keys.
+- fixed add recent to work and open files by path in menu.
