@@ -92,7 +92,7 @@ $iDefaultSize = 10 ; default size
 
 Local $r
 For $r = 1 To 9
-	$aRecent[$r][0] = 99999
+	$aRecent[$r][0] = 99999 ; set default values
 Next
 
 Local $bSysMsg = False
