@@ -90,5 +90,5 @@ https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 - fixed tag labels to show gui accelerator keys.
 - fixed add recent function.
 - ability to open recent files in recent files menu.
-- Added text to speech ability
+- Added text to speech ability (idea from betapad - http://www.autoitscript.com/forum/topic/38353-betapad/)
 - added menu item for text to speech
