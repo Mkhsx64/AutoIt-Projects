@@ -60,7 +60,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$au3Buffer = 0, $mCombo[3], _
 		$tagContainer, $taggedStr, _
 		$taggedStrEx, $taggedLen, _
-		$forComp
+		$forComp, $au3SynOn
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -165,6 +165,13 @@ While 1
 						$au3Count = AdlibRegister("au3Syn", 1000) ; turn it on
 					Else
 						AdlibUnRegister("au3Syn") ; turn it off
+						$au3SynOn = _GUICtrlRichEdit_GetSel($pEditWindow)
+						If $au3SynOn[1] = $au3SynOn[0] Then
+							_GUICtrlRichEdit_SetCharColor($pEditWindow, Default)
+						Else
+							_GUICtrlRichEdit_SetSel($pEditWindow, 0, 0)
+							_GUICtrlRichEdit_SetCharColor($pEditWindow, Default)
+						EndIf
 						$au3Count = 0 ; set the Adlib variable off
 					EndIf
 				Case $forComp
