@@ -413,6 +413,9 @@ Func setNew()
 	If $title = "" Then MsgBox(0, "error", "Could not set window title...", 10) ; if the title equals nothing tell us
 EndFunc   ;==>setNew
 
+; http://www.autoitscript.com/forum/topic/149659-alternate-data-streams-viewer/
+; Thanks to AZJIO's My notepad program -- http://www.autoitscript.com/forum/topic/152017-my-notepad/
+;======================================================
 Func addRecent($sPath)
 	Local $c = 0, $i = 1
 	For $i = 1 To $aRecent[0][0] ; 1 to the number of recent files
@@ -444,6 +447,7 @@ Func addRecent($sPath)
 	$aRecent[$c][0] = GUICtrlCreateMenuItem($aRecent[$c][1], $fAR, $c) ; create the menu item
 	$aRecent[$c][3] = 1 ; set 3rd value
 EndFunc   ;==>addRecent
+;======================================================
 
 Func aChild()
 	Local $authLabel, $nameLabel
