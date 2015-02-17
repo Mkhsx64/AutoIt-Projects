@@ -165,12 +165,12 @@ While 1
 						$au3Count = AdlibRegister("au3Syn", 1000) ; turn it on
 					Else
 						AdlibUnRegister("au3Syn") ; turn it off
-						$au3SynOn = _GUICtrlRichEdit_GetSel($pEditWindow)
+						$au3SynOn = _GUICtrlRichEdit_GetSel($pEditWindow) ; see if we have any selections
 						If $au3SynOn[1] = $au3SynOn[0] Then
-							_GUICtrlRichEdit_SetCharColor($pEditWindow, Default)
+							_GUICtrlRichEdit_SetCharColor($pEditWindow, Default) ; if we don't set the color
 						Else
-							_GUICtrlRichEdit_SetSel($pEditWindow, 0, 0)
-							_GUICtrlRichEdit_SetCharColor($pEditWindow, Default)
+							_GUICtrlRichEdit_SetSel($pEditWindow, 0, 0) ; unselect any text
+							_GUICtrlRichEdit_SetCharColor($pEditWindow, Default) ; set the color
 						EndIf
 						$au3Count = 0 ; set the Adlib variable off
 					EndIf
