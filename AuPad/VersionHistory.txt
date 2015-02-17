@@ -91,4 +91,4 @@ https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 - fixed add recent function.
 - ability to open recent files in recent files menu.
 - Added text to speech ability
-
+- added menu item for text to speech
