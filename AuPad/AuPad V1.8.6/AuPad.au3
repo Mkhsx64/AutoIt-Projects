@@ -32,6 +32,7 @@
 #include <APIDlgConstants.au3>
 #include <printMGv2.au3> ; printing support from martin's print UDF
 #include <String.au3>
+#include <IE.au3>
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fSave, $fSaveAs, $fontBox, _
@@ -60,7 +61,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$au3Buffer = 0, $mCombo[3], _
 		$tagContainer, $taggedStr, _
 		$taggedStrEx, $taggedLen, _
-		$forComp, $vTxt_Spch, $SE
+		$forComp, $vTxt_Spch, $SE, _
+		$oIE
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -79,7 +81,8 @@ $cButton[4] = 99999
 
 ;seo gui child vars
 Local $seChild, $seInput, $seLabel, _
-	$seRadio[6], $seSubmit = 99999
+	$seRadio[6], $seSubmit = 99999, _
+	$seI
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -261,7 +264,11 @@ While 1
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($seChild)
 				Case $seSubmit
-					;
+					For $seI = 1 To UBound($seRadio) - 1 Step 1
+						If GUICtrlGetState($seRadio[$seI]) <> $GUI_UNCHECKED Then
+							_openWeb($seRadio[$seI])
+						EndIf
+					Next
 			EndSwitch
 	EndSwitch
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
@@ -386,7 +393,20 @@ Func seGUI()
 	$seRadio[4] = GUICtrlCreateRadio("Ask", 153, 80, "40") ; create the radio
 	$seRadio[0] = 4 ; set the # of radios
 	$seSubmit = GUICtrlCreateButton("Search", 80, 110) ; submit button to search
-	GUISetState()
+	GUISetState() ; show the window
+EndFunc
+
+Func _openWeb($srchProv)
+	Switch $srchProv
+		Case "Google"
+			$oIe = _IECreate("https://www.google.com/?gws_rd=ssl#q=" & GUICtrlRead($seInput))
+		Case "Bing"
+			$oIe = _IECreate("http://www.bing.com/search?q=" & GUICtrlRead($seInput) & "&qs=n&form=QBLH&pq=hi&sc=8-0&sp=-1&sk=&cvid=0009bd901245417b8293556931945db9")
+		Case "Yahoo"
+			$oIe = _IECreate("https://search.yahoo.com/search;_ylt=At62TSEfE_U8sUmfF1eBBEmbvZx4?p=" & GUICtrlRead($seInput) & "&toggle=1&cop=mss&ei=UTF-8&fr=yfp-t-764&fp=1")
+		Case "Ask"
+			$oIe = _IECreate("http://www.ask.com/web?q=" & GUICtrlRead($seInput) & "&qsrc=0&o=0&l=dir&qo=homepageSearchBox")
+	EndSwitch
 EndFunc
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
@@ -878,6 +898,7 @@ Func Quit()
 	$title = StringSplit($wgt, " - ") ; split the window title
 	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
 		$o_speech = "" ; reset the obj
+		_IEQuit($oIE) ; get out
 		Exit ; get out
 	ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
 		$fOp = FileOpen($fn[$oIndex]) ; open the already opened file
@@ -887,6 +908,7 @@ Func Quit()
 			Save() ; call the save function
 			FileClose($fOp) ; close the file
 			$o_speech = "" ; reset the obj
+			_IEQuit($oIE) ; get out
 			Exit ; exit the script
 		EndIf
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
@@ -895,7 +917,6 @@ Func Quit()
 		If $mBox = 6 Then ; if we said yes
 			Save() ; run the save function
 		ElseIf $mBox = 2 Then
-			$o_speech = "" ; reset the obj
 			Return ; get out
 		EndIf
 	ElseIf $st > 0 Then ; if there is something in the window, and it is called Untitled
@@ -906,10 +927,10 @@ Func Quit()
 			$saveCounter = 0 ; reset the save counter
 			Save() ; call the save function
 		ElseIf $mBox = 2 Then ; if they hit cancel
-			$o_speech = "" ; reset the obj
 			Return ; get out
 		EndIf
 	EndIf
+	_IEQuit($oIE) ; get out
 	$o_speech = "" ; reset the obj
 	Exit ; get out
 EndFunc   ;==>Quit
