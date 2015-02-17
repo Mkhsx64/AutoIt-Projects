@@ -225,7 +225,7 @@ While 1
 						EndIf
 					Next
 				Case $vTxt_Spch
-					$o_speech.Speak(_GUICtrlRichEdit_GetText($pEditWindow)
+					$o_speech.Speak(_GUICtrlRichEdit_GetText($pEditWindow) ; say it like you mean it mary!
 			EndSwitch
 			If $bSysMsg Then ; if the flag has been set
 				$bSysMsg = False ; reset the flag
