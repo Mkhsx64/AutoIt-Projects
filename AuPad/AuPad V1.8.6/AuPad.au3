@@ -60,7 +60,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$au3Buffer = 0, $mCombo[3], _
 		$tagContainer, $taggedStr, _
 		$taggedStrEx, $taggedLen, _
-		$forComp
+		$forComp, $vTxt_Spch
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -104,6 +104,9 @@ $aRecent[0][0] = 0 ; start the recent files counter
 GUICtrlSetState($eRedo, 128) ; set the state of the redo menu item
 
 $hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
+
+Local $o_speech = ObjCreate("SAPI.SpVoice")
+$o_speech.Voice = $o_speech.GetVoices("Name=Microsoft Mary", "Language=409").Item(0)
 
 Local $aAccelKeys[20][20] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
@@ -221,6 +224,8 @@ While 1
 							_OpenFile($aRecent[$i][2]) ; open the file
 						EndIf
 					Next
+				Case $vTxt_Spch
+					$o_speech.Speak(_GUICtrlRichEdit_GetText($pEditWindow)
 			EndSwitch
 			If $bSysMsg Then ; if the flag has been set
 				$bSysMsg = False ; reset the flag
@@ -308,6 +313,8 @@ Func GUI()
 	$mCombo[2] = GUICtrlCreateMenuItem("Link" & @TAB & "Shft + L", $forTags, 2) ;create the second level link menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
+	GUICtrlCreateMenuItem("", $ViewM, 1) ; create line
+	$vTxt_Spch = GUICtrlCreateMenuItem("Text to Speech", $ViewM, 2) ; create the second level text to speech menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
 	$hVHelp = GUICtrlCreateMenuItem("View Help" & @TAB & "F2", $HelpM, 0) ; create the second level view help menu item
@@ -840,6 +847,7 @@ Func Quit()
 	$wgt = WinGetTitle($pWnd, "") ; get the title of the window
 	$title = StringSplit($wgt, " - ") ; split the window title
 	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
+		$o_speech = "" ; reset the obj
 		Exit ; get out
 	ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
 		$fOp = FileOpen($fn[$oIndex]) ; open the already opened file
@@ -848,6 +856,7 @@ Func Quit()
 			$saveCounter += 1 ; increment the save counter
 			Save() ; call the save function
 			FileClose($fOp) ; close the file
+			$o_speech = "" ; reset the obj
 			Exit ; exit the script
 		EndIf
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
@@ -856,7 +865,8 @@ Func Quit()
 		If $mBox = 6 Then ; if we said yes
 			Save() ; run the save function
 		ElseIf $mBox = 2 Then
-			Return
+			$o_speech = "" ; reset the obj
+			Return ; get out
 		EndIf
 	ElseIf $st > 0 Then ; if there is something in the window, and it is called Untitled
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
@@ -866,9 +876,11 @@ Func Quit()
 			$saveCounter = 0 ; reset the save counter
 			Save() ; call the save function
 		ElseIf $mBox = 2 Then ; if they hit cancel
+			$o_speech = "" ; reset the obj
 			Return ; get out
 		EndIf
 	EndIf
+	$o_speech = "" ; reset the obj
 	Exit ; get out
 EndFunc   ;==>Quit
 
