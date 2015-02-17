@@ -89,4 +89,3 @@ https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 
 - fixed tag labels to show gui accelerator keys.
 - fixed add recent to work and open files by path in menu.
-- fixed syntax highlighting to change to default color when syntax highlighting is stopped.
