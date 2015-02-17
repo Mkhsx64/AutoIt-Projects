@@ -60,7 +60,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$au3Buffer = 0, $mCombo[3], _
 		$tagContainer, $taggedStr, _
 		$taggedStrEx, $taggedLen, _
-		$forComp, $vTxt_Spch
+		$forComp, $vTxt_Spch, $SE
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -76,6 +76,10 @@ Local $cChild, $cLabel[3], $cInput[2], _
 $cButton[2] = 99999
 $cButton[3] = 99999
 $cButton[4] = 99999
+
+;seo gui child vars
+Local $seChild, $seInput, $seLabel, _
+	$seRadio[6], $seSubmit = 99999
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -108,13 +112,14 @@ $hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
 Local $o_speech = ObjCreate("SAPI.SpVoice")
 $o_speech.Voice = $o_speech.GetVoices("Name=Microsoft Mary", "Language=409").Item(0)
 
-Local $aAccelKeys[20][20] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
+Local $aAccelKeys[22][22] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
 		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], _
 		["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], _
 		["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], _
 		["{F2}", $hVHelp], ["+c", $mCombo[1]], ["+l", $mCombo[2]], _
-		["+q", $mCombo[0]], ["{F7}", $forComp]]
+		["+q", $mCombo[0]], ["{F7}", $forComp], ["{F3}", $vTxt_Spch], _
+		["{F4}", $SE]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
@@ -191,6 +196,8 @@ While 1
 					fontGUI() ; if we select the font menu option call the fontGUI function
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
+				Case $SE
+					seGUI() ; open the search engine gui
 				Case $mCombo[0]
 					$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the current selection if any
 					If $tagContainer[1] = $tagContainer[0] Then ; check if a selection has been made
@@ -248,6 +255,13 @@ While 1
 					executeCompile() ; compile the script
 				Case $cButton[4]
 					executeCompile("Yes") ; compile advanced
+			EndSwitch
+		Case $seChild
+			Switch $msg[0]
+				Case $GUI_EVENT_CLOSE
+					GUIDelete($seChild)
+				Case $seSubmit
+					;
 			EndSwitch
 	EndSwitch
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
@@ -314,8 +328,10 @@ Func GUI()
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	GUICtrlCreateMenuItem("", $ViewM, 1) ; create line
-	$vTxt_Spch = GUICtrlCreateMenuItem("Text to Speech", $ViewM, 2) ; create the second level text to speech menu item
+	$vTxt_Spch = GUICtrlCreateMenuItem("Text to Speech" & @TAB & "F3", $ViewM, 2) ; create the second level text to speech menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
+	GUICtrlCreateMenuItem("", $ViewM, 3) ; create line
+	$SE = GUICtrlCreateMenuItem("Web Search" & @TAB & "F4", $ViewM, 4) ; create the second level web search menu item
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
 	$hVHelp = GUICtrlCreateMenuItem("View Help" & @TAB & "F2", $HelpM, 0) ; create the second level view help menu item
 	GUICtrlCreateMenuItem("", $HelpM, 1) ; create line
@@ -358,6 +374,20 @@ Func executeCompile($advanced = "No")
 	EndIf
 	ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & '" /comp 4') ; compile the script
 EndFunc   ;==>executeCompile
+
+Func seGUI()
+	$seChild = GUICreate("Search Engine", 200, 140) ; create the window
+	$seLabel = GUICtrlCreateLabel("Search Google, Bing, Yahoo, or Ask", 10, 15) ; create the label
+	$seInput = GUICtrlCreateInput("", 8, 55) ; create the search input
+	$seRadio[1] = GUICtrlCreateRadio("Google", 5, 80, "52")  ; create the radio
+	GUICtrlSetState($seRadio[1], $GUI_CHECKED) ; set first state
+	$seRadio[2] = GUICtrlCreateRadio("Bing", 58, 80, "48") ; create the radio
+	$seRadio[3] = GUICtrlCreateRadio("Yahoo", 103, 80, "48") ; create the radio
+	$seRadio[4] = GUICtrlCreateRadio("Ask", 153, 80, "40") ; create the radio
+	$seRadio[0] = 4 ; set the # of radios
+	$seSubmit = GUICtrlCreateButton("Search", 80, 110) ; submit button to search
+	GUISetState()
+EndFunc
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
 ; This is the ASM RESH library - included in the zip file

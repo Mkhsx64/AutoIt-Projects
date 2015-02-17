@@ -92,3 +92,5 @@ https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 - ability to open recent files in recent files menu.
 - Added text to speech ability (idea from betapad - http://www.autoitscript.com/forum/topic/38353-betapad/)
 - added menu item for text to speech
+- accel key added for text to speech and web search
+- added child gui for web search
