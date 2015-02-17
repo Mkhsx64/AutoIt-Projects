@@ -88,4 +88,6 @@ https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 ---==== 1.8.6 ====---
 
 - fixed tag labels to show gui accelerator keys.
-- fixed add recent to work and open files by path in menu.
+- fixed add recent function.
+- ability to open recent files in recent files menu.
+
