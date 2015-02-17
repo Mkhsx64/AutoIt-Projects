@@ -715,12 +715,18 @@ Func Open()
 	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
 			$strinString, $stripString, $titleNow, $mBox, _
 			$spltTitle, $fileGetSize, $fileReadEx, $pdfFile
-	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|RTF files (*.rtf)|Au3 files (*.au3)|All (*.*)", BitOR(1, 2)) ; ask the user what they would like to open
+	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|RTF files (*.rtf)|Au3 files (*.au3)|PDF Files (*.pdf)|All (*.*)", BitOR(1, 2)) ; ask the user what they would like to open
 	$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
 	$oIndex = $strSplit[0] ; set the $oIndex to the last value in the split array
 	If $strSplit[$oIndex] = "" Then ; if there is not a value
 		MsgBox(0, "error", "Did not open a file") ; tell us
 		Return ; get out
+	EndIf
+	If StringInStr($strSplit[$oIndex], ".pdf") Then
+		$pdfFile = $fileOpenD
+		$fileOpenD = _openPDF($pdfFile)
+		$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
+	$oIndex = $strSplit[0] ; set the $oIndex to the last value in the split array
 	EndIf
 	$strinString = StringSplit($strSplit[$oIndex], ".") ; split the file name by the . char
 	$fileGetSize = FileGetSize($fileOpenD) ; get the size of the file
@@ -780,6 +786,10 @@ Func Open()
 	addRecent($fileOpenD) ; add the file opened to the recent list
 	$iNumRecent += 1 ; increment the recent counter
 EndFunc   ;==>Open
+
+Func _openPDF($path)
+
+EndFunc
 
 Func Save()
 	Local $r, $sd, $cn, $i, $chkExt
