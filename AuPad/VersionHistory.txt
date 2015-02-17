@@ -90,4 +90,5 @@ https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 - fixed tag labels to show gui accelerator keys.
 - fixed add recent function.
 - ability to open recent files in recent files menu.
+- added open for .pdf files to be brought in as plain text.
 

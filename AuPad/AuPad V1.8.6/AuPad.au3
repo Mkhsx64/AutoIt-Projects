@@ -715,7 +715,7 @@ Func Open()
 	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
 			$strinString, $stripString, $titleNow, $mBox, _
 			$spltTitle, $fileGetSize, $fileReadEx
-	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|RTF files (*.rtf)|Au3 files (*.au3)|All (*.*)", BitOR(1, 2)) ; ask the user what they would like to open
+	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|RTF files (*.rtf)|Au3 files (*.au3)|PDF Files (*.pdf)|All (*.*)", BitOR(1, 2)) ; ask the user what they would like to open
 	$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
 	$oIndex = $strSplit[0] ; set the $oIndex to the last value in the split array
 	If $strSplit[$oIndex] = "" Then ; if there is not a value
