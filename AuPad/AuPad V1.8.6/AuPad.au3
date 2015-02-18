@@ -388,6 +388,7 @@ Func seGUI()
 	GUISetState() ; show the window
 EndFunc
 
+; idea thanks to The Saint's WebPad
 Func _openWeb($srchProv)
 	Switch $srchProv
 		Case "Google"
