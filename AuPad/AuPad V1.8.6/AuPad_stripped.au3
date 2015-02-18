@@ -2470,7 +2470,7 @@ Case Else
 Return $_IESTATUS_Success
 EndSwitch
 EndFunc
-Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC, $eLC, $lCount, $eSU, $eSL, $lpRead, $sUpper, $sLower, $wwINIvalue, $aRecent[10][4], $fAR, $iDefaultSize, $iBufferedfSize = "", $eRedo, $forBkClr, $au3Count = 0, $printDLL = "printmg.dll", $synAu3, $cLabel_1, $iEnd, $iStart, $iNumRecent = 5, $au3Buffer = 0, $mCombo[3], $tagContainer, $taggedStr, $taggedStrEx, $taggedLen, $forComp, $vTxt_Spch, $SE, $oIE, $hVH
+Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC, $eLC, $lCount, $eSU, $eSL, $lpRead, $sUpper, $sLower, $wwINIvalue, $aRecent[10][4], $fAR, $iDefaultSize, $iBufferedfSize = "", $eRedo, $forBkClr, $au3Count = 0, $printDLL = "printmg.dll", $synAu3, $cLabel_1, $iEnd, $iStart, $iNumRecent = 5, $au3Buffer = 0, $mCombo[3], $tagContainer, $taggedStr, $taggedStrEx, $taggedLen, $forComp, $vTxt_Spch, $vSE, $oIE, $hVH
 Local $tLimit = 1000000
 Local $abChild, $fCount = 0, $sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru, $fColor, $cColor
 Local $cChild, $cLabel[3], $cInput[2], $cButton[5], $cCombo, $x86, $x64
@@ -2478,6 +2478,7 @@ $cButton[2] = 99999
 $cButton[3] = 99999
 $cButton[4] = 99999
 Local $seChild, $seInput, $seLabel, $seCombo, $seSubmit = 99999, $seI
+Local $vhChild, $vhEdit, $vhButton = 99999
 AdlibRegister("chkSel", 1000)
 AdlibRegister("chkTxt", 1000)
 AdlibRegister("chkUndo", 1000)
@@ -2500,7 +2501,7 @@ GUICtrlSetState($eRedo, 128)
 $hp = _PrintDLLStart($mmssgg, $printDLL)
 Local $o_speech = ObjCreate("SAPI.SpVoice")
 $o_speech.Voice = $o_speech.GetVoices("Name=Microsoft Mary", "Language=409").Item(0)
-Local $aAccelKeys[22][22] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], ["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], ["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], ["{F2}", $hVHelp], ["^+a", $mCombo[1]], ["^+h", $mCombo[2]], ["^+q", $mCombo[0]], ["{F7}", $forComp], ["{F3}", $vTxt_Spch], ["{F4}", $SE]]
+Local $aAccelKeys[22][22] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], ["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], ["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], ["{F2}", $hVHelp], ["^+a", $mCombo[1]], ["^+h", $mCombo[2]], ["^+q", $mCombo[0]], ["{F7}", $forComp], ["{F3}", $vTxt_Spch], ["{F4}", $vSE]]
 GUISetAccelerators($aAccelKeys, $pWnd)
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES")
 While 1
@@ -2574,8 +2575,10 @@ Case $forFont
 fontGUI()
 Case $hVHelp
 Help()
-Case $SE
+Case $vSE
 seGUI()
+Case $hVH
+vhGUI()
 Case $mCombo[0]
 $tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow)
 If $tagContainer[1] = $tagContainer[0] Then
@@ -2641,6 +2644,13 @@ GUIDelete($seChild)
 Case $seSubmit
 _openWeb(GUICtrlRead($seCombo))
 EndSwitch
+Case $vhChild
+Switch $msg[0]
+Case $GUI_EVENT_CLOSE
+GUIDelete($vhChild)
+Case $vhButton
+GUIDelete($vhChild)
+EndSwitch
 EndSwitch
 Sleep(10)
 WEnd
@@ -2705,7 +2715,7 @@ GUICtrlCreateMenuItem("", $ViewM, 1)
 $vTxt_Spch = GUICtrlCreateMenuItem("Text to Speech" & @TAB & "F3", $ViewM, 2)
 GUICtrlSetState($vStatus, 128)
 GUICtrlCreateMenuItem("", $ViewM, 3)
-$SE = GUICtrlCreateMenuItem("Web Search" & @TAB & "F4", $ViewM, 4)
+$vSE = GUICtrlCreateMenuItem("Web Search" & @TAB & "F4", $ViewM, 4)
 $HelpM = GUICtrlCreateMenu("Help")
 $hVHelp = GUICtrlCreateMenuItem("View Help" & @TAB & "F2", $HelpM, 0)
 GUICtrlCreateMenuItem("", $HelpM, 1)
@@ -2766,6 +2776,13 @@ $oIe = _IECreate("https://search.yahoo.com/search;_ylt=At62TSEfE_U8sUmfF1eBBEmbv
 Case "Ask"
 $oIe = _IECreate("http://www.ask.com/web?q=" & GUICtrlRead($seInput) & "&qsrc=0&o=0&l=dir&qo=homepageSearchBox")
 EndSwitch
+EndFunc
+Func vhGUI()
+$vhChild = GUICreate("Vresion History", 400, 400)
+GUICtrlCreateEdit("---==== 1.0.0 ====---" & @CRLF & "- All basic notepad features" & @CRLF & "---==== 1.5.0 ====---" & @CRLF & "- Took out extra save dialog in the Save() function." & @CRLF & "- Drag and drop functionality added (thanks to AZJIO)" & @CRLF & "- Took out check for txt file when opening" & @CRLF & "- Fixed open function to delete text already in control and ask to save" & @CRLF & "- Added $ws_ex_composite to stop flicker on xp machines." & @CRLF & "- Added default font" & @CRLF & "- Set the font in the setWW() function" & @CRLF & "- added word count functionality with a accelerator key" & @CRLF & "---==== 1.5.1 ====---" & @CRLF & "- Fixed word count function" & @CRLF & "- Added line count thanks to DreamVB" & @CRLF & "- Added uppercase and lowercase thanks to DreamVB" & @CRLF & "---==== 1.6.0 ====---" & @CRLF & "- Added better text limit" & @CRLF & "- Fixed the edit control to show the horizontal scrollbar" & @CRLF & "- Made resizing of the edit control AUTO; making the menu AUTO, instead of just 5 pixel height" & @CRLF & "- Changed any file over 100 MB to read in as binary" & @CRLF & "- Changed any file dragged and dropped to read in as binary if over 100 MB in size" & @CRLF & "- Added accelerator keys for uppercase, lowercase and save as" & @CRLF & "- Took out unnecarry MsgBox in save function" & @CRLF & "- Added keyboard shortcuts to menu items" & @CRLF & "- Added print by line support" & @CRLF & "- Added ini file for settings saved" & @CRLF & "- Added setting in ini for word wrap" & @CRLF & "---==== 1.7.0 ====---" & @CRLF & "- Added cancel button when quitting" & @CRLF & "- Took out extra include" & @CRLF & "- Set default font into font variables" & @CRLF & "- Set default font when word wrap has been selected" & @CRLF & "- Set default font when taking off word wrap" & @CRLF & "- Added RTF files and All files to save dialog" & @CRLF & "- Added redo functionality" & @CRLF & "- added character attribute functionality for rich edit" & @CRLF & "- added rtf files to the open file dialog" & @CRLF & "- Added color support" & @CRLF & "- Added picture support" & @CRLF & "- Added background color support" & @CRLF & "- Added stream rtf from file support" & @CRLF & "- Added stream rtf to file support" & @CRLF & "- Added recent files to menu item" & @CRLF & "- Added AutoIt syntax highlighting; thanks goes to Beege for RESH UDF" & @CRLF & "- Took out word wrap function and menu item as RichEdit is word wrapped already" & @CRLF & "- Took out ini for the word wrap, but want to be very portable anyway" & @CRLF & "- Added check for character attributes change" & @CRLF & "---==== 1.8.0 ====---" & @CRLF & "- Fixed upper, lower, tab" & @CRLF & "- Fixed resizing of window and rich edit control" & @CRLF & "- Fixed recent files" & @CRLF & "- Fixed time/date at cursor position" & @CRLF & "- Fixed RESH.au3 comment block functionality (added check in Do..While loop & added -1 to Ubound call)" & @CRLF & "---==== 1.8.2 ====---" & @CRLF & "- Took out HotkeySets and made GUI accelerator keys (F2 (about), F5 (time/date))" & @CRLF & "- Fixed Au3 syntax highlighting setting caret position" & @CRLF & "- Added cancel to New file dialog" & @CRLF & "- Switched to ASM RESH UDF by Beege (thanks!)" & @CRLF & "- Added check when Syntax Highlighting to not highlight if there has not been any more user interaction. Cutting down a ton of processing." & @CRLF & "- Added check for quotes, due to problem with RESH - It will crash the entire program when trying to syntax highlight an unterminated quote." & @CRLF & "- Commented out Addrecent as problems with messageloop and GUI dummy creation" & @CRLF & "- F2 was fixed to bring up help instead of about AuPad." & @CRLF & "---==== 1.8.4 ====---" & @CRLF & "- added version developed in the about child window" & @CRLF & "- added tags quote, link, autoit (code). (all thanks for the Idea from The Saint's webpad - http://www.autoitscript.com/forum/topic/153265-web-pad-update/?hl=+webpad" & @CRLF & "- added GUI Accelerator keys for tags." & @CRLF & "- added compiler GUI." & @CRLF & _
+"- added ability to compile au3 scripts." & @CRLF & "- ability to open aut2exe for more options." & @CRLF & "---==== 1.8.6 ====---" & @CRLF & "- fixed tag labels to show gui accelerator keys." & @CRLF & "- fixed add recent function." & @CRLF & "- ability to open recent files in recent files menu." & @CRLF & "- Added text to speech ability (idea from betapad - http://www.autoitscript.com/forum/topic/38353-betapad/)" & @CRLF & "- added menu item for text to speech" & @CRLF & "- accel key added for text to speech and web search" & @CRLF & "- added child gui for web search" & @CRLF & "- fixed tag accelerator keys to ctrl + shft combo." & @CRLF & "- added ability to search web using 4 search providers in seperate gui." & @CRLF & "- added accelerator keys for web search GUI." & @CRLF & "- fixed version number in directives." & @CRLF & "- added version history gui.", 0, 0, 400, 380, $ES_READONLY)
+$vhButton = GUICtrlCreateButton("Okay", 360, 380)
+GUISetState()
 EndFunc
 Func au3Syn()
 Local $gRTFcode, $gSel, $quotes
@@ -3206,7 +3223,7 @@ $wgt = WinGetTitle($pWnd, "")
 $title = StringSplit($wgt, " - ")
 If $st = 0 And $title[1] = "Untitled" Then
 $o_speech = ""
-_IEQuit($oIE)
+_IEQuit($oIe)
 Exit
 ElseIf $title[1] <> "Untitled" Then
 $fOp = FileOpen($fn[$oIndex])
@@ -3216,7 +3233,7 @@ $saveCounter += 1
 Save()
 FileClose($fOp)
 $o_speech = ""
-_IEQuit($oIE)
+_IEQuit($oIe)
 Exit
 EndIf
 $winTitle = WinGetTitle("[ACTIVE]")
@@ -3238,7 +3255,7 @@ ElseIf $mBox = 2 Then
 Return
 EndIf
 EndIf
-_IEQuit($oIE)
+_IEQuit($oIe)
 $o_speech = ""
 Exit
 EndFunc

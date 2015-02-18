@@ -81,12 +81,12 @@ $cButton[4] = 99999
 
 ;seo gui child vars
 Local $seChild, $seInput, $seLabel, _
-		$seCombo, $seSubmit = 99999, _
-		$seI
+	$seCombo, $seSubmit = 99999, _
+	$seI
 
 ;version history child vars
 Local $vhChild, $vhEdit, _
-		$vhButton = 99999
+	$vhButton = 99999
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -400,7 +400,7 @@ Func seGUI()
 	GUICtrlSetData($seCombo, "Bing|Yahoo|Ask", "Google") ; add data and set default
 	$seSubmit = GUICtrlCreateButton("Search", 80, 110) ; submit button to search
 	GUISetState() ; show the window
-EndFunc   ;==>seGUI
+EndFunc
 
 ; idea thanks to The Saint's WebPad
 Func _openWeb($srchProv)
@@ -414,95 +414,95 @@ Func _openWeb($srchProv)
 		Case "Ask"
 			$oIe = _IECreate("http://www.ask.com/web?q=" & GUICtrlRead($seInput) & "&qsrc=0&o=0&l=dir&qo=homepageSearchBox") ; create IE Instance
 	EndSwitch
-EndFunc   ;==>_openWeb
+EndFunc
 
 Func vhGUI()
 	$vhChild = GUICreate("Vresion History", 400, 400)
 	GUICtrlCreateEdit("---==== 1.0.0 ====---" & @CRLF & _
-			"- All basic notepad features" & @CRLF & _
-			"---==== 1.5.0 ====---" & @CRLF & _
-			"- Took out extra save dialog in the Save() function." & @CRLF & _
-			"- Drag and drop functionality added (thanks to AZJIO)" & @CRLF & _
-			"- Took out check for txt file when opening" & @CRLF & _
-			"- Fixed open function to delete text already in control and ask to save" & @CRLF & _
-			"- Added $ws_ex_composite to stop flicker on xp machines." & @CRLF & _
-			"- Added default font" & @CRLF & _
-			"- Set the font in the setWW() function" & @CRLF & _
-			"- added word count functionality with a accelerator key" & @CRLF & _
-			"---==== 1.5.1 ====---" & @CRLF & _
-			"- Fixed word count function" & @CRLF & _
-			"- Added line count thanks to DreamVB" & @CRLF & _
-			"- Added uppercase and lowercase thanks to DreamVB" & @CRLF & _
-			"---==== 1.6.0 ====---" & @CRLF & _
-			"- Added better text limit" & @CRLF & _
-			"- Fixed the edit control to show the horizontal scrollbar" & @CRLF & _
-			"- Made resizing of the edit control AUTO; making the menu AUTO, instead of just 5 pixel height" & @CRLF & _
-			"- Changed any file over 100 MB to read in as binary" & @CRLF & _
-			"- Changed any file dragged and dropped to read in as binary if over 100 MB in size" & @CRLF & _
-			"- Added accelerator keys for uppercase, lowercase and save as" & @CRLF & _
-			"- Took out unnecarry MsgBox in save function" & @CRLF & _
-			"- Added keyboard shortcuts to menu items" & @CRLF & _
-			"- Added print by line support" & @CRLF & _
-			"- Added ini file for settings saved" & @CRLF & _
-			"- Added setting in ini for word wrap" & @CRLF & _
-			"---==== 1.7.0 ====---" & @CRLF & _
-			"- Added cancel button when quitting" & @CRLF & _
-			"- Took out extra include" & @CRLF & _
-			"- Set default font into font variables" & @CRLF & _
-			"- Set default font when word wrap has been selected" & @CRLF & _
-			"- Set default font when taking off word wrap" & @CRLF & _
-			"- Added RTF files and All files to save dialog" & @CRLF & _
-			"- Added redo functionality" & @CRLF & _
-			"- added character attribute functionality for rich edit" & @CRLF & _
-			"- added rtf files to the open file dialog" & @CRLF & _
-			"- Added color support" & @CRLF & _
-			"- Added picture support" & @CRLF & _
-			"- Added background color support" & @CRLF & _
-			"- Added stream rtf from file support" & @CRLF & _
-			"- Added stream rtf to file support" & @CRLF & _
-			"- Added recent files to menu item" & @CRLF & _
-			"- Added AutoIt syntax highlighting; thanks goes to Beege for RESH UDF" & @CRLF & _
-			"- Took out word wrap function and menu item as RichEdit is word wrapped already" & @CRLF & _
-			"- Took out ini for the word wrap, but want to be very portable anyway" & @CRLF & _
-			"- Added check for character attributes change" & @CRLF & _
-			"---==== 1.8.0 ====---" & @CRLF & _
-			"- Fixed upper, lower, tab" & @CRLF & _
-			"- Fixed resizing of window and rich edit control" & @CRLF & _
-			"- Fixed recent files" & @CRLF & _
-			"- Fixed time/date at cursor position" & @CRLF & _
-			"- Fixed RESH.au3 comment block functionality (added check in Do..While loop & added -1 to Ubound call)" & @CRLF & _
-			"---==== 1.8.2 ====---" & @CRLF & _
-			"- Took out HotkeySets and made GUI accelerator keys (F2 (about), F5 (time/date))" & @CRLF & _
-			"- Fixed Au3 syntax highlighting setting caret position" & @CRLF & _
-			"- Added cancel to New file dialog" & @CRLF & _
-			"- Switched to ASM RESH UDF by Beege (thanks!)" & @CRLF & _
-			"- Added check when Syntax Highlighting to not highlight if there has not been any more user interaction. Cutting down a ton of processing." & @CRLF & _
-			"- Added check for quotes, due to problem with RESH - It will crash the entire program when trying to syntax highlight an unterminated quote." & @CRLF & _
-			"- Commented out Addrecent as problems with messageloop and GUI dummy creation" & @CRLF & _
-			"- F2 was fixed to bring up help instead of about AuPad." & @CRLF & _
-			"---==== 1.8.4 ====---" & @CRLF & _
-			"- added version developed in the about child window" & @CRLF & _
-			"- added tags quote, link, autoit (code). (all thanks for the Idea from The Saint's webpad - http://www.autoitscript.com/forum/topic/153265-web-pad-update/?hl=+webpad" & @CRLF & _
-			"- added GUI Accelerator keys for tags." & @CRLF & _
-			"- added compiler GUI." & @CRLF & _
-			"- added ability to compile au3 scripts." & @CRLF & _
-			"- ability to open aut2exe for more options." & @CRLF & _
-			"---==== 1.8.6 ====---" & @CRLF & _
-			"- fixed tag labels to show gui accelerator keys." & @CRLF & _
-			"- fixed add recent function." & @CRLF & _
-			"- ability to open recent files in recent files menu." & @CRLF & _
-			"- Added text to speech ability (idea from betapad - http://www.autoitscript.com/forum/topic/38353-betapad/)" & @CRLF & _
-			"- added menu item for text to speech" & @CRLF & _
-			"- accel key added for text to speech and web search" & @CRLF & _
-			"- added child gui for web search" & @CRLF & _
-			"- fixed tag accelerator keys to ctrl + shft combo." & @CRLF & _
-			"- added ability to search web using 4 search providers in seperate gui." & @CRLF & _
-			"- added accelerator keys for web search GUI." & @CRLF & _
-			"- fixed version number in directives." & @CRLF & _
-			"- added version history gui.", 0, 0, 400, 380, $ES_READONLY)
-	$vhButton = GUICtrlCreateButton("Okay", 360, 380)
+"- All basic notepad features" & @CRLF & _
+"---==== 1.5.0 ====---" & @CRLF & _
+"- Took out extra save dialog in the Save() function." & @CRLF & _
+"- Drag and drop functionality added (thanks to AZJIO)" & @CRLF & _
+"- Took out check for txt file when opening" & @CRLF & _
+"- Fixed open function to delete text already in control and ask to save" & @CRLF & _
+"- Added $ws_ex_composite to stop flicker on xp machines." & @CRLF & _
+"- Added default font" & @CRLF & _
+"- Set the font in the setWW() function" & @CRLF & _
+"- added word count functionality with a accelerator key" & @CRLF & _
+"---==== 1.5.1 ====---" & @CRLF & _
+"- Fixed word count function" & @CRLF & _
+"- Added line count thanks to DreamVB" & @CRLF & _
+"- Added uppercase and lowercase thanks to DreamVB" & @CRLF & _
+"---==== 1.6.0 ====---" & @CRLF & _
+"- Added better text limit" & @CRLF & _
+"- Fixed the edit control to show the horizontal scrollbar" & @CRLF & _
+"- Made resizing of the edit control AUTO; making the menu AUTO, instead of just 5 pixel height" & @CRLF & _
+"- Changed any file over 100 MB to read in as binary" & @CRLF & _
+"- Changed any file dragged and dropped to read in as binary if over 100 MB in size" & @CRLF & _
+"- Added accelerator keys for uppercase, lowercase and save as" & @CRLF & _
+"- Took out unnecarry MsgBox in save function" & @CRLF & _
+"- Added keyboard shortcuts to menu items" & @CRLF & _
+"- Added print by line support" & @CRLF & _
+"- Added ini file for settings saved" & @CRLF & _
+"- Added setting in ini for word wrap" & @CRLF & _
+"---==== 1.7.0 ====---" & @CRLF & _
+"- Added cancel button when quitting" & @CRLF & _
+"- Took out extra include" & @CRLF & _
+"- Set default font into font variables" & @CRLF & _
+"- Set default font when word wrap has been selected" & @CRLF & _
+"- Set default font when taking off word wrap" & @CRLF & _
+"- Added RTF files and All files to save dialog" & @CRLF & _
+"- Added redo functionality" & @CRLF & _
+"- added character attribute functionality for rich edit" & @CRLF & _
+"- added rtf files to the open file dialog" & @CRLF & _
+"- Added color support" & @CRLF & _
+"- Added picture support" & @CRLF & _
+"- Added background color support" & @CRLF & _
+"- Added stream rtf from file support" & @CRLF & _
+"- Added stream rtf to file support" & @CRLF & _
+"- Added recent files to menu item" & @CRLF & _
+"- Added AutoIt syntax highlighting; thanks goes to Beege for RESH UDF" & @CRLF & _
+"- Took out word wrap function and menu item as RichEdit is word wrapped already" & @CRLF & _
+"- Took out ini for the word wrap, but want to be very portable anyway" & @CRLF & _
+"- Added check for character attributes change" & @CRLF & _
+"---==== 1.8.0 ====---" & @CRLF & _
+"- Fixed upper, lower, tab" & @CRLF & _
+"- Fixed resizing of window and rich edit control" & @CRLF & _
+"- Fixed recent files" & @CRLF & _
+"- Fixed time/date at cursor position" & @CRLF & _
+"- Fixed RESH.au3 comment block functionality (added check in Do..While loop & added -1 to Ubound call)" & @CRLF & _
+"---==== 1.8.2 ====---" & @CRLF & _
+"- Took out HotkeySets and made GUI accelerator keys (F2 (about), F5 (time/date))" & @CRLF & _
+"- Fixed Au3 syntax highlighting setting caret position" & @CRLF & _
+"- Added cancel to New file dialog" & @CRLF & _
+"- Switched to ASM RESH UDF by Beege (thanks!)" & @CRLF & _
+"- Added check when Syntax Highlighting to not highlight if there has not been any more user interaction. Cutting down a ton of processing." & @CRLF & _
+"- Added check for quotes, due to problem with RESH - It will crash the entire program when trying to syntax highlight an unterminated quote." & @CRLF & _
+"- Commented out Addrecent as problems with messageloop and GUI dummy creation" & @CRLF & _
+"- F2 was fixed to bring up help instead of about AuPad." & @CRLF & _
+"---==== 1.8.4 ====---" & @CRLF & _
+"- added version developed in the about child window" & @CRLF & _
+"- added tags quote, link, autoit (code). (all thanks for the Idea from The Saint's webpad - http://www.autoitscript.com/forum/topic/153265-web-pad-update/?hl=+webpad" & @CRLF & _
+"- added GUI Accelerator keys for tags." & @CRLF & _
+"- added compiler GUI." & @CRLF & _
+"- added ability to compile au3 scripts." & @CRLF & _
+"- ability to open aut2exe for more options." & @CRLF & _
+"---==== 1.8.6 ====---" & @CRLF & _
+"- fixed tag labels to show gui accelerator keys." & @CRLF & _
+"- fixed add recent function." & @CRLF & _
+"- ability to open recent files in recent files menu." & @CRLF & _
+"- Added text to speech ability (idea from betapad - http://www.autoitscript.com/forum/topic/38353-betapad/)" & @CRLF & _
+"- added menu item for text to speech" & @CRLF & _
+"- accel key added for text to speech and web search" & @CRLF & _
+"- added child gui for web search" & @CRLF & _
+"- fixed tag accelerator keys to ctrl + shft combo." & @CRLF & _
+"- added ability to search web using 4 search providers in seperate gui." & @CRLF & _
+"- added accelerator keys for web search GUI." & @CRLF & _
+"- fixed version number in directives." & @CRLF & _
+"- added version history gui.", 0, 0, 400, 380, $ES_READONLY)
+$vhButton = GUICtrlCreateButton("Okay", 360, 380)
 	GUISetState()
-EndFunc   ;==>vhGUI
+EndFunc
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
 ; This is the ASM RESH library - included in the zip file
@@ -993,7 +993,7 @@ Func Quit()
 	$title = StringSplit($wgt, " - ") ; split the window title
 	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
 		$o_speech = "" ; reset the obj
-		_IEQuit($oIe) ; get out
+		_IEQuit($oIE) ; get out
 		Exit ; get out
 	ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
 		$fOp = FileOpen($fn[$oIndex]) ; open the already opened file
@@ -1003,7 +1003,7 @@ Func Quit()
 			Save() ; call the save function
 			FileClose($fOp) ; close the file
 			$o_speech = "" ; reset the obj
-			_IEQuit($oIe) ; get out
+			_IEQuit($oIE) ; get out
 			Exit ; exit the script
 		EndIf
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
@@ -1025,7 +1025,7 @@ Func Quit()
 			Return ; get out
 		EndIf
 	EndIf
-	_IEQuit($oIe) ; get out
+	_IEQuit($oIE) ; get out
 	$o_speech = "" ; reset the obj
 	Exit ; get out
 EndFunc   ;==>Quit
