@@ -76,8 +76,6 @@
 
 ---==== 1.8.4 ====---
 
-https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
-
 - added version developed in the about child window
 - added tags quote, link, autoit (code). (all thanks for the Idea from The Saint's webpad - http://www.autoitscript.com/forum/topic/153265-web-pad-update/?hl=+webpad
 - added GUI Accelerator keys for tags.
@@ -99,3 +97,7 @@ https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 - added accelerator keys for web search GUI.
 - fixed version number in directives.
 - added version history gui.
+
+---==== 1.8.8 ====---
+
+- took off $ES_READONLY style on version history edit control.
