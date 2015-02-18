@@ -62,7 +62,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$tagContainer, $taggedStr, _
 		$taggedStrEx, $taggedLen, _
 		$forComp, $vTxt_Spch, $SE, _
-		$oIE
+		$oIE, $hVH
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -339,6 +339,7 @@ Func GUI()
 	$hVHelp = GUICtrlCreateMenuItem("View Help" & @TAB & "F2", $HelpM, 0) ; create the second level view help menu item
 	GUICtrlCreateMenuItem("", $HelpM, 1) ; create line
 	$hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 2) ; create the second level about aupad menu item
+	$hVH = GUICtrlCreateMenuItem("Version History", $HelpM, 3) ; create the second level version history menu item
 	setNew() ; set the window to have a new file
 	GUISetState(@SW_SHOW) ; show the window
 EndFunc   ;==>GUI
