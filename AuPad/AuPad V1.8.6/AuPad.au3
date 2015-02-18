@@ -81,7 +81,7 @@ $cButton[4] = 99999
 
 ;seo gui child vars
 Local $seChild, $seInput, $seLabel, _
-	$seRadio[6], $seSubmit = 99999, _
+	$seCombo, $seSubmit = 99999, _
 	$seI
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
@@ -120,8 +120,8 @@ Local $aAccelKeys[22][22] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], _
 		["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], _
 		["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], _
-		["{F2}", $hVHelp], ["+c", $mCombo[1]], ["+l", $mCombo[2]], _
-		["+q", $mCombo[0]], ["{F7}", $forComp], ["{F3}", $vTxt_Spch], _
+		["{F2}", $hVHelp], ["^+a", $mCombo[1]], ["^+h", $mCombo[2]], _
+		["^+q", $mCombo[0]], ["{F7}", $forComp], ["{F3}", $vTxt_Spch], _
 		["{F4}", $SE]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
@@ -264,11 +264,7 @@ While 1
 				Case $GUI_EVENT_CLOSE
 					GUIDelete($seChild)
 				Case $seSubmit
-					For $seI = 1 To UBound($seRadio) - 1 Step 1
-						If GUICtrlGetState($seRadio[$seI]) <> $GUI_UNCHECKED Then
-							_openWeb($seRadio[$seI])
-						EndIf
-					Next
+					;
 			EndSwitch
 	EndSwitch
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
@@ -329,9 +325,9 @@ Func GUI()
 	$synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn) ; create the third level menu item for autoit syntax highlighting
 	GUICtrlCreateMenuItem("", $FormatM, 6) ; create line
 	$forTags = GUICtrlCreateMenu("Tags", $FormatM, 7) ; create the first level tags menu item
-	$mCombo[0] = GUICtrlCreateMenuItem("Quote" & @TAB & "Shft + Q", $forTags, 0) ; create the second level quote menu item
-	$mCombo[1] = GUICtrlCreateMenuItem("Code" & @TAB & "Shft + C", $forTags, 1) ; create the second level code menu item
-	$mCombo[2] = GUICtrlCreateMenuItem("Link" & @TAB & "Shft + L", $forTags, 2) ;create the second level link menu item
+	$mCombo[0] = GUICtrlCreateMenuItem("Quote" & @TAB & "Ctrl + Shft + Q", $forTags, 0) ; create the second level quote menu item
+	$mCombo[1] = GUICtrlCreateMenuItem("Code" & @TAB & "Ctrl + Shft + A", $forTags, 1) ; create the second level code menu item
+	$mCombo[2] = GUICtrlCreateMenuItem("Link" & @TAB & "Ctrl + Shft + H", $forTags, 2) ;create the second level link menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
 	GUICtrlCreateMenuItem("", $ViewM, 1) ; create line
@@ -386,17 +382,14 @@ Func seGUI()
 	$seChild = GUICreate("Search Engine", 200, 140) ; create the window
 	$seLabel = GUICtrlCreateLabel("Search Google, Bing, Yahoo, or Ask", 10, 15) ; create the label
 	$seInput = GUICtrlCreateInput("", 8, 55) ; create the search input
-	$seRadio[1] = GUICtrlCreateRadio("Google", 5, 80, "52")  ; create the radio
-	GUICtrlSetState($seRadio[1], $GUI_CHECKED) ; set first state
-	$seRadio[2] = GUICtrlCreateRadio("Bing", 58, 80, "48") ; create the radio
-	$seRadio[3] = GUICtrlCreateRadio("Yahoo", 103, 80, "48") ; create the radio
-	$seRadio[4] = GUICtrlCreateRadio("Ask", 153, 80, "40") ; create the radio
-	$seRadio[0] = 4 ; set the # of radios
+	$seCombo = GUICtrlCreateCombo("Google", 60, 85, 75) ; create combo
+	GUICtrlSetData($seCombo, "Bing|Yahoo|Ask", "Google") ; add data and set default
 	$seSubmit = GUICtrlCreateButton("Search", 80, 110) ; submit button to search
 	GUISetState() ; show the window
 EndFunc
 
 Func _openWeb($srchProv)
+	MsgBox(0, "", $srchProv)
 	Switch $srchProv
 		Case "Google"
 			$oIe = _IECreate("https://www.google.com/?gws_rd=ssl#q=" & GUICtrlRead($seInput))
