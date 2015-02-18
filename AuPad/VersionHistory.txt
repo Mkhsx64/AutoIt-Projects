@@ -94,3 +94,4 @@ https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 - added menu item for text to speech
 - accel key added for text to speech and web search
 - added child gui for web search
+********** FIX CODE TAG AND ALL TAGS TO NOT BE SHIFT - SOMETHING AS YOU CANT CAPITALIZE ANYTHING NOW
