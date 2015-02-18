@@ -1,3 +1,4 @@
+Global Const $OPT_MATCHANY = 2
 Global Const $UBOUND_COLUMNS = 2
 Global Const $MB_SYSTEMMODAL = 4096
 Global Const $tagPOINT = "struct;long X;long Y;endstruct"
@@ -1586,13 +1587,897 @@ Else
 Return StringRegExpReplace($sString, "(?s)\A(.*)(.{" & - $iPosition & "})\z", "${1}" & $sInsertString & "$2")
 EndIf
 EndFunc
-Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC, $eLC, $lCount, $eSU, $eSL, $lpRead, $sUpper, $sLower, $wwINIvalue, $aRecent[100][4], $fAR, $iDefaultSize, $iBufferedfSize = "", $eRedo, $forBkClr, $au3Count = 0, $printDLL = "printmg.dll", $synAu3, $cLabel_1, $iEnd, $iStart, $iNumRecent = 5, $au3Buffer = 0, $mCombo[3], $tagContainer, $taggedStr, $taggedStrEx, $taggedLen, $forComp
+Global $__g_iIELoadWaitTimeout = 300000
+Global $__g_bIEAU3Debug = False
+Global $__g_bIEErrorNotify = True
+Global Const $__gaIEAU3VersionInfo[6] = ["T", 3, 0, 1, "20130601", "T3.0-1"]
+Global Const $LSFW_LOCK = 1, $LSFW_UNLOCK = 2
+Global Enum $_IESTATUS_Success = 0, $_IESTATUS_GeneralError, $_IESTATUS_ComError, $_IESTATUS_InvalidDataType, $_IESTATUS_InvalidObjectType, $_IESTATUS_InvalidValue, $_IESTATUS_LoadWaitTimeout, $_IESTATUS_NoMatch, $_IESTATUS_AccessIsDenied, $_IESTATUS_ClientDisconnected
+Func _IECreate($sUrl = "about:blank", $iTryAttach = 0, $iVisible = 1, $iWait = 1, $iTakeFocus = 1)
+If Not $iVisible Then $iTakeFocus = 0
+If $iTryAttach Then
+Local $oResult = _IEAttach($sUrl, "url")
+If IsObj($oResult) Then
+If $iTakeFocus Then WinActivate(HWnd($oResult.hWnd))
+Return SetError($_IESTATUS_Success, 1, $oResult)
+EndIf
+EndIf
+Local $iMustUnlock = 0
+If Not $iVisible And __IELockSetForegroundWindow($LSFW_LOCK) Then $iMustUnlock = 1
+Local $oObject = ObjCreate("InternetExplorer.Application")
+If Not IsObj($oObject) Then
+__IEConsoleWriteError("Error", "_IECreate", "", "Browser Object Creation Failed")
+If $iMustUnlock Then __IELockSetForegroundWindow($LSFW_UNLOCK)
+Return SetError($_IESTATUS_GeneralError, 0, 0)
+EndIf
+$oObject.visible = $iVisible
+If $iMustUnlock And Not __IELockSetForegroundWindow($LSFW_UNLOCK) Then __IEConsoleWriteError("Warning", "_IECreate", "", "Foreground Window Unlock Failed!")
+_IENavigate($oObject, $sUrl, $iWait)
+Local $iError = @error
+If Not $iError And StringLeft($sUrl, 6) = "about:" Then
+Local $oDocument = $oObject.document
+_IEAction($oDocument, "focus")
+EndIf
+Return SetError($iError, 0, $oObject)
+EndFunc
+Func _IENavigate(ByRef $oObject, $sUrl, $iWait = 1)
+If Not IsObj($oObject) Then
+__IEConsoleWriteError("Error", "_IENavigate", "$_IESTATUS_InvalidDataType")
+Return SetError($_IESTATUS_InvalidDataType, 1, 0)
+EndIf
+If Not __IEIsObjType($oObject, "documentContainer") Then
+__IEConsoleWriteError("Error", "_IENavigate", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.navigate($sUrl)
+If @error Then
+__IEConsoleWriteError("Error", "_IENavigate", "$_IESTATUS_COMError", @error)
+Return SetError($_IESTATUS_ComError, @error, 0)
+EndIf
+If $iWait Then
+_IELoadWait($oObject)
+Return SetError(@error, 0, -1)
+EndIf
+Return SetError($_IESTATUS_Success, 0, -1)
+EndFunc
+Func _IEAttach($sString, $sMode = "Title", $iInstance = 1)
+$sMode = StringLower($sMode)
+$iInstance = Int($iInstance)
+If $iInstance < 1 Then
+__IEConsoleWriteError("Error", "_IEAttach", "$_IESTATUS_InvalidValue", "$iInstance < 1")
+Return SetError($_IESTATUS_InvalidValue, 3, 0)
+EndIf
+If $sMode = "embedded" Or $sMode = "dialogbox" Then
+Local $iWinTitleMatchMode = Opt("WinTitleMatchMode", $OPT_MATCHANY)
+If $sMode = "dialogbox" And $iInstance > 1 Then
+If IsHWnd($sString) Then
+$iInstance = 1
+__IEConsoleWriteError("Warning", "_IEAttach", "$_IESTATUS_GeneralError", "$iInstance > 1 invalid with HWnd and DialogBox.  Setting to 1.")
+Else
+Local $aWinlist = WinList($sString, "")
+If $iInstance <= $aWinlist[0][0] Then
+$sString = $aWinlist[$iInstance][1]
+$iInstance = 1
+Else
+__IEConsoleWriteError("Warning", "_IEAttach", "$_IESTATUS_NoMatch")
+Opt("WinTitleMatchMode", $iWinTitleMatchMode)
+Return SetError($_IESTATUS_NoMatch, 1, 0)
+EndIf
+EndIf
+EndIf
+Local $hControl = ControlGetHandle($sString, "", "[CLASS:Internet Explorer_Server; INSTANCE:" & $iInstance & "]")
+Local $oResult = __IEControlGetObjFromHWND($hControl)
+Opt("WinTitleMatchMode", $iWinTitleMatchMode)
+If IsObj($oResult) Then
+Return SetError($_IESTATUS_Success, 0, $oResult)
+Else
+__IEConsoleWriteError("Warning", "_IEAttach", "$_IESTATUS_NoMatch")
+Return SetError($_IESTATUS_NoMatch, 1, 0)
+EndIf
+EndIf
+Local $oShell = ObjCreate("Shell.Application")
+Local $oShellWindows = $oShell.Windows()
+Local $iTmp = 1
+Local $iNotifyStatus, $bIsBrowser, $sTmp
+For $oWindow In $oShellWindows
+$bIsBrowser = True
+$iNotifyStatus = _IEErrorNotify()
+_IEErrorNotify(False)
+If $bIsBrowser Then
+$sTmp = $oWindow.type
+If @error Then $bIsBrowser = False
+EndIf
+If $bIsBrowser Then
+$sTmp = $oWindow.document.title
+If @error Then $bIsBrowser = False
+EndIf
+_IEErrorNotify($iNotifyStatus)
+If $bIsBrowser Then
+Switch $sMode
+Case "title"
+If StringInStr($oWindow.document.title, $sString) > 0 Then
+If $iInstance = $iTmp Then
+Return SetError($_IESTATUS_Success, 0, $oWindow)
+Else
+$iTmp += 1
+EndIf
+EndIf
+Case "instance"
+If $iInstance = $iTmp Then
+Return SetError($_IESTATUS_Success, 0, $oWindow)
+Else
+$iTmp += 1
+EndIf
+Case "windowtitle"
+Local $bFound = False
+$sTmp = RegRead("HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main\", "Window Title")
+If Not @error Then
+If StringInStr($oWindow.document.title & " - " & $sTmp, $sString) Then $bFound = True
+Else
+If StringInStr($oWindow.document.title & " - Microsoft Internet Explorer", $sString) Then $bFound = True
+If StringInStr($oWindow.document.title & " - Windows Internet Explorer", $sString) Then $bFound = True
+EndIf
+If $bFound Then
+If $iInstance = $iTmp Then
+Return SetError($_IESTATUS_Success, 0, $oWindow)
+Else
+$iTmp += 1
+EndIf
+EndIf
+Case "url"
+If StringInStr($oWindow.LocationURL, $sString) > 0 Then
+If $iInstance = $iTmp Then
+Return SetError($_IESTATUS_Success, 0, $oWindow)
+Else
+$iTmp += 1
+EndIf
+EndIf
+Case "text"
+If StringInStr($oWindow.document.body.innerText, $sString) > 0 Then
+If $iInstance = $iTmp Then
+Return SetError($_IESTATUS_Success, 0, $oWindow)
+Else
+$iTmp += 1
+EndIf
+EndIf
+Case "html"
+If StringInStr($oWindow.document.body.innerHTML, $sString) > 0 Then
+If $iInstance = $iTmp Then
+Return SetError($_IESTATUS_Success, 0, $oWindow)
+Else
+$iTmp += 1
+EndIf
+EndIf
+Case "hwnd"
+If $iInstance > 1 Then
+$iInstance = 1
+__IEConsoleWriteError("Warning", "_IEAttach", "$_IESTATUS_GeneralError", "$iInstance > 1 invalid with HWnd.  Setting to 1.")
+EndIf
+If _IEPropertyGet($oWindow, "hwnd") = $sString Then
+Return SetError($_IESTATUS_Success, 0, $oWindow)
+EndIf
+Case Else
+__IEConsoleWriteError("Error", "_IEAttach", "$_IESTATUS_InvalidValue", "Invalid Mode Specified")
+Return SetError($_IESTATUS_InvalidValue, 2, 0)
+EndSwitch
+EndIf
+Next
+__IEConsoleWriteError("Warning", "_IEAttach", "$_IESTATUS_NoMatch")
+Return SetError($_IESTATUS_NoMatch, 1, 0)
+EndFunc
+Func _IELoadWait(ByRef $oObject, $iDelay = 0, $iTimeout = -1)
+If Not IsObj($oObject) Then
+__IEConsoleWriteError("Error", "_IELoadWait", "$_IESTATUS_InvalidDataType")
+Return SetError($_IESTATUS_InvalidDataType, 1, 0)
+EndIf
+If Not __IEIsObjType($oObject, "browserdom") Then
+__IEConsoleWriteError("Error", "_IELoadWait", "$_IESTATUS_InvalidObjectType", ObjName($oObject))
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Local $oTemp, $bAbort = False, $iErrorStatusCode = $_IESTATUS_Success
+Local $iNotifyStatus = _IEErrorNotify()
+_IEErrorNotify(False)
+Sleep($iDelay)
+Local $iError
+Local $hIELoadWaitTimer = TimerInit()
+If $iTimeout = -1 Then $iTimeout = $__g_iIELoadWaitTimeout
+Select
+Case __IEIsObjType($oObject, "browser")
+While Not(String($oObject.readyState) = "complete" Or $oObject.readyState = 4 Or $bAbort)
+If @error Then
+$iError = @error
+If __IEComErrorUnrecoverable($iError) Then
+$iErrorStatusCode = __IEComErrorUnrecoverable($iError)
+$bAbort = True
+EndIf
+ElseIf(TimerDiff($hIELoadWaitTimer) > $iTimeout) Then
+$iErrorStatusCode = $_IESTATUS_LoadWaitTimeout
+$bAbort = True
+EndIf
+Sleep(100)
+WEnd
+While Not(String($oObject.document.readyState) = "complete" Or $oObject.document.readyState = 4 Or $bAbort)
+If @error Then
+$iError = @error
+If __IEComErrorUnrecoverable($iError) Then
+$iErrorStatusCode = __IEComErrorUnrecoverable($iError)
+$bAbort = True
+EndIf
+ElseIf(TimerDiff($hIELoadWaitTimer) > $iTimeout) Then
+$iErrorStatusCode = $_IESTATUS_LoadWaitTimeout
+$bAbort = True
+EndIf
+Sleep(100)
+WEnd
+Case __IEIsObjType($oObject, "window")
+While Not(String($oObject.document.readyState) = "complete" Or $oObject.document.readyState = 4 Or $bAbort)
+If @error Then
+$iError = @error
+If __IEComErrorUnrecoverable($iError) Then
+$iErrorStatusCode = __IEComErrorUnrecoverable($iError)
+$bAbort = True
+EndIf
+ElseIf(TimerDiff($hIELoadWaitTimer) > $iTimeout) Then
+$iErrorStatusCode = $_IESTATUS_LoadWaitTimeout
+$bAbort = True
+EndIf
+Sleep(100)
+WEnd
+While Not(String($oObject.top.document.readyState) = "complete" Or $oObject.top.document.readyState = 4 Or $bAbort)
+If @error Then
+$iError = @error
+If __IEComErrorUnrecoverable($iError) Then
+$iErrorStatusCode = __IEComErrorUnrecoverable($iError)
+$bAbort = True
+EndIf
+ElseIf(TimerDiff($hIELoadWaitTimer) > $iTimeout) Then
+$iErrorStatusCode = $_IESTATUS_LoadWaitTimeout
+$bAbort = True
+EndIf
+Sleep(100)
+WEnd
+Case __IEIsObjType($oObject, "document")
+$oTemp = $oObject.parentWindow
+While Not(String($oTemp.document.readyState) = "complete" Or $oTemp.document.readyState = 4 Or $bAbort)
+If @error Then
+$iError = @error
+If __IEComErrorUnrecoverable($iError) Then
+$iErrorStatusCode = __IEComErrorUnrecoverable($iError)
+$bAbort = True
+EndIf
+ElseIf(TimerDiff($hIELoadWaitTimer) > $iTimeout) Then
+$iErrorStatusCode = $_IESTATUS_LoadWaitTimeout
+$bAbort = True
+EndIf
+Sleep(100)
+WEnd
+While Not(String($oTemp.top.document.readyState) = "complete" Or $oTemp.top.document.readyState = 4 Or $bAbort)
+If @error Then
+$iError = @error
+If __IEComErrorUnrecoverable($iError) Then
+$iErrorStatusCode = __IEComErrorUnrecoverable($iError)
+$bAbort = True
+EndIf
+ElseIf(TimerDiff($hIELoadWaitTimer) > $iTimeout) Then
+$iErrorStatusCode = $_IESTATUS_LoadWaitTimeout
+$bAbort = True
+EndIf
+Sleep(100)
+WEnd
+Case Else
+$oTemp = $oObject.document.parentWindow
+While Not(String($oTemp.document.readyState) = "complete" Or $oTemp.document.readyState = 4 Or $bAbort)
+If @error Then
+$iError = @error
+If __IEComErrorUnrecoverable($iError) Then
+$iErrorStatusCode = __IEComErrorUnrecoverable($iError)
+$bAbort = True
+EndIf
+ElseIf(TimerDiff($hIELoadWaitTimer) > $iTimeout) Then
+$iErrorStatusCode = $_IESTATUS_LoadWaitTimeout
+$bAbort = True
+EndIf
+Sleep(100)
+WEnd
+While Not(String($oTemp.top.document.readyState) = "complete" Or $oObject.top.document.readyState = 4 Or $bAbort)
+If @error Then
+$iError = @error
+If __IEComErrorUnrecoverable($iError) Then
+$iErrorStatusCode = __IEComErrorUnrecoverable($iError)
+$bAbort = True
+EndIf
+ElseIf(TimerDiff($hIELoadWaitTimer) > $iTimeout) Then
+$iErrorStatusCode = $_IESTATUS_LoadWaitTimeout
+$bAbort = True
+EndIf
+Sleep(100)
+WEnd
+EndSelect
+_IEErrorNotify($iNotifyStatus)
+Switch $iErrorStatusCode
+Case $_IESTATUS_Success
+Return SetError($_IESTATUS_Success, 0, 1)
+Case $_IESTATUS_LoadWaitTimeout
+__IEConsoleWriteError("Warning", "_IELoadWait", "$_IESTATUS_LoadWaitTimeout")
+Return SetError($_IESTATUS_LoadWaitTimeout, 3, 0)
+Case $_IESTATUS_AccessIsDenied
+__IEConsoleWriteError("Warning", "_IELoadWait", "$_IESTATUS_AccessIsDenied", "Cannot verify readyState.  Likely casue: cross-domain scripting security restriction. (" & $iError & ")")
+Return SetError($_IESTATUS_AccessIsDenied, 0, 0)
+Case $_IESTATUS_ClientDisconnected
+__IEConsoleWriteError("Error", "_IELoadWait", "$_IESTATUS_ClientDisconnected", $iError & ", Browser has been deleted prior to operation.")
+Return SetError($_IESTATUS_ClientDisconnected, 0, 0)
+Case Else
+__IEConsoleWriteError("Error", "_IELoadWait", "$_IESTATUS_GeneralError", "Invalid Error Status - Notify IE.au3 developer")
+Return SetError($_IESTATUS_GeneralError, 0, 0)
+EndSwitch
+EndFunc
+Func _IEAction(ByRef $oObject, $sAction)
+If Not IsObj($oObject) Then
+__IEConsoleWriteError("Error", "_IEAction(" & $sAction & ")", "$_IESTATUS_InvalidDataType")
+Return SetError($_IESTATUS_InvalidDataType, 1, 0)
+EndIf
+$sAction = StringLower($sAction)
+Select
+Case $sAction = "click"
+If __IEIsObjType($oObject, "documentContainer") Then
+__IEConsoleWriteError("Error", "_IEAction(click)", " $_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.Click()
+Case $sAction = "disable"
+If __IEIsObjType($oObject, "documentContainer") Then
+__IEConsoleWriteError("Error", "_IEAction(disable)", " $_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.disabled = True
+Case $sAction = "enable"
+If __IEIsObjType($oObject, "documentContainer") Then
+__IEConsoleWriteError("Error", "_IEAction(enable)", " $_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.disabled = False
+Case $sAction = "focus"
+If __IEIsObjType($oObject, "documentContainer") Then
+__IEConsoleWriteError("Error", "_IEAction(focus)", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.Focus()
+Case $sAction = "scrollintoview"
+If __IEIsObjType($oObject, "documentContainer") Then
+__IEConsoleWriteError("Error", "_IEAction(scrollintoview)", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.scrollIntoView()
+Case $sAction = "copy"
+$oObject.document.execCommand("Copy")
+Case $sAction = "cut"
+$oObject.document.execCommand("Cut")
+Case $sAction = "paste"
+$oObject.document.execCommand("Paste")
+Case $sAction = "delete"
+$oObject.document.execCommand("Delete")
+Case $sAction = "saveas"
+$oObject.document.execCommand("SaveAs")
+Case $sAction = "refresh"
+$oObject.document.execCommand("Refresh")
+If @error Then
+__IEConsoleWriteError("Error", "_IEAction(refresh)", "$_IESTATUS_COMError", @error)
+Return SetError($_IESTATUS_ComError, @error, 0)
+EndIf
+_IELoadWait($oObject)
+Case $sAction = "selectall"
+$oObject.document.execCommand("SelectAll")
+Case $sAction = "unselect"
+$oObject.document.execCommand("Unselect")
+Case $sAction = "print"
+$oObject.document.parentwindow.Print()
+Case $sAction = "printdefault"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEAction(printdefault)", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.execWB(6, 2)
+Case $sAction = "back"
+If Not __IEIsObjType($oObject, "documentContainer") Then
+__IEConsoleWriteError("Error", "_IEAction(back)", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.GoBack()
+Case $sAction = "blur"
+$oObject.Blur()
+Case $sAction = "forward"
+If Not __IEIsObjType($oObject, "documentContainer") Then
+__IEConsoleWriteError("Error", "_IEAction(forward)", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.GoForward()
+Case $sAction = "home"
+If Not __IEIsObjType($oObject, "documentContainer") Then
+__IEConsoleWriteError("Error", "_IEAction(home)", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.GoHome()
+Case $sAction = "invisible"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEAction(invisible)", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.visible = 0
+Case $sAction = "visible"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEAction(visible)", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.visible = 1
+Case $sAction = "search"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEAction(search)", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.GoSearch()
+Case $sAction = "stop"
+If Not __IEIsObjType($oObject, "documentContainer") Then
+__IEConsoleWriteError("Error", "_IEAction(stop)", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.Stop()
+Case $sAction = "quit"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEAction(quit)", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.Quit()
+If @error Then
+__IEConsoleWriteError("Error", "_IEAction(" & $sAction & ")", "$_IESTATUS_COMError", @error)
+Return SetError($_IESTATUS_ComError, @error, 0)
+EndIf
+$oObject = 0
+Return SetError($_IESTATUS_Success, 0, 1)
+Case Else
+__IEConsoleWriteError("Error", "_IEAction(" & $sAction & ")", "$_IESTATUS_InvalidValue", "Invalid Action")
+Return SetError($_IESTATUS_InvalidValue, 2, 0)
+EndSelect
+If @error Then
+__IEConsoleWriteError("Error", "_IEAction(" & $sAction & ")", "$_IESTATUS_COMError", @error)
+Return SetError($_IESTATUS_ComError, @error, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, 1)
+EndFunc
+Func _IEPropertyGet(ByRef $oObject, $sProperty)
+If Not IsObj($oObject) Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidDataType")
+Return SetError($_IESTATUS_InvalidDataType, 1, 0)
+EndIf
+If Not __IEIsObjType($oObject, "browserdom") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Local $oTemp, $iTemp
+$sProperty = StringLower($sProperty)
+Select
+Case $sProperty = "browserx"
+If __IEIsObjType($oObject, "browsercontainer") Or __IEIsObjType($oObject, "document") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oTemp = $oObject
+$iTemp = 0
+While IsObj($oTemp)
+$iTemp += $oTemp.offsetLeft
+$oTemp = $oTemp.offsetParent
+WEnd
+Return SetError($_IESTATUS_Success, 0, $iTemp)
+Case $sProperty = "browsery"
+If __IEIsObjType($oObject, "browsercontainer") Or __IEIsObjType($oObject, "document") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oTemp = $oObject
+$iTemp = 0
+While IsObj($oTemp)
+$iTemp += $oTemp.offsetTop
+$oTemp = $oTemp.offsetParent
+WEnd
+Return SetError($_IESTATUS_Success, 0, $iTemp)
+Case $sProperty = "screenx"
+If __IEIsObjType($oObject, "window") Or __IEIsObjType($oObject, "document") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+If __IEIsObjType($oObject, "browser") Then
+Return SetError($_IESTATUS_Success, 0, $oObject.left())
+Else
+$oTemp = $oObject
+$iTemp = 0
+While IsObj($oTemp)
+$iTemp += $oTemp.offsetLeft
+$oTemp = $oTemp.offsetParent
+WEnd
+EndIf
+Return SetError($_IESTATUS_Success, 0, $iTemp + $oObject.document.parentWindow.screenLeft)
+Case $sProperty = "screeny"
+If __IEIsObjType($oObject, "window") Or __IEIsObjType($oObject, "document") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+If __IEIsObjType($oObject, "browser") Then
+Return SetError($_IESTATUS_Success, 0, $oObject.top())
+Else
+$oTemp = $oObject
+$iTemp = 0
+While IsObj($oTemp)
+$iTemp += $oTemp.offsetTop
+$oTemp = $oTemp.offsetParent
+WEnd
+EndIf
+Return SetError($_IESTATUS_Success, 0, $iTemp + $oObject.document.parentWindow.screenTop)
+Case $sProperty = "height"
+If __IEIsObjType($oObject, "window") Or __IEIsObjType($oObject, "document") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+If __IEIsObjType($oObject, "browser") Then
+Return SetError($_IESTATUS_Success, 0, $oObject.Height())
+Else
+Return SetError($_IESTATUS_Success, 0, $oObject.offsetHeight)
+EndIf
+Case $sProperty = "width"
+If __IEIsObjType($oObject, "window") Or __IEIsObjType($oObject, "document") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+If __IEIsObjType($oObject, "browser") Then
+Return SetError($_IESTATUS_Success, 0, $oObject.Width())
+Else
+Return SetError($_IESTATUS_Success, 0, $oObject.offsetWidth)
+EndIf
+Case $sProperty = "isdisabled"
+Return SetError($_IESTATUS_Success, 0, $oObject.isDisabled())
+Case $sProperty = "addressbar"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.AddressBar())
+Case $sProperty = "busy"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.Busy())
+Case $sProperty = "fullscreen"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.fullScreen())
+Case $sProperty = "hwnd"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, HWnd($oObject.HWnd()))
+Case $sProperty = "left"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.Left())
+Case $sProperty = "locationname"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.LocationName())
+Case $sProperty = "locationurl"
+If __IEIsObjType($oObject, "browser") Then
+Return SetError($_IESTATUS_Success, 0, $oObject.locationURL())
+EndIf
+If __IEIsObjType($oObject, "window") Then
+Return SetError($_IESTATUS_Success, 0, $oObject.location.href())
+EndIf
+If __IEIsObjType($oObject, "document") Then
+Return SetError($_IESTATUS_Success, 0, $oObject.parentwindow.location.href())
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentwindow.location.href())
+Case $sProperty = "menubar"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.MenuBar())
+Case $sProperty = "offline"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.OffLine())
+Case $sProperty = "readystate"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.ReadyState())
+Case $sProperty = "resizable"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.Resizable())
+Case $sProperty = "silent"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.Silent())
+Case $sProperty = "statusbar"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.StatusBar())
+Case $sProperty = "statustext"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.StatusText())
+Case $sProperty = "top"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.Top())
+Case $sProperty = "visible"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.Visible())
+Case $sProperty = "appcodename"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.appCodeName())
+Case $sProperty = "appminorversion"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.appMinorVersion())
+Case $sProperty = "appname"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.appName())
+Case $sProperty = "appversion"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.appVersion())
+Case $sProperty = "browserlanguage"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.browserLanguage())
+Case $sProperty = "cookieenabled"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.cookieEnabled())
+Case $sProperty = "cpuclass"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.cpuClass())
+Case $sProperty = "javaenabled"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.javaEnabled())
+Case $sProperty = "online"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.onLine())
+Case $sProperty = "platform"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.platform())
+Case $sProperty = "systemlanguage"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.systemLanguage())
+Case $sProperty = "useragent"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.userAgent())
+Case $sProperty = "userlanguage"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.parentWindow.top.navigator.userLanguage())
+Case $sProperty = "referrer"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.referrer)
+Case $sProperty = "theatermode"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.TheaterMode)
+Case $sProperty = "toolbar"
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oObject.ToolBar)
+Case $sProperty = "contenteditable"
+If __IEIsObjType($oObject, "browser") Or __IEIsObjType($oObject, "document") Then
+$oTemp = $oObject.document.body
+Else
+$oTemp = $oObject
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oTemp.isContentEditable)
+Case $sProperty = "innertext"
+If __IEIsObjType($oObject, "documentcontainer") Or __IEIsObjType($oObject, "document") Then
+$oTemp = $oObject.document.body
+Else
+$oTemp = $oObject
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oTemp.innerText)
+Case $sProperty = "outertext"
+If __IEIsObjType($oObject, "documentcontainer") Or __IEIsObjType($oObject, "document") Then
+$oTemp = $oObject.document.body
+Else
+$oTemp = $oObject
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oTemp.outerText)
+Case $sProperty = "innerhtml"
+If __IEIsObjType($oObject, "documentcontainer") Or __IEIsObjType($oObject, "document") Then
+$oTemp = $oObject.document.body
+Else
+$oTemp = $oObject
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oTemp.innerHTML)
+Case $sProperty = "outerhtml"
+If __IEIsObjType($oObject, "documentcontainer") Or __IEIsObjType($oObject, "document") Then
+$oTemp = $oObject.document.body
+Else
+$oTemp = $oObject
+EndIf
+Return SetError($_IESTATUS_Success, 0, $oTemp.outerHTML)
+Case $sProperty = "title"
+Return SetError($_IESTATUS_Success, 0, $oObject.document.title)
+Case $sProperty = "uniqueid"
+If __IEIsObjType($oObject, "window") Then
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+Else
+Return SetError($_IESTATUS_Success, 0, $oObject.uniqueID)
+EndIf
+Case Else
+__IEConsoleWriteError("Error", "_IEPropertyGet", "$_IESTATUS_InvalidValue", "Invalid Property")
+Return SetError($_IESTATUS_InvalidValue, 2, 0)
+EndSelect
+EndFunc
+Func _IEErrorNotify($vNotify = Default)
+If $vNotify = Default Then Return $__g_bIEErrorNotify
+If $vNotify Then
+$__g_bIEErrorNotify = True
+Else
+$__g_bIEErrorNotify = False
+EndIf
+Return 1
+EndFunc
+Func _IEQuit(ByRef $oObject)
+If Not IsObj($oObject) Then
+__IEConsoleWriteError("Error", "_IEQuit", "$_IESTATUS_InvalidDataType")
+Return SetError($_IESTATUS_InvalidDataType, 1, 0)
+EndIf
+If Not __IEIsObjType($oObject, "browser") Then
+__IEConsoleWriteError("Error", "_IEQuit", "$_IESTATUS_InvalidObjectType")
+Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
+EndIf
+$oObject.quit()
+If @error Then
+__IEConsoleWriteError("Error", "_IEQuit", "$_IESTATUS_COMError", @error)
+Return SetError($_IESTATUS_ComError, @error, 0)
+EndIf
+$oObject = 0
+Return SetError($_IESTATUS_Success, 0, 1)
+EndFunc
+Func __IELockSetForegroundWindow($iLockCode)
+Local $aRet = DllCall("user32.dll", "bool", "LockSetForegroundWindow", "uint", $iLockCode)
+If @error Or Not $aRet[0] Then Return SetError(1, _WinAPI_GetLastError(), 0)
+Return $aRet[0]
+EndFunc
+Func __IEControlGetObjFromHWND(ByRef $hWin)
+DllCall("ole32.dll", "long", "CoInitialize", "ptr", 0)
+If @error Then Return SetError(2, @error, 0)
+Local Const $WM_HTML_GETOBJECT = __IERegisterWindowMessage("WM_HTML_GETOBJECT")
+Local Const $SMTO_ABORTIFHUNG = 0x0002
+Local $iResult
+__IESendMessageTimeout($hWin, $WM_HTML_GETOBJECT, 0, 0, $SMTO_ABORTIFHUNG, 1000, $iResult)
+Local $tUUID = DllStructCreate("int;short;short;byte[8]")
+DllStructSetData($tUUID, 1, 0x626FC520)
+DllStructSetData($tUUID, 2, 0xA41E)
+DllStructSetData($tUUID, 3, 0x11CF)
+DllStructSetData($tUUID, 4, 0xA7, 1)
+DllStructSetData($tUUID, 4, 0x31, 2)
+DllStructSetData($tUUID, 4, 0x0, 3)
+DllStructSetData($tUUID, 4, 0xA0, 4)
+DllStructSetData($tUUID, 4, 0xC9, 5)
+DllStructSetData($tUUID, 4, 0x8, 6)
+DllStructSetData($tUUID, 4, 0x26, 7)
+DllStructSetData($tUUID, 4, 0x37, 8)
+Local $aRet = DllCall("oleacc.dll", "long", "ObjectFromLresult", "lresult", $iResult, "struct*", $tUUID, "wparam", 0, "idispatch*", 0)
+If @error Then Return SetError(3, @error, 0)
+If IsObj($aRet[4]) Then
+Local $oIE = $aRet[4] .Script()
+Return $oIE.Document.parentwindow
+Else
+Return SetError(1, $aRet[0], 0)
+EndIf
+EndFunc
+Func __IERegisterWindowMessage($sMsg)
+Local $aRet = DllCall("user32.dll", "uint", "RegisterWindowMessageW", "wstr", $sMsg)
+If @error Then Return SetError(@error, @extended, 0)
+If $aRet[0] = 0 Then Return SetError(10, _WinAPI_GetLastError(), 0)
+Return $aRet[0]
+EndFunc
+Func __IESendMessageTimeout($hWnd, $iMsg, $wParam, $lParam, $iFlags, $iTimeout, ByRef $vOut, $r = 0, $sT1 = "int", $sT2 = "int")
+Local $aRet = DllCall("user32.dll", "lresult", "SendMessageTimeout", "hwnd", $hWnd, "uint", $iMsg, $sT1, $wParam, $sT2, $lParam, "uint", $iFlags, "uint", $iTimeout, "dword_ptr*", "")
+If @error Or $aRet[0] = 0 Then
+$vOut = 0
+Return SetError(1, _WinAPI_GetLastError(), 0)
+EndIf
+$vOut = $aRet[7]
+If $r >= 0 And $r <= 4 Then Return $aRet[$r]
+Return $aRet
+EndFunc
+Func __IEIsObjType(ByRef $oObject, $sType)
+If Not IsObj($oObject) Then
+Return SetError($_IESTATUS_InvalidDataType, 1, 0)
+EndIf
+Local $iNotifyStatus = _IEErrorNotify()
+_IEErrorNotify(False)
+Local $sName = String(ObjName($oObject)), $iErrorStatus = $_IESTATUS_InvalidObjectType
+Switch $sType
+Case "browserdom"
+If __IEIsObjType($oObject, "documentcontainer") Then
+$iErrorStatus = $_IESTATUS_Success
+ElseIf __IEIsObjType($oObject, "document") Then
+$iErrorStatus = $_IESTATUS_Success
+Else
+Local $oTemp = $oObject.document
+If __IEIsObjType($oTemp, "document") Then
+$iErrorStatus = $_IESTATUS_Success
+EndIf
+EndIf
+Case "browser"
+If($sName = "IWebBrowser2") Or($sName = "IWebBrowser") Or($sName = "WebBrowser") Then $iErrorStatus = $_IESTATUS_Success
+Case "window"
+If $sName = "HTMLWindow2" Then $iErrorStatus = $_IESTATUS_Success
+Case "documentContainer"
+If __IEIsObjType($oObject, "window") Or __IEIsObjType($oObject, "browser") Then $iErrorStatus = $_IESTATUS_Success
+Case "document"
+If $sName = "HTMLDocument" Then $iErrorStatus = $_IESTATUS_Success
+Case "table"
+If $sName = "HTMLTable" Then $iErrorStatus = $_IESTATUS_Success
+Case "form"
+If $sName = "HTMLFormElement" Then $iErrorStatus = $_IESTATUS_Success
+Case "forminputelement"
+If($sName = "HTMLInputElement") Or($sName = "HTMLSelectElement") Or($sName = "HTMLTextAreaElement") Then $iErrorStatus = $_IESTATUS_Success
+Case "elementcollection"
+If($sName = "HTMLElementCollection") Then $iErrorStatus = $_IESTATUS_Success
+Case "formselectelement"
+If $sName = "HTMLSelectElement" Then $iErrorStatus = $_IESTATUS_Success
+Case Else
+$iErrorStatus = $_IESTATUS_InvalidValue
+EndSwitch
+_IEErrorNotify($iNotifyStatus)
+If $iErrorStatus = $_IESTATUS_Success Then
+Return SetError($_IESTATUS_Success, 0, 1)
+Else
+Return SetError($iErrorStatus, 1, 0)
+EndIf
+EndFunc
+Func __IEConsoleWriteError($sSeverity, $sFunc, $sMessage = Default, $sStatus = Default)
+If $__g_bIEErrorNotify Or $__g_bIEAU3Debug Then
+Local $sStr = "--> IE.au3 " & $__gaIEAU3VersionInfo[5] & " " & $sSeverity & " from function " & $sFunc
+If Not($sMessage = Default) Then $sStr &= ", " & $sMessage
+If Not($sStatus = Default) Then $sStr &= " (" & $sStatus & ")"
+ConsoleWrite($sStr & @CRLF)
+EndIf
+Return SetError($sStatus, 0, 1)
+EndFunc
+Func __IEComErrorUnrecoverable($iError)
+Switch $iError
+Case -2147352567
+Return $_IESTATUS_AccessIsDenied
+Case -2147024891
+Return $_IESTATUS_AccessIsDenied
+Case -2147417848
+Return $_IESTATUS_ClientDisconnected
+Case -2147023174
+Return $_IESTATUS_ClientDisconnected
+Case -2147023179
+Return $_IESTATUS_ClientDisconnected
+Case Else
+Return $_IESTATUS_Success
+EndSwitch
+EndFunc
+Local $pWnd, $msg, $control, $fNew, $fOpen, $fSave, $fSaveAs, $fontBox, $fPrint, $fExit, $pEditWindow, $eUndo, $pActiveW, $eCut, $eCopy, $ePaste, $eDelete, $eFind, $eReplace, $eSA, $oIndex = 0, $eTD, $saveCounter = 0, $fe, $fs, $fn[20], $fo, $fw, $forFont, $vStatus, $hVHelp, $hAA, $selBuffer, $strB, $fnArray, $fnCount = 0, $selBufferEx, $fullStrRepl, $strFnd, $strEnd, $strLen, $forStrRepl, $hp, $mmssgg, $openBuff, $eTab, $eWC, $eLC, $lCount, $eSU, $eSL, $lpRead, $sUpper, $sLower, $wwINIvalue, $aRecent[10][4], $fAR, $iDefaultSize, $iBufferedfSize = "", $eRedo, $forBkClr, $au3Count = 0, $printDLL = "printmg.dll", $synAu3, $cLabel_1, $iEnd, $iStart, $iNumRecent = 5, $au3Buffer = 0, $mCombo[3], $tagContainer, $taggedStr, $taggedStrEx, $taggedLen, $forComp, $vTxt_Spch, $SE, $oIE, $hVH
 Local $tLimit = 1000000
 Local $abChild, $fCount = 0, $sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru, $fColor, $cColor
 Local $cChild, $cLabel[3], $cInput[2], $cButton[5], $cCombo, $x86, $x64
 $cButton[2] = 99999
 $cButton[3] = 99999
 $cButton[4] = 99999
+Local $seChild, $seInput, $seLabel, $seCombo, $seSubmit = 99999, $seI
 AdlibRegister("chkSel", 1000)
 AdlibRegister("chkTxt", 1000)
 AdlibRegister("chkUndo", 1000)
@@ -1603,13 +2488,19 @@ _GUICtrlRichEdit_ChangeFontSize($pEditWindow, 10)
 $sFontName = 'Arial'
 $iFontSize = 10
 $iDefaultSize = 10
+Local $r
+For $r = 1 To 9
+$aRecent[$r][0] = 99999
+Next
 Local $bSysMsg = False
 GUIRegisterMsg($WM_SIZE, "WM_SIZE")
 GUIRegisterMsg($WM_SYSCOMMAND, "_WM_SYSCOMMAND")
 $aRecent[0][0] = 0
 GUICtrlSetState($eRedo, 128)
 $hp = _PrintDLLStart($mmssgg, $printDLL)
-Local $aAccelKeys[20][20] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], ["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], ["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], ["{F2}", $hVHelp], ["+c", $mCombo[1]], ["+l", $mCombo[2]], ["+q", $mCombo[0]], ["{F7}", $forComp]]
+Local $o_speech = ObjCreate("SAPI.SpVoice")
+$o_speech.Voice = $o_speech.GetVoices("Name=Microsoft Mary", "Language=409").Item(0)
+Local $aAccelKeys[22][22] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], ["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], ["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], ["{F2}", $hVHelp], ["^+a", $mCombo[1]], ["^+h", $mCombo[2]], ["^+q", $mCombo[0]], ["{F7}", $forComp], ["{F3}", $vTxt_Spch], ["{F4}", $SE]]
 GUISetAccelerators($aAccelKeys, $pWnd)
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES")
 While 1
@@ -1683,6 +2574,8 @@ Case $forFont
 fontGUI()
 Case $hVHelp
 Help()
+Case $SE
+seGUI()
 Case $mCombo[0]
 $tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow)
 If $tagContainer[1] = $tagContainer[0] Then
@@ -1710,6 +2603,14 @@ EndIf
 $taggedStr = _StringInsert(_GUICtrlRichEdit_GetText($pEditWindow), "[href='']", $tagContainer[0])
 $taggedStrEx = _StringInsert($taggedStr, "[/href]", $tagContainer[1] + 9)
 _GUICtrlRichEdit_SetText($pEditWindow, $taggedStrEx)
+Case $aRecent[1][0] To $aRecent[9][0]
+For $i = 0 To $aRecent[0][0]
+If $msg[0] = $aRecent[$i][0] Then
+_OpenFile($aRecent[$i][2])
+EndIf
+Next
+Case $vTxt_Spch
+$o_speech.Speak(_GUICtrlRichEdit_GetText($pEditWindow))
 EndSwitch
 If $bSysMsg Then
 $bSysMsg = False
@@ -1733,6 +2634,13 @@ executeCompile()
 Case $cButton[4]
 executeCompile("Yes")
 EndSwitch
+Case $seChild
+Switch $msg[0]
+Case $GUI_EVENT_CLOSE
+GUIDelete($seChild)
+Case $seSubmit
+_openWeb(GUICtrlRead($seCombo))
+EndSwitch
 EndSwitch
 Sleep(10)
 WEnd
@@ -1754,6 +2662,8 @@ $fSaveAs = GUICtrlCreateMenuItem("Save As..." & @TAB & "Ctrl + Shft + S", $FileM
 GUICtrlCreateMenuItem("", $FileM, 4)
 $fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 5)
 GUICtrlCreateMenuItem("", $FileM, 6)
+$fAR = GUICtrlCreateMenu("Recent Files", $FileM, 7)
+GUICtrlCreateMenuItem("", $FileM, 8)
 $fExit = GUICtrlCreateMenuItem("Exit" & @TAB & "ESC", $FileM, 9)
 $EditM = GUICtrlCreateMenu("Edit")
 $eUndo = GUICtrlCreateMenuItem("Undo" & @TAB & "Ctrl + Z", $EditM, 0)
@@ -1786,16 +2696,21 @@ $forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 5)
 $synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn)
 GUICtrlCreateMenuItem("", $FormatM, 6)
 $forTags = GUICtrlCreateMenu("Tags", $FormatM, 7)
-$mCombo[0] = GUICtrlCreateMenuItem("Quote", $forTags, 0)
-$mCombo[1] = GUICtrlCreateMenuItem("Code", $forTags, 1)
-$mCombo[2] = GUICtrlCreateMenuItem("Link", $forTags, 2)
+$mCombo[0] = GUICtrlCreateMenuItem("Quote" & @TAB & "Ctrl + Shft + Q", $forTags, 0)
+$mCombo[1] = GUICtrlCreateMenuItem("Code" & @TAB & "Ctrl + Shft + A", $forTags, 1)
+$mCombo[2] = GUICtrlCreateMenuItem("Link" & @TAB & "Ctrl + Shft + H", $forTags, 2)
 $ViewM = GUICtrlCreateMenu("View")
 $vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0)
+GUICtrlCreateMenuItem("", $ViewM, 1)
+$vTxt_Spch = GUICtrlCreateMenuItem("Text to Speech" & @TAB & "F3", $ViewM, 2)
 GUICtrlSetState($vStatus, 128)
+GUICtrlCreateMenuItem("", $ViewM, 3)
+$SE = GUICtrlCreateMenuItem("Web Search" & @TAB & "F4", $ViewM, 4)
 $HelpM = GUICtrlCreateMenu("Help")
 $hVHelp = GUICtrlCreateMenuItem("View Help" & @TAB & "F2", $HelpM, 0)
 GUICtrlCreateMenuItem("", $HelpM, 1)
 $hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 2)
+$hVH = GUICtrlCreateMenuItem("Version History", $HelpM, 3)
 setNew()
 GUISetState(@SW_SHOW)
 EndFunc
@@ -1825,11 +2740,32 @@ Func executeCompile($advanced = "No")
 Local $in_path
 $in_path = GUICtrlRead($cInput[1])
 If $advanced = "Yes" Then
-ShellExecute( @ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe')
+ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe')
 GUIDelete($cChild)
 Return
 EndIf
 ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & '" /comp 4')
+EndFunc
+Func seGUI()
+$seChild = GUICreate("Search Engine", 200, 140)
+$seLabel = GUICtrlCreateLabel("Search Google, Bing, Yahoo, or Ask", 10, 15)
+$seInput = GUICtrlCreateInput("", 8, 55)
+$seCombo = GUICtrlCreateCombo("Google", 60, 85, 75)
+GUICtrlSetData($seCombo, "Bing|Yahoo|Ask", "Google")
+$seSubmit = GUICtrlCreateButton("Search", 80, 110)
+GUISetState()
+EndFunc
+Func _openWeb($srchProv)
+Switch $srchProv
+Case "Google"
+$oIe = _IECreate("https://www.google.com/?gws_rd=ssl#q=" & GUICtrlRead($seInput))
+Case "Bing"
+$oIe = _IECreate("http://www.bing.com/search?q=" & GUICtrlRead($seInput) & "&qs=n&form=QBLH&pq=hi&sc=8-0&sp=-1&sk=&cvid=0009bd901245417b8293556931945db9")
+Case "Yahoo"
+$oIe = _IECreate("https://search.yahoo.com/search;_ylt=At62TSEfE_U8sUmfF1eBBEmbvZx4?p=" & GUICtrlRead($seInput) & "&toggle=1&cop=mss&ei=UTF-8&fr=yfp-t-764&fp=1")
+Case "Ask"
+$oIe = _IECreate("http://www.ask.com/web?q=" & GUICtrlRead($seInput) & "&qsrc=0&o=0&l=dir&qo=homepageSearchBox")
+EndSwitch
 EndFunc
 Func au3Syn()
 Local $gRTFcode, $gSel, $quotes
@@ -1876,6 +2812,37 @@ _GUICtrlRichEdit_SetText($pEditWindow, "")
 EndIf
 $title = WinSetTitle($pWnd, $titleNow, "Untitled - AuPad")
 If $title = "" Then MsgBox(0, "error", "Could not set window title...", 10)
+EndFunc
+Func addRecent($sPath)
+Local $c = 0, $i = 1
+For $i = 1 To $aRecent[0][0]
+If $aRecent[$i][2] = $sPath Then
+$c = $aRecent[$i][3]
+GUICtrlDelete($aRecent[$i][0])
+$aRecent[$i][0] = GUICtrlCreateMenuItem($aRecent[$i][1], $fAR, $i)
+For $j = 1 To $aRecent[0][0]
+If $aRecent[$j][3] < $c Then $aRecent[$j][3] += 1
+Next
+$aRecent[$i][3] = 1
+Return
+EndIf
+Next
+For $i = 1 To $aRecent[0][0]
+$aRecent[$i][3] += 1
+If $aRecent[$i][3] > $iNumRecent Then
+$aRecent[$i][3] = 1
+$c = $i
+GUICtrlDelete($aRecent[$i][0])
+EndIf
+Next
+If $aRecent[0][0] < $iNumRecent Then
+$c = $aRecent[0][0] + 1
+$aRecent[0][0] = $c
+EndIf
+$aRecent[$c][1] = StringRegExpReplace($sPath, '^(.{3,11}\\|.{11})(.*)(\\.{6,27}|.{27})$', '\1...\3')
+$aRecent[$c][2] = $sPath
+$aRecent[$c][0] = GUICtrlCreateMenuItem($aRecent[$c][1], $fAR, $c)
+$aRecent[$c][3] = 1
 EndFunc
 Func aChild()
 Local $authLabel, $nameLabel
@@ -1992,6 +2959,7 @@ $i = $iPath[0]
 $fName = StringSplit($iPath[$i], ".")
 WinSetTitle($pWnd, '', $fName[1] & ' - ' & "AuPad")
 _GUICtrlRichEdit_SetModified($pEditWindow, False)
+addRecent($droppedPath)
 $iNumRecent += 1
 EndFunc
 Func Print()
@@ -2115,7 +3083,7 @@ $colorSet = _GUICtrlRichEdit_SetCharColor($pEditWindow, $fontBox[5])
 EndIf
 EndFunc
 Func Open()
-Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, $strinString, $stripString, $titleNow, $mBox, $spltTitle, $fileGetSize, $fileReadEx
+Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, $strinString, $stripString, $titleNow, $mBox, $spltTitle, $fileGetSize, $fileReadEx, $pdfFile
 $fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|RTF files (*.rtf)|Au3 files (*.au3)|All (*.*)", BitOR(1, 2))
 $strSplit = StringSplit($fileOpenD, "\")
 $oIndex = $strSplit[0]
@@ -2178,6 +3146,7 @@ _GUICtrlRichEdit_SetText($pEditWindow, $fileRead)
 $saveCounter += 1
 $fn[$oIndex] = $fileOpenD
 FileClose($fileOpen)
+addRecent($fileOpenD)
 $iNumRecent += 1
 EndFunc
 Func Save()
@@ -2194,6 +3163,8 @@ _GUICtrlRichEdit_StreamToFile($pEditWindow, $fs)
 $cn = StringSplit($fn[$i], ".")
 $sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad")
 $saveCounter += 1
+addRecent($fs)
+$iNumRecent += 1
 Return
 EndIf
 $fo = FileOpen($fs, 1)
@@ -2203,6 +3174,8 @@ FileClose($fn[$i])
 $cn = StringSplit($fn[$i], ".")
 $sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad")
 $saveCounter += 1
+addRecent($fs)
+$iNumRecent += 1
 Return
 EndIf
 If StringInStr($fn[$oIndex], "rtf") Then
@@ -2210,12 +3183,16 @@ _GUICtrlRichEdit_StreamToFile($pEditWindow, $fn[$oIndex])
 $cn = StringSplit($fn[$oIndex], ".")
 $sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad")
 $saveCounter += 1
+addRecent($fn[$oIndex])
+$iNumRecent += 1
 Return
 EndIf
 $fo = FileOpen($fn[$oIndex], 2)
 If $fo = -1 Then Return MsgBox(0, "error", "Could not create file")
 $fw = FileWrite($fs, $r)
 FileClose($fn[$oIndex])
+addRecent($fn[$oIndex])
+$iNumRecent += 1
 EndFunc
 Func Help()
 WinActivate("Program Manager", "")
@@ -2228,6 +3205,8 @@ $st = StringLen($rd)
 $wgt = WinGetTitle($pWnd, "")
 $title = StringSplit($wgt, " - ")
 If $st = 0 And $title[1] = "Untitled" Then
+$o_speech = ""
+_IEQuit($oIE)
 Exit
 ElseIf $title[1] <> "Untitled" Then
 $fOp = FileOpen($fn[$oIndex])
@@ -2236,6 +3215,8 @@ If $rd = $fRd Then
 $saveCounter += 1
 Save()
 FileClose($fOp)
+$o_speech = ""
+_IEQuit($oIE)
 Exit
 EndIf
 $winTitle = WinGetTitle("[ACTIVE]")
@@ -2257,6 +3238,8 @@ ElseIf $mBox = 2 Then
 Return
 EndIf
 EndIf
+_IEQuit($oIE)
+$o_speech = ""
 Exit
 EndFunc
 Func WM_SIZE($hWnd, $msg, $wParam, $lParam)

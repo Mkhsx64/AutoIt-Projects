@@ -61,7 +61,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$au3Buffer = 0, $mCombo[3], _
 		$tagContainer, $taggedStr, _
 		$taggedStrEx, $taggedLen, _
-		$forComp, $vTxt_Spch, $SE, _
+		$forComp, $vTxt_Spch, $vSE, _
 		$oIE, $hVH
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
@@ -83,6 +83,10 @@ $cButton[4] = 99999
 Local $seChild, $seInput, $seLabel, _
 	$seCombo, $seSubmit = 99999, _
 	$seI
+
+;version history child vars
+Local $vhChild, $vhEdit, _
+	$vhButton = 99999
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -122,7 +126,7 @@ Local $aAccelKeys[22][22] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], _
 		["{F2}", $hVHelp], ["^+a", $mCombo[1]], ["^+h", $mCombo[2]], _
 		["^+q", $mCombo[0]], ["{F7}", $forComp], ["{F3}", $vTxt_Spch], _
-		["{F4}", $SE]]
+		["{F4}", $vSE]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
@@ -199,8 +203,10 @@ While 1
 					fontGUI() ; if we select the font menu option call the fontGUI function
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
-				Case $SE
+				Case $vSE
 					seGUI() ; open the search engine gui
+				Case $hVH
+
 				Case $mCombo[0]
 					$tagContainer = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the current selection if any
 					If $tagContainer[1] = $tagContainer[0] Then ; check if a selection has been made
@@ -265,6 +271,13 @@ While 1
 					GUIDelete($seChild) ; if the exit event is sent call the GUIDelete Function
 				Case $seSubmit
 					_openWeb(GUICtrlRead($seCombo)) ; open the search engine chosen
+			EndSwitch
+		Case $vhChild
+			Switch $msg[0]
+				Case $GUI_EVENT_CLOSE
+					GUIDelete($vhChild) ; if the exit event is sent call the GUIDelete Function
+				Case $vhButton
+					GUIDelete($vhChild) ; if the okay button has been pressed
 			EndSwitch
 	EndSwitch
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
@@ -334,7 +347,7 @@ Func GUI()
 	$vTxt_Spch = GUICtrlCreateMenuItem("Text to Speech" & @TAB & "F3", $ViewM, 2) ; create the second level text to speech menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
 	GUICtrlCreateMenuItem("", $ViewM, 3) ; create line
-	$SE = GUICtrlCreateMenuItem("Web Search" & @TAB & "F4", $ViewM, 4) ; create the second level web search menu item
+	$vSE = GUICtrlCreateMenuItem("Web Search" & @TAB & "F4", $ViewM, 4) ; create the second level web search menu item
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
 	$hVHelp = GUICtrlCreateMenuItem("View Help" & @TAB & "F2", $HelpM, 0) ; create the second level view help menu item
 	GUICtrlCreateMenuItem("", $HelpM, 1) ; create line
@@ -401,6 +414,11 @@ Func _openWeb($srchProv)
 		Case "Ask"
 			$oIe = _IECreate("http://www.ask.com/web?q=" & GUICtrlRead($seInput) & "&qsrc=0&o=0&l=dir&qo=homepageSearchBox") ; create IE Instance
 	EndSwitch
+EndFunc
+
+Func vhGUI()
+	$vhChild = GUICreate("Vresion History", 100, 400)
+	GUISetState()
 EndFunc
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
