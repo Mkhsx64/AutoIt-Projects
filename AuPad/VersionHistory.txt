@@ -98,3 +98,4 @@ https://www.autoitscript.com/autoit3/docs/intro/compiler.htm
 - added ability to search web using 4 search providers in seperate gui.
 - added accelerator keys for web search GUI.
 - fixed version number in directives.
+- added version history gui.
