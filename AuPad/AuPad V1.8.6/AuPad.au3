@@ -262,9 +262,9 @@ While 1
 		Case $seChild
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
-					GUIDelete($seChild)
+					GUIDelete($seChild) ; if the exit event is sent call the GUIDelete Function
 				Case $seSubmit
-					;
+					_openWeb(GUICtrlRead($seCombo)) ; open the search engine chosen
 			EndSwitch
 	EndSwitch
 	Sleep(10) ; added as the functions running every second are causing the window to twitch
@@ -389,16 +389,15 @@ Func seGUI()
 EndFunc
 
 Func _openWeb($srchProv)
-	MsgBox(0, "", $srchProv)
 	Switch $srchProv
 		Case "Google"
-			$oIe = _IECreate("https://www.google.com/?gws_rd=ssl#q=" & GUICtrlRead($seInput))
+			$oIe = _IECreate("https://www.google.com/?gws_rd=ssl#q=" & GUICtrlRead($seInput)) ; create IE Instance
 		Case "Bing"
-			$oIe = _IECreate("http://www.bing.com/search?q=" & GUICtrlRead($seInput) & "&qs=n&form=QBLH&pq=hi&sc=8-0&sp=-1&sk=&cvid=0009bd901245417b8293556931945db9")
+			$oIe = _IECreate("http://www.bing.com/search?q=" & GUICtrlRead($seInput) & "&qs=n&form=QBLH&pq=hi&sc=8-0&sp=-1&sk=&cvid=0009bd901245417b8293556931945db9") ; create IE Instance
 		Case "Yahoo"
-			$oIe = _IECreate("https://search.yahoo.com/search;_ylt=At62TSEfE_U8sUmfF1eBBEmbvZx4?p=" & GUICtrlRead($seInput) & "&toggle=1&cop=mss&ei=UTF-8&fr=yfp-t-764&fp=1")
+			$oIe = _IECreate("https://search.yahoo.com/search;_ylt=At62TSEfE_U8sUmfF1eBBEmbvZx4?p=" & GUICtrlRead($seInput) & "&toggle=1&cop=mss&ei=UTF-8&fr=yfp-t-764&fp=1") ; create IE Instance
 		Case "Ask"
-			$oIe = _IECreate("http://www.ask.com/web?q=" & GUICtrlRead($seInput) & "&qsrc=0&o=0&l=dir&qo=homepageSearchBox")
+			$oIe = _IECreate("http://www.ask.com/web?q=" & GUICtrlRead($seInput) & "&qsrc=0&o=0&l=dir&qo=homepageSearchBox") ; create IE Instance
 	EndSwitch
 EndFunc
 
