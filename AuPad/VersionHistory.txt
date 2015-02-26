@@ -102,3 +102,7 @@
 
 - took off $ES_READONLY style on version history edit control.
 - fixed view about aupad event. When opening it would call folderpath() in a loop, making it unable to close.
+
+---==== 1.9.0 ====---
+
+- 
