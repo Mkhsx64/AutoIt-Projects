@@ -105,4 +105,4 @@
 
 ---==== 1.9.0 ====---
 
-- 
+- added ability to highlight, then websearch the selected text.

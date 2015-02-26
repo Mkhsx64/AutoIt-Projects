@@ -206,11 +206,11 @@ While 1
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
 				Case $vSE
-					$webText = _GUICtrlRichEdit_GetSelText($pEditWindow) ; get any selected text
-					If @error Then ; if there is no selection
-						seGUI() ; open the search engine gui
+					$webText = _GUICtrlRichEdit_GetSelText($pEditWindow)
+					If @error Then
+					seGUI() ; open the search engine gui
 					Else
-						seGUI($webText) ; open with selected word
+					seGUI($webText)
 					EndIf
 				Case $hVH
 					vhGUI() ; open the version history gui
@@ -399,14 +399,10 @@ Func executeCompile($advanced = "No")
 	ShellExecute(@ProgramFilesDir & '\AutoIt3\Aut2Exe\Aut2exe.exe', ' /in "' & $in_path & '" /comp 4') ; compile the script
 EndFunc   ;==>executeCompile
 
-Func seGUI($searchText = "")
+Func seGUI()
 	$seChild = GUICreate("Search Engine", 200, 140) ; create the window
 	$seLabel = GUICtrlCreateLabel("Search Google, Bing, Yahoo, or Ask", 10, 15) ; create the label
-	If $searchText <> "" Then
-		$seInput = GUICtrlCreateInput($searchText, 8, 55) ; create the search input w/ text
-	Else
-		$seInput = GUICtrlCreateInput("", 8, 55) ; create the search input
-	EndIf
+	$seInput = GUICtrlCreateInput("", 8, 55) ; create the search input
 	$seCombo = GUICtrlCreateCombo("Google", 60, 85, 75) ; create combo
 	GUICtrlSetData($seCombo, "Bing|Yahoo|Ask", "Google") ; add data and set default
 	$seSubmit = GUICtrlCreateButton("Search", 80, 110) ; submit button to search
@@ -1064,4 +1060,3 @@ Func _Resize_RichEdit()
 	WinMove($pEditWindow, "", $aRet[0], $aRet[1], $aRet[2], $aRet[3])
 EndFunc   ;==>_Resize_RichEdit
 ;======================================================
-

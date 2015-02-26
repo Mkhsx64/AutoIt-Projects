@@ -400,12 +400,13 @@ Func executeCompile($advanced = "No")
 EndFunc   ;==>executeCompile
 
 Func seGUI($searchText = "")
+	If $searchText <> "" Then
 	$seChild = GUICreate("Search Engine", 200, 140) ; create the window
 	$seLabel = GUICtrlCreateLabel("Search Google, Bing, Yahoo, or Ask", 10, 15) ; create the label
 	If $searchText <> "" Then
-		$seInput = GUICtrlCreateInput($searchText, 8, 55) ; create the search input w/ text
+	$seInput = GUICtrlCreateInput($searchText, 8, 55) ; create the search input
 	Else
-		$seInput = GUICtrlCreateInput("", 8, 55) ; create the search input
+	$seInput = GUICtrlCreateInput("", 8, 55) ; create the search input
 	EndIf
 	$seCombo = GUICtrlCreateCombo("Google", 60, 85, 75) ; create combo
 	GUICtrlSetData($seCombo, "Bing|Yahoo|Ask", "Google") ; add data and set default
@@ -1064,4 +1065,3 @@ Func _Resize_RichEdit()
 	WinMove($pEditWindow, "", $aRet[0], $aRet[1], $aRet[2], $aRet[3])
 EndFunc   ;==>_Resize_RichEdit
 ;======================================================
-
