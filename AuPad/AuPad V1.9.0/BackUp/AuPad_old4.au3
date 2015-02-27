@@ -33,7 +33,6 @@
 #include <printMGv2.au3> ; printing support from martin's print UDF
 #include <String.au3>
 #include <IE.au3>
-#include <GuiListView.au3>
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$fSave, $fSaveAs, $fontBox, _
@@ -89,10 +88,6 @@ Local $seChild, $seInput, $seLabel, _
 ;version history child vars
 Local $vhChild, $vhEdit, _
 		$vhButton = 99999
-
-;print child vars
-Local $pGUI = 99999, $pListview = 99999, _
-		$og_Defaultprinter
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -754,34 +749,33 @@ EndFunc   ;==>_OpenFile
 ;======================================================
 
 Func Print()
-	Local $strComputer, $i
+	Local $strComputer, $i, $pGUI, _
+	$pListview
 	If WinGetTitle("[ACTIVE]") = "Untitled - AuPad" Then
 		Save()
 		If WinGetTitle("[ACTIVE]") = "Untitled - AuPad" Then
 			Return
 		Else
-
-			$pGUI = GUICreate("Printer Select", 300, 300)
-			GUICtrlCreateLabel("double click the printer you would like to use", 5, 2)
-			$pListview =_GUICtrlListView_Create($pGUI, "Printer list", 0, 20, 300, 280)
-			_GUICtrlListView_SetExtendedListViewStyle($pListview, $LVS_EX_GRIDLINES)
-			GUISetState()
+;~ 			$i = $fn[0]
+;~ 			ShellExecute($fs, $selected, "", "print", @SW_HIDE)
 
 			$strComputer = "."
 
-			$objWMIService = ObjGet("winmgmts:\\" & $strComputer & "\root\cimv2")
-			$colPrinters = $objWMIService.ExecQuery("Select * From Win32_Printer Where Default = False")
-			For $objPrinter In $colPrinters
-				_GUICtrlListView_AddItem($pListview, $objPrinter.Name)
-			Next
-			$colPrinters = $objWMIService.ExecQuery("Select * From Win32_Printer Where Default = True")
-			For $objPrinter In $colPrinters
-				$og_Defaultprinter = $objPrinter.Name
-			Next
+$objWMIService = ObjGet("winmgmts:\\" & $strComputer & "\root\cimv2")
+$colPrinters = $objWMIService.ExecQuery("Select * From Win32_Printer Where Default = False")
+For $objPrinter In $colPrinters
+	ConsoleWrite($objPrinter.Name & @CRLF)
+Next
+ConsoleWrite("Default Printer: " & @CRLF)
+$colPrinters = $objWMIService.ExecQuery("Select * From Win32_Printer Where Default = True")
+For $objPrinter In $colPrinters
+	ConsoleWrite($objPrinter.Name & @CRLF)
+Next
 
-			_GUICtrlListView_SetColumnWidth($pListview, 0, $LVSCW_AUTOSIZE_USEHEADER)
-
-			GUIRegisterMsg($WM_NOTIFY, "WM_NOTIFY")
+			$pGUI = GUICreate("Printer Select", 300, 300)
+			GUICtrlCreateLabel("double click the printer you would like to use", 5, 2)
+			$pListview = GUICtrlCreateListView("Printer list", 0, 20, 300, 270, BitOR($LVS_REPORT, $LVS_SINGLESEL))
+			GUISetState()
 
 			While 1
 				$msg = GUIGetMsg()
@@ -792,9 +786,6 @@ Func Print()
 				EndSwitch
 			WEnd
 
-			ShellExecute($fs, "", "", "print", @SW_HIDE)
-
-			_WinAPI_SetDefaultPrinter($og_Defaultprinter)
 		EndIf
 	EndIf
 EndFunc   ;==>Print
@@ -1085,21 +1076,3 @@ Func _Resize_RichEdit()
 EndFunc   ;==>_Resize_RichEdit
 ;======================================================
 
-Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
-	Local $hWndFrom, $iIDFrom, $iCode, $tNMHDR, _
-	$selInd, $selDefPrint, $listHandle
-	$tNMHDR = DllStructCreate($tagNMHDR, $ilParam)
-	$hWndFrom = HWnd(DllStructGetData($tNMHDR, "hWndFrom"))
-	$iIDFrom = DllStructGetData($tNMHDR, "IDFrom")
-	$iCode = DllStructGetData($tNMHDR, "Code")
-	Switch $hWndFrom
-		Case $pListview
-			Switch $iCode
-				Case $NM_DBLCLK
-					$selInd = _GUICtrlListView_GetSelectedIndices($pListview)
-					$selDefPrint = _GUICtrlListView_GetItemText($pListview, $selInd)
-					_WinAPI_SetDefaultPrinter($selDefPrint)
-					GUIDelete($pGUI)
-			EndSwitch
-	EndSwitch
-EndFunc   ;==>WM_NOTIFY

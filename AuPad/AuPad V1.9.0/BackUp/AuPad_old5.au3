@@ -92,7 +92,7 @@ Local $vhChild, $vhEdit, _
 
 ;print child vars
 Local $pGUI = 99999, $pListview = 99999, _
-		$og_Defaultprinter
+$og_Defaultprinter
 
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
@@ -760,11 +760,12 @@ Func Print()
 		If WinGetTitle("[ACTIVE]") = "Untitled - AuPad" Then
 			Return
 		Else
+;~ 			$i = $fn[0]
+;~ 			ShellExecute($fs, $selected, "", "print", @SW_HIDE)
 
 			$pGUI = GUICreate("Printer Select", 300, 300)
 			GUICtrlCreateLabel("double click the printer you would like to use", 5, 2)
-			$pListview =_GUICtrlListView_Create($pGUI, "Printer list", 0, 20, 300, 280)
-			_GUICtrlListView_SetExtendedListViewStyle($pListview, $LVS_EX_GRIDLINES)
+			$pListview = GUICtrlCreateListView("Printer list", 0, 20, 300, 280, $LVS_REPORT, $LVS_EX_GRIDLINES)
 			GUISetState()
 
 			$strComputer = "."
@@ -774,6 +775,7 @@ Func Print()
 			For $objPrinter In $colPrinters
 				_GUICtrlListView_AddItem($pListview, $objPrinter.Name)
 			Next
+			ConsoleWrite("Default Printer: " & @CRLF)
 			$colPrinters = $objWMIService.ExecQuery("Select * From Win32_Printer Where Default = True")
 			For $objPrinter In $colPrinters
 				$og_Defaultprinter = $objPrinter.Name
@@ -792,9 +794,6 @@ Func Print()
 				EndSwitch
 			WEnd
 
-			ShellExecute($fs, "", "", "print", @SW_HIDE)
-
-			_WinAPI_SetDefaultPrinter($og_Defaultprinter)
 		EndIf
 	EndIf
 EndFunc   ;==>Print
@@ -1086,20 +1085,16 @@ EndFunc   ;==>_Resize_RichEdit
 ;======================================================
 
 Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
-	Local $hWndFrom, $iIDFrom, $iCode, $tNMHDR, _
-	$selInd, $selDefPrint, $listHandle
+	Local $hWndFrom, $iIDFrom, $iCode, $tNMHDR
 	$tNMHDR = DllStructCreate($tagNMHDR, $ilParam)
 	$hWndFrom = HWnd(DllStructGetData($tNMHDR, "hWndFrom"))
 	$iIDFrom = DllStructGetData($tNMHDR, "IDFrom")
 	$iCode = DllStructGetData($tNMHDR, "Code")
 	Switch $hWndFrom
-		Case $pListview
+		Case $L1_Handle
 			Switch $iCode
 				Case $NM_DBLCLK
-					$selInd = _GUICtrlListView_GetSelectedIndices($pListview)
-					$selDefPrint = _GUICtrlListView_GetItemText($pListview, $selInd)
-					_WinAPI_SetDefaultPrinter($selDefPrint)
-					GUIDelete($pGUI)
+
 			EndSwitch
 	EndSwitch
 EndFunc   ;==>WM_NOTIFY
