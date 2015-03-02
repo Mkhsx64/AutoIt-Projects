@@ -523,7 +523,10 @@ Func vhGUI()
 			"- added ability to search web using 4 search providers in seperate gui." & @CRLF & _
 			"- added accelerator keys for web search GUI." & @CRLF & _
 			"- fixed version number in directives." & @CRLF & _
-			"- added version history gui.", 0, 0, 400, 380)
+			"- added version history gui." & @CRLF & _
+			"---==== 1.8.8 ====---" & @CRLF & _
+			"- took off $ES_READONLY style on version history edit control." & @CRLF & _
+			"- fixed view about aupad event. When opening it would call folderpath() in a loop making it unable to close", 0, 0, 400, 380)
 	$vhButton = GUICtrlCreateButton("Okay", 360, 380)
 	GUISetState()
 EndFunc   ;==>vhGUI
