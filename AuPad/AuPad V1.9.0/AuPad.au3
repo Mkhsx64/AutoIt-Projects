@@ -794,7 +794,8 @@ Func Print()
 
 			ShellExecute($fs, "", "", "print", @SW_HIDE)
 
-			_WinAPI_SetDefaultPrinter($og_Defaultprinter)
+			RegWrite("HKEY_CURRENT_USER\Software\Microsoft\Windows Nt\CurrentVersion\Windows", "Device" , "REG_SZ" , $og_Defaultprinter)
+
 		EndIf
 	EndIf
 EndFunc   ;==>Print
@@ -1098,7 +1099,7 @@ Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
 				Case $NM_DBLCLK
 					$selInd = _GUICtrlListView_GetSelectedIndices($pListview)
 					$selDefPrint = _GUICtrlListView_GetItemText($pListview, $selInd)
-					_WinAPI_SetDefaultPrinter($selDefPrint)
+					RegWrite("HKEY_CURRENT_USER\Software\Microsoft\Windows Nt\CurrentVersion\Windows", "Device" , "REG_SZ" , $selDefPrint)
 					GUIDelete($pGUI)
 			EndSwitch
 	EndSwitch
