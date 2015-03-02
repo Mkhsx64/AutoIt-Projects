@@ -568,7 +568,7 @@ Func au3Syn()
 	If @error Then MsgBox(0, 'ERROR', 'Error setting new color table!')
 	$au3Buffer = _GUICtrlRichEdit_GetTextLength($pEditWindow)
 	If Not IsArray($gSel) Then Return ; get out if we don't need to select anything
-	_GUICtrlRichEdit_SetSel($pEditWindow, $gSel[0], $gSel[1], True) ; set the selection if there was anything selected
+	_GUICtrlRichEdit_SetSel($pEditWindow, $gSel[0], $gSel[1], False) ; set the selection if there was anything selected
 EndFunc   ;==>au3Syn
 ;========================================================
 
