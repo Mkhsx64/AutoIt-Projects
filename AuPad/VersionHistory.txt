@@ -106,3 +106,5 @@
 ---==== 1.9.0 ====---
 
 - added ability to highlight, then websearch the selected text.
+- Took out printing UDF by martin
+- Took out x86 force directive. Can now be used as x64.
