@@ -110,3 +110,4 @@
 - Took out x86 force directive. Can now be used as x64.
 - ability to open AutoIt helpfile.
 - ability to highlight and search the AutoIt helpfile with keyword.
+- changed _guictrlrichedit_setsel() hide sel to false, instead of true, as it would hide the selection after changing the highlighting.
