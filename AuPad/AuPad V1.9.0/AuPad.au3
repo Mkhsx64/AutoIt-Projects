@@ -129,7 +129,7 @@ Local $aAccelKeys[23][23] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], _
 		["{F2}", $hVHelp], ["^+a", $mCombo[1]], ["^+h", $mCombo[2]], _
 		["^+q", $mCombo[0]], ["{F7}", $forComp], ["{F3}", $vTxt_Spch], _
-		["{F4}", $vSE], ["{F6}", $au3help]]
+		["{F4}", $vSE], ["{F1}", $au3help]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
@@ -367,12 +367,12 @@ Func GUI()
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
 	GUICtrlCreateMenuItem("", $ViewM, 3) ; create line
 	$vSE = GUICtrlCreateMenuItem("Web Search" & @TAB & "F4", $ViewM, 4) ; create the second level web search menu item
-	$au3help = GUICtrlCreateMenuItem("AutoIt Help" & @TAB & "F6", $ViewM, 5) ; create the second level autoit search menu item
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
-	$hVHelp = GUICtrlCreateMenuItem("View Help" & @TAB & "F2", $HelpM, 0) ; create the second level view help menu item
-	GUICtrlCreateMenuItem("", $HelpM, 1) ; create line
-	$hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 2) ; create the second level about aupad menu item
-	$hVH = GUICtrlCreateMenuItem("Version History", $HelpM, 3) ; create the second level version history menu item
+	$au3help = GUICtrlCreateMenuItem("AutoIt Help" & @TAB & "F1", $HelpM, 0) ; create the second level autoit search menu item
+	$hVHelp = GUICtrlCreateMenuItem("View Help" & @TAB & "F2", $HelpM, 1) ; create the second level view help menu item
+	GUICtrlCreateMenuItem("", $HelpM, 2) ; create line
+	$hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 3) ; create the second level about aupad menu item
+	$hVH = GUICtrlCreateMenuItem("Version History", $HelpM, 4) ; create the second level version history menu item
 	setNew() ; set the window to have a new file
 	GUISetState(@SW_SHOW) ; show the window
 EndFunc   ;==>GUI
