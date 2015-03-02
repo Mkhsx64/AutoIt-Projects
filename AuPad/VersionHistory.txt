@@ -112,3 +112,4 @@
 - ability to highlight and search the AutoIt helpfile with keyword.
 - changed _guictrlrichedit_setsel() hide sel to false, instead of true, as it would hide the selection after changing the highlighting.
 - printing will print to default printer only. Trying to make more portable, which will exclude print dll and library now. Changing of printer is in the works.
+- took out debugging code from last version to fix folderpath() loop.
