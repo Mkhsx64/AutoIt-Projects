@@ -89,10 +89,6 @@ Local $seChild, $seInput, $seLabel, _
 Local $vhChild, $vhEdit, _
 		$vhButton = 99999
 
-;print child vars
-Local $pGUI = 99999, $pListview = 99999, _
-		$og_Defaultprinter
-
 AdlibRegister("chkSel", 1000) ; check if there has been any user selections
 AdlibRegister("chkTxt", 1000) ; check if ther has been any user input
 AdlibRegister("chkUndo", 1000) ; check if there has been any undo actions
@@ -771,13 +767,12 @@ EndFunc   ;==>_OpenFile
 ;======================================================
 
 Func Print()
-	Local $strComputer, $i
-	If WinGetTitle("[ACTIVE]") = "Untitled - AuPad" Then
-		Save()
-		If WinGetTitle("[ACTIVE]") = "Untitled - AuPad" Then
-			Return
+	If WinGetTitle("[ACTIVE]") = "Untitled - AuPad" Then ; if we haven't saved
+		Save() ; save
+		If WinGetTitle("[ACTIVE]") = "Untitled - AuPad" Then ; if we still haven't
+			Return ; get out
 		Else
-			ShellExecute($fs, "", "", "print", @SW_HIDE)
+			ShellExecute($fs, "", "", "print", @SW_HIDE) ; print our document to the default printer
 		EndIf
 	EndIf
 EndFunc   ;==>Print
@@ -1068,23 +1063,5 @@ Func _Resize_RichEdit()
 EndFunc   ;==>_Resize_RichEdit
 ;======================================================
 
-Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
-	Local $hWndFrom, $iIDFrom, $iCode, $tNMHDR, _
-			$selInd, $selDefPrint, $listHandle
-	$tNMHDR = DllStructCreate($tagNMHDR, $ilParam)
-	$hWndFrom = HWnd(DllStructGetData($tNMHDR, "hWndFrom"))
-	$iIDFrom = DllStructGetData($tNMHDR, "IDFrom")
-	$iCode = DllStructGetData($tNMHDR, "Code")
-	Switch $hWndFrom
-		Case $pListview
-			Switch $iCode
-				Case $NM_DBLCLK
-					$selInd = _GUICtrlListView_GetSelectedIndices($pListview)
-					$selDefPrint = _GUICtrlListView_GetItemText($pListview, $selInd)
-					RegWrite("HKEY_CURRENT_USER\Software\Microsoft\Windows Nt\CurrentVersion\Windows", "Device", "REG_SZ", $selDefPrint)
-					GUIDelete($pGUI)
-			EndSwitch
-	EndSwitch
-EndFunc   ;==>WM_NOTIFY
 
 
