@@ -1,5 +1,4 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
-#AutoIt3Wrapper_UseX64=N ; must run as x86 for printing functionality
 #AutoIt3Wrapper_Icon=aupad.ico
 #AutoIt3Wrapper_Outfile=
 #AutoIt3Wrapper_Res_Comment=Version 1.9.0
@@ -30,7 +29,6 @@
 #include <RESH.au3> ; thanks goes to Brian J Christy (Beege)
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
-#include <printMGv2.au3> ; printing support from martin's print UDF
 #include <String.au3>
 #include <IE.au3>
 #include <GuiListView.au3>
@@ -63,7 +61,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$tagContainer, $taggedStr, _
 		$taggedStrEx, $taggedLen, _
 		$forComp, $vTxt_Spch, $vSE, _
-		$oIE, $hVH, $webText
+		$oIE = 9999, $hVH, $webText
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -1026,7 +1024,7 @@ Func Quit()
 	$title = StringSplit($wgt, " - ") ; split the window title
 	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
 		$o_speech = "" ; reset the obj
-		_IEQuit($oIe) ; get out
+		If $oIE <> 9999 Then _IEQuit($oIe) ; get out
 		Exit ; get out
 	ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
 		$fOp = FileOpen($fn[$oIndex]) ; open the already opened file
@@ -1036,7 +1034,7 @@ Func Quit()
 			Save() ; call the save function
 			FileClose($fOp) ; close the file
 			$o_speech = "" ; reset the obj
-			_IEQuit($oIe) ; get out
+			If $oIE <> 9999 Then _IEQuit($oIe) ; get out
 			Exit ; exit the script
 		EndIf
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
@@ -1058,7 +1056,7 @@ Func Quit()
 			Return ; get out
 		EndIf
 	EndIf
-	_IEQuit($oIe) ; get out
+	If $oIE <> 9999 Then _IEQuit($oIe) ; get out
 	$o_speech = "" ; reset the obj
 	Exit ; get out
 EndFunc   ;==>Quit
