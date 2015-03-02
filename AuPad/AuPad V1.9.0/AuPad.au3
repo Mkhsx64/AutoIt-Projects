@@ -526,7 +526,13 @@ Func vhGUI()
 			"- added version history gui." & @CRLF & _
 			"---==== 1.8.8 ====---" & @CRLF & _
 			"- took off $ES_READONLY style on version history edit control." & @CRLF & _
-			"- fixed view about aupad event. When opening it would call folderpath() in a loop making it unable to close", 0, 0, 400, 380)
+			"- fixed view about aupad event. When opening it would call folderpath() in a loop making it unable to close" & @CRLF & _
+			"---==== 1.9.0 ====---" & @CRLF & _
+			"- added ability to highlight, then websearch the selected text." & @CRLF & _
+			"- Took out printing UDF by martin" & @CRLF & _
+			"- Took out x86 force directive. Can now be x64" & @CRLF & _
+			"- ability to open AutoIt helpfile" & @CRLF & _
+			"- ability to highlight and search the AutoIt helpfile with keyword", 0, 0, 400, 380)
 	$vhButton = GUICtrlCreateButton("Okay", 360, 380)
 	GUISetState()
 EndFunc   ;==>vhGUI
