@@ -108,3 +108,5 @@
 - added ability to highlight, then websearch the selected text.
 - Took out printing UDF by martin
 - Took out x86 force directive. Can now be used as x64.
+- ability to open AutoIt helpfile.
+- ability to highlight and search the AutoIt helpfile with keyword.
