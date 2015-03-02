@@ -527,7 +527,10 @@ Func vhGUI()
 			"- Took out printing UDF by martin" & @CRLF & _
 			"- Took out x86 force directive. Can now be x64" & @CRLF & _
 			"- ability to open AutoIt helpfile" & @CRLF & _
-			"- ability to highlight and search the AutoIt helpfile with keyword", 0, 0, 400, 380)
+			"- ability to highlight and search the AutoIt helpfile with keyword" & @CRLF & _
+			"- changed _guictrlrichedit_setsel() hide sel to false, instead of true, as it would hide the selection after changing the highlighting." & @CRLF & _
+			"- printing will print to default printer only. Trying to make more portable, which will exclude print dll and library now. Changing of printer is in the works." & @CRLF & _
+			"- took out debugging code from last version to fix folderpath() loop.", 0, 0, 400, 380)
 	$vhButton = GUICtrlCreateButton("Okay", 360, 380)
 	GUISetState()
 EndFunc   ;==>vhGUI
