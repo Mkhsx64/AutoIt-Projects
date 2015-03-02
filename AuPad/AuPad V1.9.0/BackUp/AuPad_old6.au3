@@ -215,16 +215,14 @@ While 1
 						seGUI($webText) ; open with selected word
 					EndIf
 				Case $au3help
-					$au3Help_Seltext = _GUICtrlRichEdit_GetSelText($pEditWindow) ; get any selected text
-					If @error = -1 Then
-						ShellExecute(@ProgramFilesDir & "\AutoIt3\AutoIt.chm") ; if there isn't any selected text
+					$au3Help_Seltext = _GUICtrlRichEdit_GetSelText($pEditWindow)
+					If @error Then
+						ShellExecute(@ProgramFilesDir & "\AutoIt3\AutoIt.chm")
 					Else
-						ShellExecute(@ProgramFilesDir & "\AutoIt3\AutoIt.chm") ; do the same if there is
-						Sleep(300) ; wait a second for it to become active
-						Send("!n") ; go to the index tab
-						Send($au3Help_Seltext) ; send the selected text
-						Send("{ENTER}") ; get the page
-					EndIf
+						ShellExecute("hh.exe", "mk:@MSITStore:C:\Program%20Files%20(x86)\AutoIt3\AutoIt.chm::/html/intro/lang_operators.htm")
+sleep(50)
+Send($txtSel)
+Send("{ENTER}")
 				Case $hVH
 					vhGUI() ; open the version history gui
 				Case $mCombo[0]
@@ -430,13 +428,13 @@ EndFunc   ;==>seGUI
 Func _openWeb($srchProv)
 	Switch $srchProv
 		Case "Google"
-			$oIE = _IECreate("https://www.google.com/?gws_rd=ssl#q=" & GUICtrlRead($seInput)) ; create IE Instance
+			$oIe = _IECreate("https://www.google.com/?gws_rd=ssl#q=" & GUICtrlRead($seInput)) ; create IE Instance
 		Case "Bing"
-			$oIE = _IECreate("http://www.bing.com/search?q=" & GUICtrlRead($seInput) & "&qs=n&form=QBLH&pq=hi&sc=8-0&sp=-1&sk=&cvid=0009bd901245417b8293556931945db9") ; create IE Instance
+			$oIe = _IECreate("http://www.bing.com/search?q=" & GUICtrlRead($seInput) & "&qs=n&form=QBLH&pq=hi&sc=8-0&sp=-1&sk=&cvid=0009bd901245417b8293556931945db9") ; create IE Instance
 		Case "Yahoo"
-			$oIE = _IECreate("https://search.yahoo.com/search;_ylt=At62TSEfE_U8sUmfF1eBBEmbvZx4?p=" & GUICtrlRead($seInput) & "&toggle=1&cop=mss&ei=UTF-8&fr=yfp-t-764&fp=1") ; create IE Instance
+			$oIe = _IECreate("https://search.yahoo.com/search;_ylt=At62TSEfE_U8sUmfF1eBBEmbvZx4?p=" & GUICtrlRead($seInput) & "&toggle=1&cop=mss&ei=UTF-8&fr=yfp-t-764&fp=1") ; create IE Instance
 		Case "Ask"
-			$oIE = _IECreate("http://www.ask.com/web?q=" & GUICtrlRead($seInput) & "&qsrc=0&o=0&l=dir&qo=homepageSearchBox") ; create IE Instance
+			$oIe = _IECreate("http://www.ask.com/web?q=" & GUICtrlRead($seInput) & "&qsrc=0&o=0&l=dir&qo=homepageSearchBox") ; create IE Instance
 	EndSwitch
 EndFunc   ;==>_openWeb
 
@@ -771,7 +769,7 @@ Func Print()
 
 			$pGUI = GUICreate("Printer Select", 300, 300)
 			GUICtrlCreateLabel("double click the printer you would like to use", 5, 2)
-			$pListview = _GUICtrlListView_Create($pGUI, "Printer list", 0, 20, 300, 280)
+			$pListview =_GUICtrlListView_Create($pGUI, "Printer list", 0, 20, 300, 280)
 			_GUICtrlListView_SetExtendedListViewStyle($pListview, $LVS_EX_GRIDLINES)
 			GUISetState()
 
@@ -802,7 +800,7 @@ Func Print()
 
 			ShellExecute($fs, "", "", "print", @SW_HIDE)
 
-			RegWrite("HKEY_CURRENT_USER\Software\Microsoft\Windows Nt\CurrentVersion\Windows", "Device", "REG_SZ", $og_Defaultprinter)
+			RegWrite("HKEY_CURRENT_USER\Software\Microsoft\Windows Nt\CurrentVersion\Windows", "Device" , "REG_SZ" , $og_Defaultprinter)
 
 		EndIf
 	EndIf
@@ -1034,7 +1032,7 @@ Func Quit()
 	$title = StringSplit($wgt, " - ") ; split the window title
 	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
 		$o_speech = "" ; reset the obj
-		If $oIE <> 9999 Then _IEQuit($oIE) ; get out
+		If $oIE <> 9999 Then _IEQuit($oIe) ; get out
 		Exit ; get out
 	ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
 		$fOp = FileOpen($fn[$oIndex]) ; open the already opened file
@@ -1044,7 +1042,7 @@ Func Quit()
 			Save() ; call the save function
 			FileClose($fOp) ; close the file
 			$o_speech = "" ; reset the obj
-			If $oIE <> 9999 Then _IEQuit($oIE) ; get out
+			If $oIE <> 9999 Then _IEQuit($oIe) ; get out
 			Exit ; exit the script
 		EndIf
 		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
@@ -1066,7 +1064,7 @@ Func Quit()
 			Return ; get out
 		EndIf
 	EndIf
-	If $oIE <> 9999 Then _IEQuit($oIE) ; get out
+	If $oIE <> 9999 Then _IEQuit($oIe) ; get out
 	$o_speech = "" ; reset the obj
 	Exit ; get out
 EndFunc   ;==>Quit
@@ -1096,7 +1094,7 @@ EndFunc   ;==>_Resize_RichEdit
 
 Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
 	Local $hWndFrom, $iIDFrom, $iCode, $tNMHDR, _
-			$selInd, $selDefPrint, $listHandle
+	$selInd, $selDefPrint, $listHandle
 	$tNMHDR = DllStructCreate($tagNMHDR, $ilParam)
 	$hWndFrom = HWnd(DllStructGetData($tNMHDR, "hWndFrom"))
 	$iIDFrom = DllStructGetData($tNMHDR, "IDFrom")
@@ -1107,9 +1105,8 @@ Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
 				Case $NM_DBLCLK
 					$selInd = _GUICtrlListView_GetSelectedIndices($pListview)
 					$selDefPrint = _GUICtrlListView_GetItemText($pListview, $selInd)
-					RegWrite("HKEY_CURRENT_USER\Software\Microsoft\Windows Nt\CurrentVersion\Windows", "Device", "REG_SZ", $selDefPrint)
+					RegWrite("HKEY_CURRENT_USER\Software\Microsoft\Windows Nt\CurrentVersion\Windows", "Device" , "REG_SZ" , $selDefPrint)
 					GUIDelete($pGUI)
 			EndSwitch
 	EndSwitch
 EndFunc   ;==>WM_NOTIFY
-
