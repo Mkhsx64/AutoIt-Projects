@@ -777,9 +777,8 @@ Func Print()
 		If WinGetTitle("[ACTIVE]") = "Untitled - AuPad" Then
 			Return
 		Else
-			ShellExecute($fs, "", "", "print", @SW_HIDE)
-		EndIf
-	EndIf
+ShellExecute($fs, "", "", "print", @SW_HIDE)
+EndIf
 EndFunc   ;==>Print
 
 ; Thanks to AZJIO for idea
@@ -1086,5 +1085,4 @@ Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
 			EndSwitch
 	EndSwitch
 EndFunc   ;==>WM_NOTIFY
-
 

@@ -780,126 +780,151 @@ Func Print()
 			ShellExecute($fs, "", "", "print", @SW_HIDE)
 		EndIf
 	EndIf
-EndFunc   ;==>Print
+;### Tidy Error -> "endfunc" is closing previous "if" on line 775
+	EndFunc   ;==>Print
 
-; Thanks to AZJIO for idea
-Func Tab()
-	_GUICtrlRichEdit_InsertText($pEditWindow, "    ") ; tab at curser position
-EndFunc   ;==>Tab
+	; Thanks to AZJIO for idea
+	Func Tab()
+		_GUICtrlRichEdit_InsertText($pEditWindow, "    ") ; tab at curser position
+	EndFunc   ;==>Tab
 
-Func Copy()
-	Local $gt, $st, $ct
-	$gt = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the start ($gt[0]) and end ($gt[1]) positions of the selected text
-	If $gt[0] = 0 And $gt[1] = 1 Then ; if there is no selected text in the edit control
-		Return ; get out
-	Else
-		$st = StringMid(_GUICtrlRichEdit_GetText($pEditWindow), $gt[0] + 1, $gt[1] - $gt[0]) ; get the characters between the start and end characters from the selected text in theedit control
-	EndIf
-	$ct = ClipPut($st) ; put the selected text into the clipboard
-	If $ct = 0 Then MsgBox(0, "error", "Could not copy selected text") ; check if it worked tell us if it didn't
-EndFunc   ;==>Copy
-
-Func Paste()
-	Local $g, $p
-	$g = ClipGet() ; get the string from the clipboard
-	If @error Then Return ; if @error is set get out
-	$p = _GUICtrlRichEdit_InsertText($pEditWindow, $g) ; set the string into the edit control
-EndFunc   ;==>Paste
-
-Func timeDate()
-	Local $r, $p, $h, $s
-	$r = _GUICtrlRichEdit_GetText($pEditWindow) ; read the window for the current text
-	If @HOUR >= 12 Then ; if it is after 11:59 AM
-		$h = @HOUR - 12 ; set it to the windows standard notepad hour notation
-		$s = Int($h) ; turn the string into an integer
-		$p = _GUICtrlRichEdit_InsertText($pEditWindow, $s & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
-	Else ; otherwise if it is in the AM
-		$p = _GUICtrlRichEdit_InsertText($pEditWindow, @HOUR & ":" & @MIN & " AM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
-	EndIf
-EndFunc   ;==>timeDate
-
-Func fontGUI()
-	Local $scAtt
-	If UBound($fontBox) <> 0 Then ; if the array of font values has been made
-		$sFontName = $fontBox[2] ; set the font name
-		$iFontSize = $fontBox[3] ; set the font size
-		$iColorRef = $fontBox[5] ; set the font color
-		$iFontWeight = $fontBox[4] ; set the font weight
-		$bItalic = BitAND($fontBox[1], 2) ; set the attribute
-		$bUnderline = BitAND($fontBox[1], 4) ; set the attribute
-		$bStrikethru = BitAND($fontBox[1], 8) ; set the attribute
-		$fontBox = _ChooseFont($sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru) ; call _ChooseFont with specified values
-	Else
-		$fontBox = _ChooseFont() ; call the _ChooseFont function without any params
-	EndIf
-	If UBound($fontBox) = 0 Then Return ; if they closed the font box and made no selections get out
-	If $fontBox[1] <> 0 Then
-		_GUICtrlRichEdit_SetFont($pEditWindow, $fontBox[3], $fontBox[2]) ; set the new font
-		If $iFontSize > 10 Then
-			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iDefaultSize)
+	Func Copy()
+		Local $gt, $st, $ct
+		$gt = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the start ($gt[0]) and end ($gt[1]) positions of the selected text
+		If $gt[0] = 0 And $gt[1] = 1 Then ; if there is no selected text in the edit control
+			Return ; get out
 		Else
-			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iDefaultSize - $iFontSize)
+			$st = StringMid(_GUICtrlRichEdit_GetText($pEditWindow), $gt[0] + 1, $gt[1] - $gt[0]) ; get the characters between the start and end characters from the selected text in theedit control
 		EndIf
-		$fbS = $fontBox[1]
-		Switch $fbS
-			Case '2'
-				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
-				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
-			Case '4'
-				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+un')
-				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
-			Case '8'
-				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+st')
-				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
-		EndSwitch
-		$iBufferedfSize = $iFontSize
-		_GUICtrlRichEdit_SetCharColor($pEditWindow, $fontBox[5]) ; set the font color
-	Else
-		_GUICtrlRichEdit_SetFont($pEditWindow, $fontBox[3], $fontBox[2]) ; if their has been no selections in the font gui
-		If $iBufferedfSize = "" Then $iBufferedfSize = 10
-		If $iFontSize > $iBufferedfSize Then
-			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iBufferedfSize)
-		Else
-			_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iBufferedfSize - $iFontSize)
-		EndIf
-		$fbS = $fontBox[1]
-		Switch $fbS
-			Case '2'
-				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
-				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
-			Case '4'
-				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+un')
-				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
-			Case '8'
-				$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+st')
-				If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
-		EndSwitch
-		$colorSet = _GUICtrlRichEdit_SetCharColor($pEditWindow, $fontBox[5]) ; set the font color
-	EndIf
-EndFunc   ;==>fontGUI
+		$ct = ClipPut($st) ; put the selected text into the clipboard
+		If $ct = 0 Then MsgBox(0, "error", "Could not copy selected text") ; check if it worked tell us if it didn't
+	EndFunc   ;==>Copy
 
-Func Open()
-	Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
-			$strinString, $stripString, $titleNow, $mBox, _
-			$spltTitle, $fileGetSize, $fileReadEx, $pdfFile
-	$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|RTF files (*.rtf)|Au3 files (*.au3)|All (*.*)", BitOR(1, 2)) ; ask the user what they would like to open
-	$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
-	$oIndex = $strSplit[0] ; set the $oIndex to the last value in the split array
-	If $strSplit[$oIndex] = "" Then ; if there is not a value
-		MsgBox(0, "error", "Did not open a file") ; tell us
-		Return ; get out
-	EndIf
-	$strinString = StringSplit($strSplit[$oIndex], ".") ; split the file name by the . char
-	$fileGetSize = FileGetSize($fileOpenD) ; get the size of the file
-	$fileGetSize = $fileGetSize / 1048576 ; get the MB
-	If $fileGetSize < 100 And $strinString[2] <> 'rtf' Then ; if it is less than 100 MB
-		$fileOpen = FileOpen($fileOpenD, 0) ; open the file specified
-		$fileRead = FileRead($fileOpen) ; read the open file
-	ElseIf $fileGetSize > 100 And $strinString[2] <> 'rtf' Then
-		$fileOpen = FileOpen($fileOpenD, 16) ; open the file in binary form
-		$fileReadEx = FileRead($fileOpen) ; read the open file
-		$fileRead = BinaryToString($fileReadEx) ; set the binary data to ANSI
-	Else
+	Func Paste()
+		Local $g, $p
+		$g = ClipGet() ; get the string from the clipboard
+		If @error Then Return ; if @error is set get out
+		$p = _GUICtrlRichEdit_InsertText($pEditWindow, $g) ; set the string into the edit control
+	EndFunc   ;==>Paste
+
+	Func timeDate()
+		Local $r, $p, $h, $s
+		$r = _GUICtrlRichEdit_GetText($pEditWindow) ; read the window for the current text
+		If @HOUR >= 12 Then ; if it is after 11:59 AM
+			$h = @HOUR - 12 ; set it to the windows standard notepad hour notation
+			$s = Int($h) ; turn the string into an integer
+			$p = _GUICtrlRichEdit_InsertText($pEditWindow, $s & ":" & @MIN & " PM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
+		Else ; otherwise if it is in the AM
+			$p = _GUICtrlRichEdit_InsertText($pEditWindow, @HOUR & ":" & @MIN & " AM " & @MON & "/" & @MDAY & "/" & @YEAR) ; set the edit control to the old string and append the new time/date string
+		EndIf
+	EndFunc   ;==>timeDate
+
+	Func fontGUI()
+		Local $scAtt
+		If UBound($fontBox) <> 0 Then ; if the array of font values has been made
+			$sFontName = $fontBox[2] ; set the font name
+			$iFontSize = $fontBox[3] ; set the font size
+			$iColorRef = $fontBox[5] ; set the font color
+			$iFontWeight = $fontBox[4] ; set the font weight
+			$bItalic = BitAND($fontBox[1], 2) ; set the attribute
+			$bUnderline = BitAND($fontBox[1], 4) ; set the attribute
+			$bStrikethru = BitAND($fontBox[1], 8) ; set the attribute
+			$fontBox = _ChooseFont($sFontName, $iFontSize, $iColorRef, $iFontWeight, $bItalic, $bUnderline, $bStrikethru) ; call _ChooseFont with specified values
+		Else
+			$fontBox = _ChooseFont() ; call the _ChooseFont function without any params
+		EndIf
+		If UBound($fontBox) = 0 Then Return ; if they closed the font box and made no selections get out
+		If $fontBox[1] <> 0 Then
+			_GUICtrlRichEdit_SetFont($pEditWindow, $fontBox[3], $fontBox[2]) ; set the new font
+			If $iFontSize > 10 Then
+				_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iDefaultSize)
+			Else
+				_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iDefaultSize - $iFontSize)
+			EndIf
+			$fbS = $fontBox[1]
+			Switch $fbS
+				Case '2'
+					$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
+					If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
+				Case '4'
+					$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+un')
+					If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
+				Case '8'
+					$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+st')
+					If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
+			EndSwitch
+			$iBufferedfSize = $iFontSize
+			_GUICtrlRichEdit_SetCharColor($pEditWindow, $fontBox[5]) ; set the font color
+		Else
+			_GUICtrlRichEdit_SetFont($pEditWindow, $fontBox[3], $fontBox[2]) ; if their has been no selections in the font gui
+			If $iBufferedfSize = "" Then $iBufferedfSize = 10
+			If $iFontSize > $iBufferedfSize Then
+				_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iFontSize - $iBufferedfSize)
+			Else
+				_GUICtrlRichEdit_ChangeFontSize($pEditWindow, $iBufferedfSize - $iFontSize)
+			EndIf
+			$fbS = $fontBox[1]
+			Switch $fbS
+				Case '2'
+					$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+it')
+					If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
+				Case '4'
+					$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+un')
+					If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
+				Case '8'
+					$scAtt = _GUICtrlRichEdit_SetCharAttributes($pEditWindow, '+st')
+					If $scAtt = False Then MsgBox(0, "error", "Could not set character attributes")
+			EndSwitch
+			$colorSet = _GUICtrlRichEdit_SetCharColor($pEditWindow, $fontBox[5]) ; set the font color
+		EndIf
+	EndFunc   ;==>fontGUI
+
+	Func Open()
+		Local $fileOpenD, $strSplit, $fileName, $fileOpen, $fileRead, _
+				$strinString, $stripString, $titleNow, $mBox, _
+				$spltTitle, $fileGetSize, $fileReadEx, $pdfFile
+		$fileOpenD = FileOpenDialog("Open File", @WorkingDir, "Text files (*.txt)|RTF files (*.rtf)|Au3 files (*.au3)|All (*.*)", BitOR(1, 2)) ; ask the user what they would like to open
+		$strSplit = StringSplit($fileOpenD, "\") ; split the opened file path by the \ char
+		$oIndex = $strSplit[0] ; set the $oIndex to the last value in the split array
+		If $strSplit[$oIndex] = "" Then ; if there is not a value
+			MsgBox(0, "error", "Did not open a file") ; tell us
+			Return ; get out
+		EndIf
+		$strinString = StringSplit($strSplit[$oIndex], ".") ; split the file name by the . char
+		$fileGetSize = FileGetSize($fileOpenD) ; get the size of the file
+		$fileGetSize = $fileGetSize / 1048576 ; get the MB
+		If $fileGetSize < 100 And $strinString[2] <> 'rtf' Then ; if it is less than 100 MB
+			$fileOpen = FileOpen($fileOpenD, 0) ; open the file specified
+			$fileRead = FileRead($fileOpen) ; read the open file
+		ElseIf $fileGetSize > 100 And $strinString[2] <> 'rtf' Then
+			$fileOpen = FileOpen($fileOpenD, 16) ; open the file in binary form
+			$fileReadEx = FileRead($fileOpen) ; read the open file
+			$fileRead = BinaryToString($fileReadEx) ; set the binary data to ANSI
+		Else
+			$openBuff = _GUICtrlRichEdit_GetText($pEditWindow) ; get the current text in the window
+			If $openBuff <> "" And $openBuff <> $fileRead Then ; initiaze the save dialog if their is text in the control and it does not match the file read
+				$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
+				$spltTitle = StringSplit($titleNow, " - ") ; cut it into two pieces
+				$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
+				If $mBox = 6 And $spltTitle[1] = "Untitled" Then ; if we said yes and the title is untitled
+					$saveCounter = 0 ; reset the save counter
+					Save() ; call the save function
+				ElseIf $mBox = 6 Then ; if it is just yes
+					$saveCounter += 1 ; increment the save counter
+					Save() ; call the save function
+				EndIf
+			EndIf
+			$stripString = StringReplace($strSplit[$oIndex], "." & $strinString[2], "") ; replace the file name extension with nothing
+			WinSetTitle($pWnd, $openBuff, $stripString & " - AuPad") ; set the title of the window
+			$saveCounter += 1 ; increment the save counter
+			$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
+			$fileOpen = _GUICtrlRichEdit_StreamFromFile($pEditWindow, $fileOpenD) ; stream the rtf file using rich edit functionality
+			Return ; get out
+		EndIf
+		If $fileOpen = -1 Then ; if that didn't work
+			MsgBox(0, "error", "Could not open the file") ; tell us
+			Return ; get out
+		EndIf
 		$openBuff = _GUICtrlRichEdit_GetText($pEditWindow) ; get the current text in the window
 		If $openBuff <> "" And $openBuff <> $fileRead Then ; initiaze the save dialog if their is text in the control and it does not match the file read
 			$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
@@ -913,178 +938,155 @@ Func Open()
 				Save() ; call the save function
 			EndIf
 		EndIf
+		_GUICtrlRichEdit_SetText($pEditWindow, "") ; reset the text in the edit control
 		$stripString = StringReplace($strSplit[$oIndex], "." & $strinString[2], "") ; replace the file name extension with nothing
 		WinSetTitle($pWnd, $openBuff, $stripString & " - AuPad") ; set the title of the window
+		_GUICtrlRichEdit_SetText($pEditWindow, $fileRead) ; set the read data into the window
 		$saveCounter += 1 ; increment the save counter
 		$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
-		$fileOpen = _GUICtrlRichEdit_StreamFromFile($pEditWindow, $fileOpenD) ; stream the rtf file using rich edit functionality
-		Return ; get out
-	EndIf
-	If $fileOpen = -1 Then ; if that didn't work
-		MsgBox(0, "error", "Could not open the file") ; tell us
-		Return ; get out
-	EndIf
-	$openBuff = _GUICtrlRichEdit_GetText($pEditWindow) ; get the current text in the window
-	If $openBuff <> "" And $openBuff <> $fileRead Then ; initiaze the save dialog if their is text in the control and it does not match the file read
-		$titleNow = WinGetTitle($pWnd) ; get the current text of the title of the window
-		$spltTitle = StringSplit($titleNow, " - ") ; cut it into two pieces
-		$mBox = MsgBox(4, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
-		If $mBox = 6 And $spltTitle[1] = "Untitled" Then ; if we said yes and the title is untitled
-			$saveCounter = 0 ; reset the save counter
-			Save() ; call the save function
-		ElseIf $mBox = 6 Then ; if it is just yes
-			$saveCounter += 1 ; increment the save counter
-			Save() ; call the save function
-		EndIf
-	EndIf
-	_GUICtrlRichEdit_SetText($pEditWindow, "") ; reset the text in the edit control
-	$stripString = StringReplace($strSplit[$oIndex], "." & $strinString[2], "") ; replace the file name extension with nothing
-	WinSetTitle($pWnd, $openBuff, $stripString & " - AuPad") ; set the title of the window
-	_GUICtrlRichEdit_SetText($pEditWindow, $fileRead) ; set the read data into the window
-	$saveCounter += 1 ; increment the save counter
-	$fn[$oIndex] = $fileOpenD ; set the file name save variable to the name of the opened file
-	FileClose($fileOpen) ; close the file
-	addRecent($fileOpenD) ; add the file opened to the recent list
-	$iNumRecent += 1 ; increment the recent counter
-EndFunc   ;==>Open
+		FileClose($fileOpen) ; close the file
+		addRecent($fileOpenD) ; add the file opened to the recent list
+		$iNumRecent += 1 ; increment the recent counter
+	EndFunc   ;==>Open
 
-Func Save()
-	Local $r, $sd, $cn, $i, $chkExt
-	$r = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
-	If $saveCounter = 0 Then ; if we haven't saved before
-		$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)|RTF files (*.rtf)|Au3 files (*.au3)|All files(*.*)", 16, ".txt", $pWnd) ; tell us where and what to call your file
-		$fn = StringSplit($fs, "\") ; split the saved directory and name
-		$i = $fn[0]
-		If $fn[$i] = ".txt" Or $fn[$i] = ".rtf" Or $fn[$i] = "" Then Return ; if the value in the filesavedialog is not valid get out
-		$chkExt = StringInStr($fn[$i], "rtf")
-		If $chkExt <> 0 Then
-			_GUICtrlRichEdit_StreamToFile($pEditWindow, $fs)
+	Func Save()
+		Local $r, $sd, $cn, $i, $chkExt
+		$r = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
+		If $saveCounter = 0 Then ; if we haven't saved before
+			$fs = FileSaveDialog("Save File", @WorkingDir, "Text files (*.txt)|RTF files (*.rtf)|Au3 files (*.au3)|All files(*.*)", 16, ".txt", $pWnd) ; tell us where and what to call your file
+			$fn = StringSplit($fs, "\") ; split the saved directory and name
+			$i = $fn[0]
+			If $fn[$i] = ".txt" Or $fn[$i] = ".rtf" Or $fn[$i] = "" Then Return ; if the value in the filesavedialog is not valid get out
+			$chkExt = StringInStr($fn[$i], "rtf")
+			If $chkExt <> 0 Then
+				_GUICtrlRichEdit_StreamToFile($pEditWindow, $fs)
+				$cn = StringSplit($fn[$i], ".") ; split the file name
+				$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
+				$saveCounter += 1 ; increment the save counter
+				addRecent($fs) ; add it to the recent files
+				$iNumRecent += 1 ; increment the recent counter
+				Return ; get out
+			EndIf
+			$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
+			If $fo = -1 Then Return MsgBox(0, "error", "Could not create file : " & $saveCounter) ; if it didn't work tell us then get out
+			$fw = FileWrite($fs, $r) ; write everything into the file we specified
+			FileClose($fn[$i]) ; then close the file we specified
 			$cn = StringSplit($fn[$i], ".") ; split the file name
 			$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
 			$saveCounter += 1 ; increment the save counter
-			addRecent($fs) ; add it to the recent files
+			addRecent($fs) ; add the path to the recent files list
 			$iNumRecent += 1 ; increment the recent counter
 			Return ; get out
 		EndIf
-		$fo = FileOpen($fs, 1) ; open the file you told us to save, and if it isn't there create a new one; also overwrite the file
-		If $fo = -1 Then Return MsgBox(0, "error", "Could not create file : " & $saveCounter) ; if it didn't work tell us then get out
-		$fw = FileWrite($fs, $r) ; write everything into the file we specified
-		FileClose($fn[$i]) ; then close the file we specified
-		$cn = StringSplit($fn[$i], ".") ; split the file name
-		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
-		$saveCounter += 1 ; increment the save counter
-		addRecent($fs) ; add the path to the recent files list
-		$iNumRecent += 1 ; increment the recent counter
-		Return ; get out
-	EndIf
-	If StringInStr($fn[$oIndex], "rtf") Then
-		_GUICtrlRichEdit_StreamToFile($pEditWindow, $fn[$oIndex])
-		$cn = StringSplit($fn[$oIndex], ".") ; split the file name
-		$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
-		$saveCounter += 1 ; increment the save counter
+		If StringInStr($fn[$oIndex], "rtf") Then
+			_GUICtrlRichEdit_StreamToFile($pEditWindow, $fn[$oIndex])
+			$cn = StringSplit($fn[$oIndex], ".") ; split the file name
+			$sd = WinSetTitle($pWnd, $r, $cn[1] & " - AuPad") ; set the title to the new file name
+			$saveCounter += 1 ; increment the save counter
+			addRecent($fn[$oIndex]) ; add the path to the recent files list
+			$iNumRecent += 1 ; increment the recent counter
+			Return ; get out
+		EndIf
+		$fo = FileOpen($fn[$oIndex], 2) ; if we've already saved before, open the file and set it to overwrite current contents
+		If $fo = -1 Then Return MsgBox(0, "error", "Could not create file") ; if it didn't work tell us and get out
+		$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
+		FileClose($fn[$oIndex]) ; close the file we specified
 		addRecent($fn[$oIndex]) ; add the path to the recent files list
 		$iNumRecent += 1 ; increment the recent counter
-		Return ; get out
-	EndIf
-	$fo = FileOpen($fn[$oIndex], 2) ; if we've already saved before, open the file and set it to overwrite current contents
-	If $fo = -1 Then Return MsgBox(0, "error", "Could not create file") ; if it didn't work tell us and get out
-	$fw = FileWrite($fs, $r) ; write the contents of the edit into the file
-	FileClose($fn[$oIndex]) ; close the file we specified
-	addRecent($fn[$oIndex]) ; add the path to the recent files list
-	$iNumRecent += 1 ; increment the recent counter
-EndFunc   ;==>Save
+	EndFunc   ;==>Save
 
-Func Help()
-	WinActivate("Program Manager", "") ; activate the desktop
-	Send("{F1}") ; bring up the help menu
-EndFunc   ;==>Help
+	Func Help()
+		WinActivate("Program Manager", "") ; activate the desktop
+		Send("{F1}") ; bring up the help menu
+	EndFunc   ;==>Help
 
-Func Quit()
-	Local $wgt, $rd, $stringis, $title, $st, $active, $mBox, _
-			$winTitle, $spltTitle, $fOp, $fRd
-	$rd = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
-	$st = StringLen($rd) ; find the length of the string read from the edit control
-	$wgt = WinGetTitle($pWnd, "") ; get the title of the window
-	$title = StringSplit($wgt, " - ") ; split the window title
-	If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
-		$o_speech = "" ; reset the obj
-		If $oIE <> 9999 Then _IEQuit($oIE) ; get out
-		Exit ; get out
-	ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
-		$fOp = FileOpen($fn[$oIndex]) ; open the already opened file
-		$fRd = FileRead($fOp) ; read the file
-		If $rd = $fRd Then ; if what is in the edit control is the same as the read in file
-			$saveCounter += 1 ; increment the save counter
-			Save() ; call the save function
-			FileClose($fOp) ; close the file
+	Func Quit()
+		Local $wgt, $rd, $stringis, $title, $st, $active, $mBox, _
+				$winTitle, $spltTitle, $fOp, $fRd
+		$rd = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
+		$st = StringLen($rd) ; find the length of the string read from the edit control
+		$wgt = WinGetTitle($pWnd, "") ; get the title of the window
+		$title = StringSplit($wgt, " - ") ; split the window title
+		If $st = 0 And $title[1] = "Untitled" Then ; if there is nothing in the window and the title is Untitled
 			$o_speech = "" ; reset the obj
 			If $oIE <> 9999 Then _IEQuit($oIE) ; get out
-			Exit ; exit the script
+			Exit ; get out
+		ElseIf $title[1] <> "Untitled" Then ; if the title is not Untitled and there is data in the window
+			$fOp = FileOpen($fn[$oIndex]) ; open the already opened file
+			$fRd = FileRead($fOp) ; read the file
+			If $rd = $fRd Then ; if what is in the edit control is the same as the read in file
+				$saveCounter += 1 ; increment the save counter
+				Save() ; call the save function
+				FileClose($fOp) ; close the file
+				$o_speech = "" ; reset the obj
+				If $oIE <> 9999 Then _IEQuit($oIE) ; get out
+				Exit ; exit the script
+			EndIf
+			$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
+			$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
+			$mBox = MsgBox(3, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
+			If $mBox = 6 Then ; if we said yes
+				Save() ; run the save function
+			ElseIf $mBox = 2 Then
+				Return ; get out
+			EndIf
+		ElseIf $st > 0 Then ; if there is something in the window, and it is called Untitled
+			$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
+			$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
+			$mBox = MsgBox(3, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
+			If $mBox = 6 Then ; if we said yes
+				$saveCounter = 0 ; reset the save counter
+				Save() ; call the save function
+			ElseIf $mBox = 2 Then ; if they hit cancel
+				Return ; get out
+			EndIf
 		EndIf
-		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
-		$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
-		$mBox = MsgBox(3, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
-		If $mBox = 6 Then ; if we said yes
-			Save() ; run the save function
-		ElseIf $mBox = 2 Then
-			Return ; get out
-		EndIf
-	ElseIf $st > 0 Then ; if there is something in the window, and it is called Untitled
-		$winTitle = WinGetTitle("[ACTIVE]") ; get the full window title
-		$spltTitle = StringSplit($winTitle, " - ") ; cut it into two pieces
-		$mBox = MsgBox(3, "AuPad", "there has been changes to " & $spltTitle[1] & ", would you like to save?") ; ask us
-		If $mBox = 6 Then ; if we said yes
-			$saveCounter = 0 ; reset the save counter
-			Save() ; call the save function
-		ElseIf $mBox = 2 Then ; if they hit cancel
-			Return ; get out
-		EndIf
-	EndIf
-	If $oIE <> 9999 Then _IEQuit($oIE) ; get out
-	$o_speech = "" ; reset the obj
-	Exit ; get out
-EndFunc   ;==>Quit
+		If $oIE <> 9999 Then _IEQuit($oIE) ; get out
+		$o_speech = "" ; reset the obj
+		Exit ; get out
+	EndFunc   ;==>Quit
 
-; Resize functionality taken from Melba23's post -- http://www.autoitscript.com/forum/topic/165178-auto-resizing-of-listview-in-gui-window/?p=1205827
-;====================================================
-Func WM_SIZE($hWnd, $msg, $wParam, $lParam)
-	_Resize_RichEdit()
-	Return $GUI_RUNDEFMSG
-EndFunc   ;==>WM_SIZE
+	; Resize functionality taken from Melba23's post -- http://www.autoitscript.com/forum/topic/165178-auto-resizing-of-listview-in-gui-window/?p=1205827
+	;====================================================
+	Func WM_SIZE($hWnd, $msg, $wParam, $lParam)
+		_Resize_RichEdit()
+		Return $GUI_RUNDEFMSG
+	EndFunc   ;==>WM_SIZE
 
-Func _WM_SYSCOMMAND($hWnd, $msg, $wParam, $lParam)
-	Const $SC_MAXIMIZE = 0xF030
-	Const $SC_RESTORE = 0xF120
-	Switch $wParam
-		Case $SC_MAXIMIZE, $SC_RESTORE
-			$bSysMsg = True
-	EndSwitch
-EndFunc   ;==>_WM_SYSCOMMAND
+	Func _WM_SYSCOMMAND($hWnd, $msg, $wParam, $lParam)
+		Const $SC_MAXIMIZE = 0xF030
+		Const $SC_RESTORE = 0xF120
+		Switch $wParam
+			Case $SC_MAXIMIZE, $SC_RESTORE
+				$bSysMsg = True
+		EndSwitch
+	EndFunc   ;==>_WM_SYSCOMMAND
 
-Func _Resize_RichEdit()
-	Local $aRet
-	$aRet = ControlGetPos($pWnd, "", $cLabel_1)
-	WinMove($pEditWindow, "", $aRet[0], $aRet[1], $aRet[2], $aRet[3])
-EndFunc   ;==>_Resize_RichEdit
-;======================================================
+	Func _Resize_RichEdit()
+		Local $aRet
+		$aRet = ControlGetPos($pWnd, "", $cLabel_1)
+		WinMove($pEditWindow, "", $aRet[0], $aRet[1], $aRet[2], $aRet[3])
+	EndFunc   ;==>_Resize_RichEdit
+	;======================================================
 
-Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
-	Local $hWndFrom, $iIDFrom, $iCode, $tNMHDR, _
-			$selInd, $selDefPrint, $listHandle
-	$tNMHDR = DllStructCreate($tagNMHDR, $ilParam)
-	$hWndFrom = HWnd(DllStructGetData($tNMHDR, "hWndFrom"))
-	$iIDFrom = DllStructGetData($tNMHDR, "IDFrom")
-	$iCode = DllStructGetData($tNMHDR, "Code")
-	Switch $hWndFrom
-		Case $pListview
-			Switch $iCode
-				Case $NM_DBLCLK
-					$selInd = _GUICtrlListView_GetSelectedIndices($pListview)
-					$selDefPrint = _GUICtrlListView_GetItemText($pListview, $selInd)
-					RegWrite("HKEY_CURRENT_USER\Software\Microsoft\Windows Nt\CurrentVersion\Windows", "Device", "REG_SZ", $selDefPrint)
-					GUIDelete($pGUI)
-			EndSwitch
-	EndSwitch
-EndFunc   ;==>WM_NOTIFY
+	Func WM_NOTIFY($hWnd, $iMsg, $iwParam, $ilParam)
+		Local $hWndFrom, $iIDFrom, $iCode, $tNMHDR, _
+				$selInd, $selDefPrint, $listHandle
+		$tNMHDR = DllStructCreate($tagNMHDR, $ilParam)
+		$hWndFrom = HWnd(DllStructGetData($tNMHDR, "hWndFrom"))
+		$iIDFrom = DllStructGetData($tNMHDR, "IDFrom")
+		$iCode = DllStructGetData($tNMHDR, "Code")
+		Switch $hWndFrom
+			Case $pListview
+				Switch $iCode
+					Case $NM_DBLCLK
+						$selInd = _GUICtrlListView_GetSelectedIndices($pListview)
+						$selDefPrint = _GUICtrlListView_GetItemText($pListview, $selInd)
+						RegWrite("HKEY_CURRENT_USER\Software\Microsoft\Windows Nt\CurrentVersion\Windows", "Device", "REG_SZ", $selDefPrint)
+						GUIDelete($pGUI)
+				EndSwitch
+		EndSwitch
+	EndFunc   ;==>WM_NOTIFY
 
 
+;### Tidy Error -> func is never closed in your script.
