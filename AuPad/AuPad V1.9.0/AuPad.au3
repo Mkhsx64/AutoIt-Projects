@@ -61,7 +61,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$tagContainer, $taggedStr, _
 		$taggedStrEx, $taggedLen, _
 		$forComp, $vTxt_Spch, $vSE, _
-		$oIE = 9999, $hVH, $webText
+		$oIE = 9999, $hVH, $webText, _
+		$au3help
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -118,19 +119,17 @@ $aRecent[0][0] = 0 ; start the recent files counter
 
 GUICtrlSetState($eRedo, 128) ; set the state of the redo menu item
 
-$hp = _PrintDLLStart($mmssgg, $printDLL) ; open the print dll
-
 Local $o_speech = ObjCreate("SAPI.SpVoice")
 $o_speech.Voice = $o_speech.GetVoices("Name=Microsoft Mary", "Language=409").Item(0)
 
-Local $aAccelKeys[22][22] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
+Local $aAccelKeys[23][23] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _
 		["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], _
 		["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], _
 		["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], _
 		["{F2}", $hVHelp], ["^+a", $mCombo[1]], ["^+h", $mCombo[2]], _
 		["^+q", $mCombo[0]], ["{F7}", $forComp], ["{F3}", $vTxt_Spch], _
-		["{F4}", $vSE]]
+		["{F4}", $vSE], ["{F6}", $au3help]]
 
 GUISetAccelerators($aAccelKeys, $pWnd) ; set the accelerator keys
 
@@ -215,6 +214,8 @@ While 1
 					Else
 						seGUI($webText) ; open with selected word
 					EndIf
+				Case $au3help
+					; STUB CODE GOES HERE
 				Case $hVH
 					vhGUI() ; open the version history gui
 				Case $mCombo[0]
@@ -353,11 +354,11 @@ Func GUI()
 	$mCombo[2] = GUICtrlCreateMenuItem("Link" & @TAB & "Ctrl + Shft + H", $forTags, 2) ;create the second level link menu item
 	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
 	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
-	GUICtrlCreateMenuItem("", $ViewM, 1) ; create line
 	$vTxt_Spch = GUICtrlCreateMenuItem("Text to Speech" & @TAB & "F3", $ViewM, 2) ; create the second level text to speech menu item
 	GUICtrlSetState($vStatus, 128) ; set the status bar option to be greyed out by default
 	GUICtrlCreateMenuItem("", $ViewM, 3) ; create line
 	$vSE = GUICtrlCreateMenuItem("Web Search" & @TAB & "F4", $ViewM, 4) ; create the second level web search menu item
+	$au3help = GUICtrlCreateMenuItem("AutoIt Help" & @TAB & "F6", $ViewM, 5) ; create the second level autoit search menu item
 	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
 	$hVHelp = GUICtrlCreateMenuItem("View Help" & @TAB & "F2", $HelpM, 0) ; create the second level view help menu item
 	GUICtrlCreateMenuItem("", $HelpM, 1) ; create line
