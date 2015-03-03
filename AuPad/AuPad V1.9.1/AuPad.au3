@@ -427,12 +427,16 @@ Func _openWeb($srchProv)
 	Switch $srchProv
 		Case "Google"
 			$oIE = _IECreate("https://www.google.com/?gws_rd=ssl#q=" & GUICtrlRead($seInput)) ; create IE Instance
+			GUIDelete($seChild) ; delete the child window
 		Case "Bing"
 			$oIE = _IECreate("http://www.bing.com/search?q=" & GUICtrlRead($seInput) & "&qs=n&form=QBLH&pq=hi&sc=8-0&sp=-1&sk=&cvid=0009bd901245417b8293556931945db9") ; create IE Instance
+			GUIDelete($seChild) ; delete the child window
 		Case "Yahoo"
 			$oIE = _IECreate("https://search.yahoo.com/search;_ylt=At62TSEfE_U8sUmfF1eBBEmbvZx4?p=" & GUICtrlRead($seInput) & "&toggle=1&cop=mss&ei=UTF-8&fr=yfp-t-764&fp=1") ; create IE Instance
+			GUIDelete($seChild) ; delete the child window
 		Case "Ask"
 			$oIE = _IECreate("http://www.ask.com/web?q=" & GUICtrlRead($seInput) & "&qsrc=0&o=0&l=dir&qo=homepageSearchBox") ; create IE Instance
+			GUIDelete($seChild) ; delete the child window
 	EndSwitch
 EndFunc   ;==>_openWeb
 

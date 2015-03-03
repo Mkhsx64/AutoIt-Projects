@@ -119,3 +119,4 @@ try changing the x86 force directive for printing.
 ---==== 1.9.1 ====---
 
 - added default style to web search button.
+- deleted the child window for web search on successfully opening IE.
