@@ -599,7 +599,7 @@ Func setNew()
 			$saveCounter = 0 ; reset the save counter
 			Save() ; call the save function
 		ElseIf $mBox = 2 Then
-			Return
+			Return ; get out
 		EndIf
 		_GUICtrlRichEdit_SetText($pEditWindow, "") ; reset the text in the edit control
 	EndIf
