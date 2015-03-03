@@ -115,3 +115,7 @@
 - took out debugging code from last version to fix folderpath() loop.
 
 try changing the x86 force directive for printing.
+
+---==== 1.9.1 ====---
+
+- added default style to web search button.

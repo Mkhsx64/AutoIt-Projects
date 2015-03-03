@@ -418,6 +418,7 @@ Func seGUI($searchText = "")
 	$seCombo = GUICtrlCreateCombo("Google", 60, 85, 75) ; create combo
 	GUICtrlSetData($seCombo, "Bing|Yahoo|Ask", "Google") ; add data and set default
 	$seSubmit = GUICtrlCreateButton("Search", 80, 110) ; submit button to search
+	GUICtrlSetState($seSubmit, $GUI_DEFBUTTON) ; set default style for button
 	GUISetState() ; show the window
 EndFunc   ;==>seGUI
 
