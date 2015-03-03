@@ -80,6 +80,7 @@ $cButton[1] = 99999
 $cButton[2] = 99999
 $cButton[3] = 99999
 $cButton[4] = 99999
+;set default values
 
 ;seo gui child vars
 Local $seChild, $seInput, $seLabel, _
