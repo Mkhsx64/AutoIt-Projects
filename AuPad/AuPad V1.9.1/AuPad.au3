@@ -550,7 +550,7 @@ Func vhGUI()
 			"- deleted the child window for web search on successfully opening IE." & @CRLF & _
 			"- added abillity to open au3 file and have syntax highlighting start automatically. -idea by mLipok.", 0, 0, 400, 380)
 	$vhButton = GUICtrlCreateButton("Okay", 360, 380) ; create the okay button to close the window
-	GUISetState()
+	GUISetState() ; set the state of the gui window (default is $SW_SHOW)
 EndFunc   ;==>vhGUI
 
 ; Thank you for the great library Brian J Christy (Beege) -- http://www.autoitscript.com/forum/topic/128918-au3-syntax-highlight-for-richedit-machine-code-version-updated-12252013/
