@@ -118,5 +118,6 @@ try changing the x86 force directive for printing.
 
 ---==== 1.9.1 ====---
 
-- added default style to web search button.
+- added default style to web search button. - idea by mLipok.
 - deleted the child window for web search on successfully opening IE.
+- added abillity to open au3 file and have syntax highlighting start automatically. - idea by mLipok.

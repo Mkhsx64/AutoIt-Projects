@@ -180,14 +180,14 @@ While 1
 						$au3Count = AdlibRegister("au3Syn", 1000) ; turn it on
 						$au3tool_Pos = WinGetPos("[ACTIVE]") ; get window position
 						ToolTip("Au3 Syntax On", $au3tool_Pos[0], $au3tool_Pos[1]) ; tell us
-						Sleep(1000) ; wait to turn it off
+						sleep(1000) ; wait to turn it off
 						ToolTip("") ; turn the tooltip off
 					Else
 						AdlibUnRegister("au3Syn") ; turn it off
 						$au3Count = 0 ; set the Adlib variable off
 						$au3tool_Pos = WinGetPos("[ACTIVE]") ; get window position
 						ToolTip("Au3 Syntax Off", $au3tool_Pos[0], $au3tool_Pos[1]) ; tell us
-						Sleep(1000) ; wait to turn it off
+						sleep(1000) ; wait to turn it off
 						ToolTip("") ; turn the tooltip off
 					EndIf
 				Case $forComp
@@ -547,9 +547,8 @@ Func vhGUI()
 			"- took out debugging code from last version to fix folderpath() loop." & @CRLF & _
 			"---==== 1.9.1 ====---" & @CRLF & _
 			"- added default style to web search button. - idea from mLipok" & @CRLF & _
-			"- deleted the child window for web search on successfully opening IE." & @CRLF & _
-			"- added abillity to open au3 file and have syntax highlighting start automatically. -idea by mLipok.", 0, 0, 400, 380)
-	$vhButton = GUICtrlCreateButton("Okay", 360, 380) ; create the okay button to close the window
+			"- deleted the child window for web search on successfully opening IE.", 0, 0, 400, 380)
+	$vhButton = GUICtrlCreateButton("Okay", 360, 380)
 	GUISetState()
 EndFunc   ;==>vhGUI
 
@@ -905,11 +904,11 @@ Func Open()
 	EndIf
 	If StringInStr($strSplit[$oIndex], "au3") <> 0 Then
 		If $au3Count = 0 Then ; if the Adlib is off
-			$au3Count = AdlibRegister("au3Syn", 1000) ; turn it on
-			$au3tool_Pos = WinGetPos("[ACTIVE]") ; get window position
-			ToolTip("Au3 Syntax On", $au3tool_Pos[0], $au3tool_Pos[1]) ; tell us
-			Sleep(1000) ; wait to turn it off
-			ToolTip("") ; turn the tooltip off
+						$au3Count = AdlibRegister("au3Syn", 1000) ; turn it on
+						$au3tool_Pos = WinGetPos("[ACTIVE]") ; get window position
+						ToolTip("Au3 Syntax On", $au3tool_Pos[0], $au3tool_Pos[1]) ; tell us
+						sleep(1000) ; wait to turn it off
+						ToolTip("") ; turn the tooltip off
 		EndIf
 	EndIf
 	$strinString = StringSplit($strSplit[$oIndex], ".") ; split the file name by the . char
