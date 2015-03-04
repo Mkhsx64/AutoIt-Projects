@@ -109,9 +109,9 @@ For $r = 1 To 9
 	$aRecent[$r][0] = 99999 ; set default values
 Next
 
-Local $bSysMsg = False
-GUIRegisterMsg($WM_SIZE, "WM_SIZE")
-GUIRegisterMsg($WM_SYSCOMMAND, "_WM_SYSCOMMAND")
+Local $bSysMsg = False ; set the resize flag to false
+GUIRegisterMsg($WM_SIZE, "WM_SIZE") ; register our sizing msgs
+GUIRegisterMsg($WM_SYSCOMMAND, "_WM_SYSCOMMAND") ; register our system commands
 
 $aRecent[0][0] = 0 ; start the recent files counter
 
