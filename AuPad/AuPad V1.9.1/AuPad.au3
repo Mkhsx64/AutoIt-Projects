@@ -559,10 +559,10 @@ EndFunc   ;==>vhGUI
 ;========================================================
 Func au3Syn()
 	Local $gRTFcode, $gSel, $quotes
-	If _GUICtrlRichEdit_GetTextLength($pEditWindow) = $au3Buffer Then Return
-	$quotes = StringReplace(_GUICtrlRichEdit_GetText($pEditWindow), '"', '')
-	If Not IsInt(@extended / 2) Then Return
-	$gSel = _GUICtrlRichEdit_GetSel($pEditWindow)
+	If _GUICtrlRichEdit_GetTextLength($pEditWindow) = $au3Buffer Then Return ; if the length is the same get out
+	$quotes = StringReplace(_GUICtrlRichEdit_GetText($pEditWindow), '"', '') ; replace quotes
+	If Not IsInt(@extended / 2) Then Return ; if it isn't an integer get out
+	$gSel = _GUICtrlRichEdit_GetSel($pEditWindow) ; get any selections
 	$gRTFcode = _RESH_SyntaxHighlight($pEditWindow) ; generate the au3 code from the rtf text
 	Local $aColorTable[13]
 	Local Enum $iMacros, $iStrings, $iSpecial, $iComments, $iVariables, $iOperators, $iNumbers, $iKeywords, _
@@ -581,9 +581,9 @@ Func au3Syn()
 	$aColorTable[$iFunctions] = '#000090'
 	$aColorTable[$iPreProc] = '#808000'
 	$aColorTable[$iComObjects] = 0x993399
-	_RESH_SetColorTable($aColorTable)
-	If @error Then MsgBox(0, 'ERROR', 'Error setting new color table!')
-	$au3Buffer = _GUICtrlRichEdit_GetTextLength($pEditWindow)
+	_RESH_SetColorTable($aColorTable) ; set the color table
+	If @error Then MsgBox(0, 'ERROR', 'Error setting new color table!') ; if we couldn't tell us
+	$au3Buffer = _GUICtrlRichEdit_GetTextLength($pEditWindow) ; get the new text length
 	If Not IsArray($gSel) Then Return ; get out if we don't need to select anything
 	_GUICtrlRichEdit_SetSel($pEditWindow, $gSel[0], $gSel[1], False) ; set the selection if there was anything selected
 EndFunc   ;==>au3Syn
