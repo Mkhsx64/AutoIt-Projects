@@ -414,11 +414,11 @@ Next
 If $cCounter > 1 Then
 MsgBox(0, "Encryption Type", "Could not specify encryption type due to multiple selections. Please make sure you have only selected one type of encryption")
 $cValue = ""
-Return
+Return 1
 ElseIf $cCounter = 0 Then
 MsgBox(0, "Encryption Type", "You must select an encryption type in the Short-Order Encrypter window")
 $cValue = ""
-Return
+Return 2
 EndIf
 EndFunc
 Func inputChild()
@@ -621,12 +621,20 @@ DllCall("user32.dll", "int", "MessageBeep", "dword", $iType)
 If @error Then Return MsgBox(0, "", "error in _MessageBeep: " & @error)
 EndFunc
 Func _getInput($droppedPath)
+Local $i, $iPath, $fName, $getCheckbx
 $ifCharSet = FileGetEncoding($droppedPath)
+$getCheckbx = getCheckbox()
+If $getCheckbx = 1 Then
+Return
+ElseIf $getCheckbx = 2 Then
+Return
+EndIf
 $msgBox = _MsgBoxEnglish(3, "Drag & Drop", "Would you like to encrypt or decrypt file?")
 If $msgBox = 6 Then
 $ED = "E"
 $inputBox = InputBox("Encryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of encryption you would like to use.")
 If @error = 1 Then
+GUIDelete($hGUI)
 GUI()
 Return
 EndIf
@@ -637,6 +645,7 @@ ElseIf $msgBox = 7 Then
 $ED = "D"
 $inputBox = InputBox("Decryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of decryption you would like to use.")
 If @error = 1 Then
+GUIDelete($hGUI)
 GUI()
 Return
 EndIf
@@ -644,6 +653,7 @@ $cValue = Int(StringStripWS($inputBox, 8))
 $fcPath = $droppedPath
 iPswdBox($ED)
 Else
+GUIDelete($hGUI)
 GUI()
 Return
 EndIf
