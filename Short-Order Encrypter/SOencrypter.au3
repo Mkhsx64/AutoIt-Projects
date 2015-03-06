@@ -371,39 +371,39 @@ EndFunc   ;==>_MessageBeep
 Func _getInput($droppedPath)
 	Local $i, $iPath, $fName, $getCheckbx
 	$ifCharSet = FileGetEncoding($droppedPath) ; get file encoding
-	$getCheckbx = getCheckbox()
-	If $getCheckbx = 1 Then
-		Return
-	ElseIf $getCheckbx = 2 Then
-		Return
+	$getCheckbx = getCheckbox() ; get checkbox value
+	If $getCheckbx = 1 Then ; if we have multiple selections
+		Return ; get out
+	ElseIf $getCheckbx = 2 Then ; if we have no selections
+		Return ; get out
 	EndIf
-	$msgBox = _MsgBoxEnglish(3, "Drag & Drop", "Would you like to encrypt or decrypt file?")
+	$msgBox = _MsgBoxEnglish(3, "Drag & Drop", "Would you like to encrypt or decrypt file?"); ask us
 	If $msgBox = 6 Then
-		$ED = "E"
-		$inputBox = InputBox("Encryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of encryption you would like to use.")
+		$ED = "E" ; set to encrypt
+		$inputBox = InputBox("Encryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of encryption you would like to use.") ; choose crypt method
 		If @error = 1 Then
-			GUIDelete($hGUI)
-			GUI()
-			Return
+			GUIDelete($hGUI) ; delete old gui
+			GUI() ; repaint
+			Return ; get out
 		EndIf
-		$cValue = Int(StringStripWS($inputBox, 8))
-		$fcPath = $droppedPath
-		iPswdBox($ED)
+		$cValue = Int(StringStripWS($inputBox, 8)) ; get value
+		$fcPath = $droppedPath ; set scope
+		iPswdBox($ED) ; show the pswrd box
 	ElseIf $msgBox = 7 Then
-		$ED = "D"
-		$inputBox = InputBox("Decryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of decryption you would like to use.")
+		$ED = "D" ; set to decrypt
+		$inputBox = InputBox("Decryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of decryption you would like to use.")  ; choose crypt method
 		If @error = 1 Then
-			GUIDelete($hGUI)
-			GUI()
-			Return
+			GUIDelete($hGUI) ; delete old gui
+			GUI() ; repaint
+			Return ; get out
 		EndIf
-		$cValue = Int(StringStripWS($inputBox, 8))
-		$fcPath = $droppedPath
-		iPswdBox($ED)
+		$cValue = Int(StringStripWS($inputBox, 8)) ; get value
+		$fcPath = $droppedPath ; set scope
+		iPswdBox($ED) ; show the pswrd box
 	Else
-		GUIDelete($hGUI)
-		GUI()
-		Return
+		GUIDelete($hGUI) ; delete the gui
+		GUI() ; repaint
+		Return ; get out
 	EndIf
 EndFunc   ;==>_OpenFile
 ;======================================================
