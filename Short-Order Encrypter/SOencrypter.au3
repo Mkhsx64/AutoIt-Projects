@@ -140,11 +140,11 @@ Func getCheckbox()
 	If $cCounter > 1 Then ; if there has been multiple selections
 		MsgBox(0, "Encryption Type", "Could not specify encryption type due to multiple selections. Please make sure you have only selected one type of encryption") ; tell us
 		$cValue = "" ; reset the checkbox value
-		Return ; get out
+		Return 1; get out
 	ElseIf $cCounter = 0 Then ; or if they have not made any selection
 		MsgBox(0, "Encryption Type", "You must select an encryption type in the Short-Order Encrypter window") ; tell us
 		$cValue = "" ; reset the checkbox value
-		Return ; get out
+		Return 2; get out
 	EndIf
 EndFunc   ;==>getCheckbox
 
@@ -369,13 +369,20 @@ Func _MessageBeep($iType)
 EndFunc   ;==>_MessageBeep
 
 Func _getInput($droppedPath)
-	Local $i, $iPath, $fName
+	Local $i, $iPath, $fName, $getCheckbx
 	$ifCharSet = FileGetEncoding($droppedPath) ; get file encoding
+	$getCheckbx = getCheckbox()
+	If $getCheckbx = 1 Then
+		Return
+	ElseIf $getCheckbx = 2 Then
+		Return
+	EndIf
 	$msgBox = _MsgBoxEnglish(3, "Drag & Drop", "Would you like to encrypt or decrypt file?")
 	If $msgBox = 6 Then
 		$ED = "E"
 		$inputBox = InputBox("Encryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of encryption you would like to use.")
 		If @error = 1 Then
+			GUIDelete($hGUI)
 			GUI()
 			Return
 		EndIf
@@ -386,6 +393,7 @@ Func _getInput($droppedPath)
 		$ED = "D"
 		$inputBox = InputBox("Decryption type", "1.Text 2.3DES 3.AES (128bit) 4.AES (192bit) 5.AES (256bit) 6.DES 7.RC2 8.RC4 ; please enter the number corresponding with the type of decryption you would like to use.")
 		If @error = 1 Then
+			GUIDelete($hGUI)
 			GUI()
 			Return
 		EndIf
@@ -393,6 +401,7 @@ Func _getInput($droppedPath)
 		$fcPath = $droppedPath
 		iPswdBox($ED)
 	Else
+		GUIDelete($hGUI)
 		GUI()
 		Return
 	EndIf

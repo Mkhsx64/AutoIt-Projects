@@ -26,3 +26,4 @@
 ----==== 1.6.1.0 ====----
 
 -Fixed drag & drop event when canceling to delete and repaint GUI.
+-added check for checkbox values when drag and drop is used to encrypt or decrypt files.
