@@ -22,3 +22,7 @@
 -Fixed drag & drop support on x64 systems
 -Added _MsgBoxEnglish function which allows changing of the button text for drag & drop (thanks to funkey http://www.autoitscript.com/forum/topic/140024-english-msgbox-button-texts-for-everyone/)
 -Added repaint of GUI window if canceled during drag & drop dialog
+
+----==== 1.6.1.0 ====----
+
+-Fixed drag & drop event when canceling to delete and repaint GUI.
