@@ -549,7 +549,8 @@ Func vhGUI()
 			"---==== 1.9.1 ====---" & @CRLF & _
 			"- added default style to web search button. - idea from mLipok" & @CRLF & _
 			"- deleted the child window for web search on successfully opening IE." & @CRLF & _
-			"- added abillity to open au3 file and have syntax highlighting start automatically. -idea by mLipok.", 0, 0, 400, 380)
+			"- added abillity to open au3 file and have syntax highlighting start automatically. -idea by mLipok." & @CRLF & _
+			"- added tooltip to show when syntax highlighting for AutoIt has started or ended.", 0, 0, 400, 380)
 	$vhButton = GUICtrlCreateButton("Okay", 360, 380) ; create the okay button to close the window
 	GUISetState() ; set the state of the gui window (default is $SW_SHOW)
 EndFunc   ;==>vhGUI
