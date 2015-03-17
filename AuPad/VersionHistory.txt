@@ -122,3 +122,5 @@ try changing the x86 force directive for printing.
 - deleted the child window for web search on successfully opening IE.
 - added abillity to open au3 file and have syntax highlighting start automatically. - idea by mLipok.
 - added tooltip to show when syntax highlighting for AutoIt has started or ended.
+
+---==== 1.9.2 ====---
