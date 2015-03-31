@@ -326,15 +326,15 @@ Func GUI()
 			$HelpM, $textl, $forSyn, $forTags
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
-	$ctMenu = _GUICtrlMenu_CreatePopup()
-	$idUndo = _GUICtrlMenu_InsertMenuItem($ctMenu, 0, "&Undo", $e_idUndo)
-	_GUICtrlMenu_InsertMenuItem($ctMenu, 1, "")
-	$idCut = _GUICtrlMenu_InsertMenuItem($ctMenu, 2, "&Cut", $e_idCut)
-	$idCopy = _GUICtrlMenu_InsertMenuItem($ctMenu, 3, "&Copy", $e_idCopy)
-	$idPaste = _GUICtrlMenu_InsertMenuItem($ctMenu, 4, "&Paste", $e_idPaste)
-	$idDelete = _GUICtrlMenu_InsertMenuItem($ctMenu, 5, "&Delete", $e_idDelete)
-	_GUICtrlMenu_InsertMenuItem($ctMenu, 6, "")
-	$idSelAll = _GUICtrlMenu_InsertMenuItem($ctMenu, 7, "&Select all", $e_idSelAll)
+	$ctMenu = _GUICtrlMenu_CreatePopup() ; create out context menu
+	$idUndo = _GUICtrlMenu_InsertMenuItem($ctMenu, 0, "&Undo", $e_idUndo) ; undo ct menu item
+	_GUICtrlMenu_InsertMenuItem($ctMenu, 1, "") ; line break
+	$idCut = _GUICtrlMenu_InsertMenuItem($ctMenu, 2, "&Cut", $e_idCut) ; cut ct menu item
+	$idCopy = _GUICtrlMenu_InsertMenuItem($ctMenu, 3, "&Copy", $e_idCopy) ; copy ct menu item
+	$idPaste = _GUICtrlMenu_InsertMenuItem($ctMenu, 4, "&Paste", $e_idPaste) ; paste ct menu item
+	$idDelete = _GUICtrlMenu_InsertMenuItem($ctMenu, 5, "&Delete", $e_idDelete) ; delete ct menu item
+	_GUICtrlMenu_InsertMenuItem($ctMenu, 6, "") ; line break
+	$idSelAll = _GUICtrlMenu_InsertMenuItem($ctMenu, 7, "&Select all", $e_idSelAll) ; select all ct menu item
 	$cLabel_1 = GUICtrlCreateLabel("", 0, 0, 600, 480) ; create the label behind the rich edit
 	GUICtrlSetState($cLabel_1, $GUI_DISABLE) ; set the state of the ctrl to disabled
 	GUICtrlSetResizing($cLabel_1, $GUI_DOCKAUTO) ; set the resizing to auto
@@ -674,25 +674,25 @@ Func aChild()
 	GUICtrlCreateLabel("Just a simple notepad program", 5, 80) ; set the label description 1
 	GUICtrlCreateLabel("Made completely with AutoIt", 13, 100) ; set the label description 2
 	GUICtrlCreateLabel("Version: 3.3.12.0", 38, 120) ; set the label description 3
-	GUISetFont(8.5 * _GDIPlus_GraphicsGetDPIRatio()[0])
+	GUISetFont(8.5 * _GDIPlus_GraphicsGetDPIRatio()[0]) ; set the dpi resolution
 	GUISetState() ; show the window
 EndFunc   ;==>aChild
 
 Func chkSel()
 	Local $gs, $gc, $getState, $readWin, $strMid
 	$gs = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the selected text
-	If @error Then Return
+	If @error Then Return ; if an error get out
 	If _GUICtrlRichEdit_CanPaste($pEditWindow) = True Then
-		_GUICtrlMenu_SetItemGrayed($ctMenu, 4, False)
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 4, False) ; if you can paste, un-grey the paste option
 	Else
-		_GUICtrlMenu_SetItemGrayed($ctMenu, 4, True)
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 4, True) ; if you can't grey it out
 	EndIf
 	$gc = $gs[1] - $gs[0] ; get how many characters have been selected
 	If $gc > 0 Then ; if the selection is not blank
 		GUICtrlSetState($eDelete, 64) ; otherwise, set the state
-		_GUICtrlMenu_SetItemGrayed($ctMenu, 2, False)
-		_GUICtrlMenu_SetItemGrayed($ctMenu, 3, False)
-		_GUICtrlMenu_SetItemGrayed($ctMenu, 5, False)
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 2, False) ; set the state to un-grey
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 3, False) ; set the state to un-grey
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 5, False) ; set the state to un-grey
 		$readWin = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
 		$strMid = StringMid($readWin, $gs[0] + 1, $gs[1] + 1) ; find the selected string
 		$selBuffer = $strMid ; put the string into the buffer
@@ -702,9 +702,9 @@ Func chkSel()
 			Return ; get out
 		Else
 			GUICtrlSetState($eDelete, 128) ; otherwise, set the state
-			_GUICtrlMenu_SetItemGrayed($ctMenu, 5, True)
-			_GUICtrlMenu_SetItemGrayed($ctMenu, 2, True)
-			_GUICtrlMenu_SetItemGrayed($ctMenu, 3, True)
+			_GUICtrlMenu_SetItemGrayed($ctMenu, 5, True) ; set the state to grey
+			_GUICtrlMenu_SetItemGrayed($ctMenu, 2, True) ; set the state to grey
+			_GUICtrlMenu_SetItemGrayed($ctMenu, 3, True) ; set the state to grey
 		EndIf
 	EndIf
 EndFunc   ;==>chkSel
@@ -721,15 +721,15 @@ Func chkTxt()
 		GUICtrlSetState($eCopy, 128) ; grey the copy menu option
 		GUICtrlSetState($eCut, 128) ; grey the cut menu option
 		GUICtrlSetState($eReplace, 128) ; grey the replace menu option
-		_GUICtrlMenu_SetItemGrayed($ctMenu, 0, True)
-		_GUICtrlMenu_SetItemGrayed($ctMenu, 7, True)
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 0, True) ; grey the undo option
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 7, True) ; grey the select all option
 	Else
 		GUICtrlSetState($eFind, 64) ; un-grey the find menu option
 		GUICtrlSetState($eCopy, 64) ; un-grey the copy menu option
 		GUICtrlSetState($eCut, 64) ; un-grey the cut menu option
 		GUICtrlSetState($eReplace, 64) ; un-grey the replace menu option
-		_GUICtrlMenu_SetItemGrayed($ctMenu, 0, False)
-		_GUICtrlMenu_SetItemGrayed($ctMenu, 7, False)
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 0, False) ; un-grey the undo option
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 7, False) ; un-grey the select all option
 	EndIf
 EndFunc   ;==>chkTxt
 
@@ -1126,16 +1126,11 @@ EndFunc   ;==>_Resize_RichEdit
 ;######################################################################################################################################
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _GDIPlus_GraphicsGetDPIRatio
-; Description ...:
 ; Syntax ........: _GDIPlus_GraphicsGetDPIRatio([$iDPIDef = 96])
-; Parameters ....: $iDPIDef             - [optional] An integer value. Default is 96.
+; Parameters ....: $iDPIDef  - [optional] An integer value. Default is 96.
 ; Return values .: None
 ; Author ........: UEZ
-; Modified ......:
-; Remarks .......:
-; Related .......:
 ; Link ..........: http://www.autoitscript.com/forum/topic/159612-dpi-resolution-problem/?hl=%2Bdpi#entry1158317
-; Example .......: No
 ; ===============================================================================================================================
 Func _GDIPlus_GraphicsGetDPIRatio($iDPIDef = 96)
 	_GDIPlus_Startup()
@@ -1161,22 +1156,22 @@ Func _WindowProc($hWnd, $Msg, $wParam, $lParam)
         Case $pEditWindow
             Switch $Msg
                 Case $WM_RBUTTONUP
-                    _GUICtrlMenu_TrackPopupMenu($ctMenu, $hWnd)
+                    _GUICtrlMenu_TrackPopupMenu($ctMenu, $hWnd) ; display shortcut menu
                     Return 0
                 Case $WM_COMMAND
                     Switch $wParam
                         Case $e_idUndo
-                            Send("^z")
+                            Send("^z") ; undo, send accel key
 						Case $e_idCut
-							Send("^x")
+							Send("^x") ; cut, send accel key
 						Case $e_idCopy
-							Send("^c")
+							Send("^c") ; copy, send accel key
 						Case $e_idPaste
-							Send("^v")
+							Send("^v") ; paste, send accel key
 						Case $e_idDelete
-							Send("{DEL}")
+							Send("{DEL}") ; delete, send accel key
 						Case $e_idSelAll
-							Send("^a")
+							Send("^a") ; select all, send accel key
                     EndSwitch
             EndSwitch
     EndSwitch
