@@ -68,6 +68,8 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$au3help, $au3Help_Seltext, _
 		$au3tool_Pos, $ctMenu
 
+; context menu items
+Local $idUndo, $idCut, $idCopy, $idPaste, $idDelete, $idSelAll
 Local Enum $e_idUndo = 1000, $e_idCut, $e_idCopy, $e_idPaste, $e_idDelete, $e_idSelAll
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
@@ -324,12 +326,15 @@ Func GUI()
 			$HelpM, $textl, $forSyn, $forTags
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
-
-
 	$ctMenu = _GUICtrlMenu_CreatePopup()
-	_GUICtrlMenu_InsertMenuItem($ctMenu, 0, "&Undo", $e_idUndo)
-
-
+	$idUndo = _GUICtrlMenu_InsertMenuItem($ctMenu, 0, "&Undo", $e_idUndo)
+	_GUICtrlMenu_InsertMenuItem($ctMenu, 1, "")
+	$idCut = _GUICtrlMenu_InsertMenuItem($ctMenu, 2, "&Cut", $e_idCut)
+	$idCopy = _GUICtrlMenu_InsertMenuItem($ctMenu, 3, "&Copy", $e_idCopy)
+	$idPaste = _GUICtrlMenu_InsertMenuItem($ctMenu, 4, "&Paste", $e_idPaste)
+	$idDelete = _GUICtrlMenu_InsertMenuItem($ctMenu, 5, "&Delete", $e_idDelete)
+	_GUICtrlMenu_InsertMenuItem($ctMenu, 6, "")
+	$idSelAll = _GUICtrlMenu_InsertMenuItem($ctMenu, 7, "&Select all", $e_idSelAll)
 	$cLabel_1 = GUICtrlCreateLabel("", 0, 0, 600, 480) ; create the label behind the rich edit
 	GUICtrlSetState($cLabel_1, $GUI_DISABLE) ; set the state of the ctrl to disabled
 	GUICtrlSetResizing($cLabel_1, $GUI_DOCKAUTO) ; set the resizing to auto
@@ -677,9 +682,17 @@ Func chkSel()
 	Local $gs, $gc, $getState, $readWin, $strMid
 	$gs = _GUICtrlRichEdit_GetSel($pEditWindow) ; get the selected text
 	If @error Then Return
+	If _GUICtrlRichEdit_CanPaste($pEditWindow) = True Then
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 4, False)
+	Else
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 4, True)
+	EndIf
 	$gc = $gs[1] - $gs[0] ; get how many characters have been selected
 	If $gc > 0 Then ; if the selection is not blank
 		GUICtrlSetState($eDelete, 64) ; otherwise, set the state
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 2, False)
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 3, False)
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 5, False)
 		$readWin = _GUICtrlRichEdit_GetText($pEditWindow) ; read the edit control
 		$strMid = StringMid($readWin, $gs[0] + 1, $gs[1] + 1) ; find the selected string
 		$selBuffer = $strMid ; put the string into the buffer
@@ -689,6 +702,9 @@ Func chkSel()
 			Return ; get out
 		Else
 			GUICtrlSetState($eDelete, 128) ; otherwise, set the state
+			_GUICtrlMenu_SetItemGrayed($ctMenu, 5, True)
+			_GUICtrlMenu_SetItemGrayed($ctMenu, 2, True)
+			_GUICtrlMenu_SetItemGrayed($ctMenu, 3, True)
 		EndIf
 	EndIf
 EndFunc   ;==>chkSel
@@ -705,17 +721,21 @@ Func chkTxt()
 		GUICtrlSetState($eCopy, 128) ; grey the copy menu option
 		GUICtrlSetState($eCut, 128) ; grey the cut menu option
 		GUICtrlSetState($eReplace, 128) ; grey the replace menu option
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 0, True)
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 7, True)
 	Else
 		GUICtrlSetState($eFind, 64) ; un-grey the find menu option
 		GUICtrlSetState($eCopy, 64) ; un-grey the copy menu option
 		GUICtrlSetState($eCut, 64) ; un-grey the cut menu option
 		GUICtrlSetState($eReplace, 64) ; un-grey the replace menu option
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 0, False)
+		_GUICtrlMenu_SetItemGrayed($ctMenu, 7, False)
 	EndIf
 EndFunc   ;==>chkTxt
 
 Func chkUndo()
 	Local $cUndo = _GUICtrlRichEdit_CanRedo($pEditWindow) ; check if there has been any undo
-	If $cUndo = True Then GUICtrlSetState($eUndo, 64) ; if yes set the state of the control
+	If $cUndo = True Then GUICtrlSetState($eRedo, 64) ; if yes set the state of the control
 EndFunc   ;==>chkUndo
 
 ;Thanks Water - http://www.autoitscript.com/forum/topic/137364-the-number-of-words-in-the-text/?p=961616
@@ -1145,7 +1165,7 @@ Func _WindowProc($hWnd, $Msg, $wParam, $lParam)
                     Return 0
                 Case $WM_COMMAND
                     Switch $wParam
-                        Case $e_idNew
+                        Case $e_idUndo
                             Send("^o")
                     EndSwitch
             EndSwitch
