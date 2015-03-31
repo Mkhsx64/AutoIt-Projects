@@ -31,8 +31,8 @@
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
 #include <String.au3>
-#include <GuiMenu.au3>
 #include <IE.au3>
+#include <GuiMenu.au3>
 #include <GuiListView.au3>
 
 Local $pWnd, $msg, $control, $fNew, $fOpen, _
@@ -316,6 +316,11 @@ Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM, $textl, $forSyn, $forTags
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
+	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
+
+	;Global $ctMenu = _GUICtrlMenu_AddMenuItem($pEditWindow)
+	;Global $idHi = GUICtrlCreateMenuItem("hi", $ctMenu, -1, 0)
+
 	$cLabel_1 = GUICtrlCreateLabel("", 0, 0, 600, 480) ; create the label behind the rich edit
 	GUICtrlSetState($cLabel_1, $GUI_DISABLE) ; set the state of the ctrl to disabled
 	GUICtrlSetResizing($cLabel_1, $GUI_DOCKAUTO) ; set the resizing to auto
@@ -1076,8 +1081,6 @@ Func WM_SIZE($hWnd, $msg, $wParam, $lParam)
 EndFunc   ;==>WM_SIZE
 
 Func _WM_SYSCOMMAND($hWnd, $msg, $wParam, $lParam)
-	;Const $SC_MAXIMIZE = 0xF030
-	;Const $SC_RESTORE = 0xF120
 	Switch $wParam
 		Case $SC_MAXIMIZE, $SC_RESTORE
 			$bSysMsg = True
