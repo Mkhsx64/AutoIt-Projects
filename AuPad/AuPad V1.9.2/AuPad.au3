@@ -1166,7 +1166,17 @@ Func _WindowProc($hWnd, $Msg, $wParam, $lParam)
                 Case $WM_COMMAND
                     Switch $wParam
                         Case $e_idUndo
-                            Send("^o")
+                            Send("^z")
+						Case $e_idCut
+							Send("^x")
+						Case $e_idCopy
+							Send("^c")
+						Case $e_idPaste
+							Send("^v")
+						Case $e_idDelete
+							Send("{DEL}")
+						Case $e_idSelAll
+							Send("^a")
                     EndSwitch
             EndSwitch
     EndSwitch
