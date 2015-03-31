@@ -16,6 +16,7 @@
 
 #include <WinAPIDlg.au3>
 #include <WindowsConstants.au3>
+#include <EditConstants.au3>
 #include <GUIConstantsEx.au3>
 #include <WinAPI.au3>
 #include <Constants.au3>
@@ -318,8 +319,12 @@ Func GUI()
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
 
-	;Global $ctMenu = _GUICtrlMenu_AddMenuItem($pEditWindow)
-	;Global $idHi = GUICtrlCreateMenuItem("hi", $ctMenu, -1, 0)
+	Global Enum $e_idNew = 1000
+	Global $ctMenu = _GUICtrlMenu_CreatePopup()
+	_GUICtrlMenu_InsertMenuItem($ctMenu, 0, "&New", $e_idNew)
+
+	Global $wProcHandle = DllCallbackRegister("_WindowProc", "ptr", "hwnd;uint;wparam;lparam")
+	GLobal $wProcOld = _WinAPI_SetWindowLong($pEditWindow, $GWL_WNDPROC, DllCallbackGetPtr($wProcHandle))
 
 	$cLabel_1 = GUICtrlCreateLabel("", 0, 0, 600, 480) ; create the label behind the rich edit
 	GUICtrlSetState($cLabel_1, $GUI_DISABLE) ; set the state of the ctrl to disabled
@@ -1124,3 +1129,24 @@ Func _GDIPlus_GraphicsGetDPIRatio($iDPIDef = 96)
 	_GDIPlus_Shutdown()
 	Return $aresults
 EndFunc   ;==>_GDIPlus_GraphicsGetDPIRatio
+
+Func _WindowProc($hWnd, $Msg, $wParam, $lParam)
+    Switch $hWnd
+        Case $pEditWindow
+            Switch $Msg
+                Case $WM_RBUTTONUP
+                    _GUICtrlMenu_TrackPopupMenu($ctMenu, $hWnd)
+                    Return 0
+                Case $WM_COMMAND
+                    Switch $wParam
+                        Case $e_idNew
+                            ConsoleWrite("-> Open" & @LF)
+                    EndSwitch
+            EndSwitch
+    EndSwitch
+
+    Local $aRet = DllCall("user32.dll", "int", "CallWindowProc", "ptr", $wProcOld, _
+            "hwnd", $hWnd, "uint", $Msg, "wparam", $wParam, "lparam", $lParam)
+
+    Return $aRet[0]
+EndFunc   ;==>_WindowProc
