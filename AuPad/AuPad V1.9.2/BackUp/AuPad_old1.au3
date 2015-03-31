@@ -31,7 +31,6 @@
 #include <WinAPIFiles.au3>
 #include <APIDlgConstants.au3>
 #include <String.au3>
-#include <GuiMenu.au3>
 #include <IE.au3>
 #include <GuiListView.au3>
 
@@ -114,6 +113,7 @@ Next
 Local $bSysMsg = False ; set the resize flag to false
 GUIRegisterMsg($WM_SIZE, "WM_SIZE") ; register our sizing msgs
 GUIRegisterMsg($WM_SYSCOMMAND, "_WM_SYSCOMMAND") ; register our system commands
+GUIRegisterMsg($WM_RBUTTONUP, "WM_RichEditCommand")
 
 $aRecent[0][0] = 0 ; start the recent files counter
 
@@ -316,6 +316,15 @@ Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM, $textl, $forSyn, $forTags
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
+	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
+
+	$hMenu = _GUICtrlMenu_CreatePopup()
+
+_GUICtrlMenu_AddMenuItem($hMenu, "Open", $idOpen)
+_GUICtrlMenu_AddMenuItem($hMenu, "Save", $idSave)
+_GUICtrlMenu_AddMenuItem($hMenu, "Info", $idInfo)
+
+
 	$cLabel_1 = GUICtrlCreateLabel("", 0, 0, 600, 480) ; create the label behind the rich edit
 	GUICtrlSetState($cLabel_1, $GUI_DISABLE) ; set the state of the ctrl to disabled
 	GUICtrlSetResizing($cLabel_1, $GUI_DOCKAUTO) ; set the resizing to auto
@@ -1076,8 +1085,8 @@ Func WM_SIZE($hWnd, $msg, $wParam, $lParam)
 EndFunc   ;==>WM_SIZE
 
 Func _WM_SYSCOMMAND($hWnd, $msg, $wParam, $lParam)
-	;Const $SC_MAXIMIZE = 0xF030
-	;Const $SC_RESTORE = 0xF120
+	Const $SC_MAXIMIZE = 0xF030
+	Const $SC_RESTORE = 0xF120
 	Switch $wParam
 		Case $SC_MAXIMIZE, $SC_RESTORE
 			$bSysMsg = True
@@ -1106,18 +1115,44 @@ EndFunc   ;==>_Resize_RichEdit
 ; Example .......: No
 ; ===============================================================================================================================
 Func _GDIPlus_GraphicsGetDPIRatio($iDPIDef = 96)
-	_GDIPlus_Startup()
-	Local $hGfx = _GDIPlus_GraphicsCreateFromHWND(0)
-	If @error Then Return SetError(1, @extended, 0)
-	Local $aResult
-	#forcedef $__g_hGDIPDll, $ghGDIPDll
+    _GDIPlus_Startup()
+    Local $hGfx = _GDIPlus_GraphicsCreateFromHWND(0)
+    If @error Then Return SetError(1, @extended, 0)
+    Local $aResult
+    #forcedef $__g_hGDIPDll, $ghGDIPDll
 
-	$aResult = DllCall($__g_hGDIPDll, "int", "GdipGetDpiX", "handle", $hGfx, "float*", 0)
+    $aResult = DllCall($__g_hGDIPDll, "int", "GdipGetDpiX", "handle", $hGfx, "float*", 0)
 
-	If @error Then Return SetError(2, @extended, 0)
-	Local $iDPI = $aResult[2]
-	Local $aresults[2] = [$iDPIDef / $iDPI, $iDPI / $iDPIDef]
-	_GDIPlus_GraphicsDispose($hGfx)
-	_GDIPlus_Shutdown()
-	Return $aresults
+    If @error Then Return SetError(2, @extended, 0)
+    Local $iDPI = $aResult[2]
+    Local $aresults[2] = [$iDPIDef / $iDPI, $iDPI / $iDPIDef]
+    _GDIPlus_GraphicsDispose($hGfx)
+    _GDIPlus_Shutdown()
+    Return $aresults
 EndFunc   ;==>_GDIPlus_GraphicsGetDPIRatio
+
+Func WM_RichEditCommand($hWnd, $Msg, $wParam, $lParam)
+	Switch $hWnd
+        Case $pEditWindow
+            Switch $Msg
+                Case $WM_RBUTTONUP
+                    _GUICtrlMenu_TrackPopupMenu($hMenu, $hWnd)
+                    Return 0
+                Case $WM_COMMAND
+                    Switch $wParam
+                        Case $idOpen
+                            ConsoleWrite("-> Open" & @LF)
+                        Case $idSave
+                            ConsoleWrite("-> Save" & @LF)
+                        Case $idInfo
+                            ConsoleWrite("-> Info" & @LF)
+                    EndSwitch
+            EndSwitch
+    EndSwitch
+
+    Local $aRet = DllCall("user32.dll", "int", "CallWindowProc", "ptr", $wProcOld, _
+            "hwnd", $hWnd, "uint", $Msg, "wparam", $wParam, "lparam", $lParam)
+
+    Return $aRet[0]
+EndFunc
+
