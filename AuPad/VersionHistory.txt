@@ -126,3 +126,4 @@ try changing the x86 force directive for printing.
 ---==== 1.9.2 ====---
 
 - added default style to version history "okay" button (unhighlights edit text).
+- added dpi awareness to about AuPad GUI. Thanks to mLipok - http://www.autoitscript.com/forum/topic/166479-writing-dpi-awareness-app-workaround/
