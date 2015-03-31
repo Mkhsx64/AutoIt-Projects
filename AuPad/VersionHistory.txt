@@ -124,3 +124,5 @@ try changing the x86 force directive for printing.
 - added tooltip to show when syntax highlighting for AutoIt has started or ended.
 
 ---==== 1.9.2 ====---
+
+- added default style to version history "okay" button (unhighlights edit text).
