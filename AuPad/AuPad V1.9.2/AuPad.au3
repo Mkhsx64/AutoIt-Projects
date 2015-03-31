@@ -66,7 +66,9 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$forComp, $vTxt_Spch, $vSE, _
 		$oIE = 9999, $hVH, $webText, _
 		$au3help, $au3Help_Seltext, _
-		$au3tool_Pos
+		$au3tool_Pos, $ctMenu
+
+Local Enum $e_idUndo = 1000, $e_idCut, $e_idCopy, $e_idPaste, $e_idDelete, $e_idSelAll
 
 Local $tLimit = 1000000 ; give us an astronomical value for the text limit; as we might want to open a huge file.
 
@@ -100,6 +102,10 @@ AdlibRegister("chkUndo", 1000) ; check if there has been any undo actions
 
 GUI() ; create the window
 If Not @Compiled Then GUISetIcon(@ScriptDir & '\aupad.ico') ; if the script isn't compiled then set the icon
+
+Local $wProcHandle = DllCallbackRegister("_WindowProc", "ptr", "hwnd;uint;wparam;lparam") ; register dll
+Local $wProcOld = _WinAPI_SetWindowLong($pEditWindow, $GWL_WNDPROC, DllCallbackGetPtr($wProcHandle)) ; set the win info
+
 
 _GUICtrlRichEdit_SetFont($pEditWindow, Default, "Arial") ; set the default font
 _GUICtrlRichEdit_ChangeFontSize($pEditWindow, 10) ; set the default font size
@@ -319,12 +325,10 @@ Func GUI()
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
 
-	Global Enum $e_idNew = 1000
-	Global $ctMenu = _GUICtrlMenu_CreatePopup()
-	_GUICtrlMenu_InsertMenuItem($ctMenu, 0, "&New", $e_idNew)
 
-	Global $wProcHandle = DllCallbackRegister("_WindowProc", "ptr", "hwnd;uint;wparam;lparam")
-	GLobal $wProcOld = _WinAPI_SetWindowLong($pEditWindow, $GWL_WNDPROC, DllCallbackGetPtr($wProcHandle))
+	$ctMenu = _GUICtrlMenu_CreatePopup()
+	_GUICtrlMenu_InsertMenuItem($ctMenu, 0, "&Undo", $e_idUndo)
+
 
 	$cLabel_1 = GUICtrlCreateLabel("", 0, 0, 600, 480) ; create the label behind the rich edit
 	GUICtrlSetState($cLabel_1, $GUI_DISABLE) ; set the state of the ctrl to disabled
@@ -1142,7 +1146,7 @@ Func _WindowProc($hWnd, $Msg, $wParam, $lParam)
                 Case $WM_COMMAND
                     Switch $wParam
                         Case $e_idNew
-                            ConsoleWrite("-> Open" & @LF)
+                            Send("^o")
                     EndSwitch
             EndSwitch
     EndSwitch
