@@ -570,7 +570,13 @@ Func vhGUI()
 			"- added default style to web search button. - idea from mLipok" & @CRLF & _
 			"- deleted the child window for web search on successfully opening IE." & @CRLF & _
 			"- added abillity to open au3 file and have syntax highlighting start automatically. -idea by mLipok." & @CRLF & _
-			"- added tooltip to show when syntax highlighting for AutoIt has started or ended.", 0, 0, 400, 380)
+			"- added tooltip to show when syntax highlighting for AutoIt has started or ended." & @CRLF & _
+			"---==== 1.9.2 ====---" & @CRLF & _
+			"- added default style to version history 'okay' button (unhighlights edit text)." & @CRLF & _
+			"- added dpi awareness to about AuPad GUI. Thanks to mLipok - http://www.autoitscript.com/forum/topic/166479-writing-dpi-awareness-app-workaround/" & @CRLF _
+			"- added context menu with much thanks to Mat - http://www.autoitscript.com/forum/topic/152271-rich-edit-context-menu/?p=1092314" & @CRLF & _
+			"- state changing for context menu, just like regular menu items." @CRLF & _
+			"- events with context menu use GUI accelerators.", 0, 0, 400, 380)
 	$vhButton = GUICtrlCreateButton("Okay", 360, 380) ; create the okay button to close the window
 	GUICtrlSetState($vhButton, $GUI_FOCUS) ; give focus to button and unlight text
 	GUISetState() ; set the state of the gui window (default is $SW_SHOW)
