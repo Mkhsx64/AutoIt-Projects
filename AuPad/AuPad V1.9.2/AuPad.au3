@@ -1130,6 +1130,8 @@ Func _GDIPlus_GraphicsGetDPIRatio($iDPIDef = 96)
 	Return $aresults
 EndFunc   ;==>_GDIPlus_GraphicsGetDPIRatio
 
+;=======================================
+; Much thanks to Mat - http://www.autoitscript.com/forum/topic/152271-rich-edit-context-menu/?p=1092314
 Func _WindowProc($hWnd, $Msg, $wParam, $lParam)
     Switch $hWnd
         Case $pEditWindow
@@ -1150,3 +1152,4 @@ Func _WindowProc($hWnd, $Msg, $wParam, $lParam)
 
     Return $aRet[0]
 EndFunc   ;==>_WindowProc
+;========================================
