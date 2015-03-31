@@ -20,6 +20,7 @@
 #include <WinAPI.au3>
 #include <Constants.au3>
 #include <GUIConstants.au3>
+#include <GDIPlus.au3>
 #include <Array.au3>
 #include <GUIEdit.au3>
 #include <GuiRichEdit.au3>
@@ -451,7 +452,7 @@ Func _openWeb($srchProv)
 EndFunc   ;==>_openWeb
 
 Func vhGUI()
-	$vhChild = GUICreate("Vresion History", 400, 400)
+	$vhChild = GUICreate("Vresion History", 400, 405)
 	GUICtrlCreateEdit("---==== 1.0.0 ====---" & @CRLF & _
 			"- All basic notepad features" & @CRLF & _
 			"---==== 1.5.0 ====---" & @CRLF & _
@@ -552,6 +553,7 @@ Func vhGUI()
 			"- added abillity to open au3 file and have syntax highlighting start automatically. -idea by mLipok." & @CRLF & _
 			"- added tooltip to show when syntax highlighting for AutoIt has started or ended.", 0, 0, 400, 380)
 	$vhButton = GUICtrlCreateButton("Okay", 360, 380) ; create the okay button to close the window
+	GUICtrlSetState($vhButton, $GUI_FOCUS) ; give focus to button and unlight text
 	GUISetState() ; set the state of the gui window (default is $SW_SHOW)
 EndFunc   ;==>vhGUI
 
@@ -647,17 +649,13 @@ EndFunc   ;==>addRecent
 
 Func aChild()
 	Local $authLabel, $nameLabel
-	$abChild = GUICreate("About AuPad", 150, 150) ; create the window
-	$authLabel = GUICtrlCreateLabel("Author:", 55, 25) ; set the author label
-	GUICtrlSetFont(-1, 9, 600) ; set the font
-	$nameLabel = GUICtrlCreateLabel("MikahS", 58, 45) ; set name
-	GUICtrlSetFont(-1, 8, 500) ; set the font
-	GUICtrlCreateLabel("Just a simple notepad program", 10, 80) ; set the label description 1
-	GUICtrlSetFont(-1, 7, 500) ; set the font
-	GUICtrlCreateLabel("Made completely with AutoIt", 15, 100) ; set the label description 2
-	GUICtrlSetFont(-1, 7, 500) ; set the font
-	GUICtrlCreateLabel("Version: 3.3.12.0", 42, 120) ; set the label description 3
-	GUICtrlSetFont(-1, 7, 500) ; set the font
+	$abChild = GUICreate("About AuPad", 155, 150) ; create the window
+	$authLabel = GUICtrlCreateLabel("Author:", 54, 25) ; set the author label
+	$nameLabel = GUICtrlCreateLabel("MikahS", 55, 45) ; set name
+	GUICtrlCreateLabel("Just a simple notepad program", 5, 80) ; set the label description 1
+	GUICtrlCreateLabel("Made completely with AutoIt", 13, 100) ; set the label description 2
+	GUICtrlCreateLabel("Version: 3.3.12.0", 38, 120) ; set the label description 3
+	GUISetFont(8.5 * _GDIPlus_GraphicsGetDPIRatio()[0])
 	GUISetState() ; show the window
 EndFunc   ;==>aChild
 
@@ -1093,5 +1091,35 @@ Func _Resize_RichEdit()
 EndFunc   ;==>_Resize_RichEdit
 ;======================================================
 
+;######################################################################################################################################
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _GDIPlus_GraphicsGetDPIRatio
+; Description ...:
+; Syntax ........: _GDIPlus_GraphicsGetDPIRatio([$iDPIDef = 96])
+; Parameters ....: $iDPIDef             - [optional] An integer value. Default is 96.
+; Return values .: None
+; Author ........: UEZ
+; Modified ......:
+; Remarks .......:
+; Related .......:
+; Link ..........: http://www.autoitscript.com/forum/topic/159612-dpi-resolution-problem/?hl=%2Bdpi#entry1158317
+; Example .......: No
+; ===============================================================================================================================
+Func _GDIPlus_GraphicsGetDPIRatio($iDPIDef = 96)
+    _GDIPlus_Startup()
+    Local $hGfx = _GDIPlus_GraphicsCreateFromHWND(0)
+    If @error Then Return SetError(1, @extended, 0)
+    Local $aResult
+    #forcedef $__g_hGDIPDll, $ghGDIPDll
+
+    $aResult = DllCall($__g_hGDIPDll, "int", "GdipGetDpiX", "handle", $hGfx, "float*", 0)
+
+    If @error Then Return SetError(2, @extended, 0)
+    Local $iDPI = $aResult[2]
+    Local $aresults[2] = [$iDPIDef / $iDPI, $iDPI / $iDPIDef]
+    _GDIPlus_GraphicsDispose($hGfx)
+    _GDIPlus_Shutdown()
+    Return $aresults
+EndFunc   ;==>_GDIPlus_GraphicsGetDPIRatio
 
 
