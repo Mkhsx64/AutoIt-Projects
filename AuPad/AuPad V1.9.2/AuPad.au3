@@ -273,7 +273,7 @@ While 1
 				Case $aRecent[1][0] To $aRecent[9][0]
 					For $i = 0 To $aRecent[0][0] ; loop through all the recent added files
 						If $msg[0] = $aRecent[$i][0] Then ; if the msg is the same as one in the recent files array
-							_OpenFile($aRecent[$i][2]) ; open the file
+;~ 							_OpenFile($aRecent[$i][2]) ; open the file
 						EndIf
 					Next
 				Case $vTxt_Spch
@@ -573,9 +573,9 @@ Func vhGUI()
 			"- added tooltip to show when syntax highlighting for AutoIt has started or ended." & @CRLF & _
 			"---==== 1.9.2 ====---" & @CRLF & _
 			"- added default style to version history 'okay' button (unhighlights edit text)." & @CRLF & _
-			"- added dpi awareness to about AuPad GUI. Thanks to mLipok - http://www.autoitscript.com/forum/topic/166479-writing-dpi-awareness-app-workaround/" & @CRLF _
+			"- added dpi awareness to about AuPad GUI. Thanks to mLipok - http://www.autoitscript.com/forum/topic/166479-writing-dpi-awareness-app-workaround/" & @CRLF & _
 			"- added context menu with much thanks to Mat - http://www.autoitscript.com/forum/topic/152271-rich-edit-context-menu/?p=1092314" & @CRLF & _
-			"- state changing for context menu, just like regular menu items." @CRLF & _
+			"- state changing for context menu, just like regular menu items." & @CRLF & _
 			"- events with context menu use GUI accelerators.", 0, 0, 400, 380)
 	$vhButton = GUICtrlCreateButton("Okay", 360, 380) ; create the okay button to close the window
 	GUICtrlSetState($vhButton, $GUI_FOCUS) ; give focus to button and unlight text

@@ -1,6 +1,5 @@
 ---- ArchManager ----
 
 - added version history txt file
-- added loading screen
 - added main GUI screen
 - buttons contacts, demos, customers, marketing, emails--

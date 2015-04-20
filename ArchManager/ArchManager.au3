@@ -19,17 +19,6 @@
 
 Global $GUI[2], $msg, $main_Buttons[6]
 
-;========== Progress Window
-Global $SplashMessage = "Welcome to ArchManager!", $pi
-ProgressOn("ArchManager", $SplashMessage, "0%")
-For $pi = 0 To 100 Step 20
-	Sleep(200)
-	$SplashMessage = "Loading.."
-	ProgressSet($pi, $SplashMessage & " " & $pi & "%")
-Next
-ProgressOff()
-;==========
-
 _mainGUI()
 
 While 1
@@ -61,10 +50,15 @@ Func _mainGUI()
 	GUICtrlSetResizing(-1, $GUI_DOCKTOP + $GUI_DOCKSIZE + $GUI_DOCKHCENTER)
 	$main_Buttons[0] = 5
 	$main_Buttons[1] = GUICtrlCreateButton("Contacts", 60, 80, 70, 50)
+	GUICtrlSetResizing(-1, $GUI_DOCKAUTO)
 	$main_Buttons[2] = GUICtrlCreateButton("Demos", 60, 150, 70, 50)
+	GUICtrlSetResizing(-1, $GUI_DOCKAUTO)
 	$main_Buttons[3] = GUICtrlCreateButton("Customers", 205, 115, 70, 50)
+	GUICtrlSetResizing(-1, $GUI_DOCKAUTO)
 	$main_Buttons[4] = GUICtrlCreateButton("Marketing", 350, 80, 70, 50)
+	GUICtrlSetResizing(-1, $GUI_DOCKAUTO)
 	$main_Buttons[5] = GUICtrlCreateButton("E-Mails", 350, 150, 70, 50)
+	GUICtrlSetResizing(-1, $GUI_DOCKAUTO)
 	GUISetState()
 EndFunc
 
