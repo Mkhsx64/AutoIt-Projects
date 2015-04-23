@@ -130,3 +130,6 @@ try changing the x86 force directive for printing.
 - added context menu with much thanks to Mat - http://www.autoitscript.com/forum/topic/152271-rich-edit-context-menu/?p=1092314
 - state changing for context menu, just like regular menu items.
 - events with context menu use GUI accelerators.
+
+---==== 1.9.3 ====---
+
