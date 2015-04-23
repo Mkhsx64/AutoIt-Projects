@@ -273,7 +273,7 @@ While 1
 				Case $aRecent[1][0] To $aRecent[9][0]
 					For $i = 0 To $aRecent[0][0] ; loop through all the recent added files
 						If $msg[0] = $aRecent[$i][0] Then ; if the msg is the same as one in the recent files array
-;~ 							_OpenFile($aRecent[$i][2]) ; open the file
+							_OpenFile($aRecent[$i][2]) ; open the file
 						EndIf
 					Next
 				Case $vTxt_Spch
