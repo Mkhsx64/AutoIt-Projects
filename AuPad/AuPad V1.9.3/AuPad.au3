@@ -326,7 +326,7 @@ Func GUI()
 			$HelpM, $textl, $forSyn, $forTags
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
-	$ctMenu = _GUICtrlMenu_CreatePopup() ; create out context menu
+	$ctMenu = _GUICtrlMenu_CreatePopup() ; create our context menu
 	$idUndo = _GUICtrlMenu_InsertMenuItem($ctMenu, 0, "&Undo", $e_idUndo) ; undo ct menu item
 	_GUICtrlMenu_InsertMenuItem($ctMenu, 1, "") ; line break
 	$idCut = _GUICtrlMenu_InsertMenuItem($ctMenu, 2, "&Cut", $e_idCut) ; cut ct menu item
