@@ -133,3 +133,4 @@ try changing the x86 force directive for printing.
 
 ---==== 1.9.3 ====---
 
+- Fixed version number in directives
