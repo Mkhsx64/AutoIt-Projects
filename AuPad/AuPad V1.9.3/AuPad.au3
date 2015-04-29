@@ -576,7 +576,9 @@ Func vhGUI()
 			"- added dpi awareness to about AuPad GUI. Thanks to mLipok - http://www.autoitscript.com/forum/topic/166479-writing-dpi-awareness-app-workaround/" & @CRLF & _
 			"- added context menu with much thanks to Mat - http://www.autoitscript.com/forum/topic/152271-rich-edit-context-menu/?p=1092314" & @CRLF & _
 			"- state changing for context menu, just like regular menu items." & @CRLF & _
-			"- events with context menu use GUI accelerators.", 0, 0, 400, 380)
+			"- events with context menu use GUI accelerators." & _
+			"---==== 1.9.3 ====---" & _
+			"- Fixed version number in directives.", 0, 0, 400, 380)
 	$vhButton = GUICtrlCreateButton("Okay", 360, 380) ; create the okay button to close the window
 	GUICtrlSetState($vhButton, $GUI_FOCUS) ; give focus to button and unlight text
 	GUISetState() ; set the state of the gui window (default is $SW_SHOW)
