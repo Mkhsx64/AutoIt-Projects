@@ -69,7 +69,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$au3tool_Pos, $ctMenu, _
 		$Status_Flag = False, _
 		$Status_Buffer = "", $Status_Ln, _
-		$Status_Col, $Status_Box
+		$Status_Col
 
 ; context menu items
 Local $idUndo, $idCut, $idCopy, $idPaste, $idDelete, $idSelAll
@@ -234,12 +234,8 @@ While 1
 						$Status_Flag = False
 					EndIf
 					_GUICtrlRichEdit_Destroy($pEditWindow)
-					GUIDelete()
-					If $Status_Flag = True Then
-						STGUI()
-					Else
-						GUI()
-					EndIf
+					GUIDelete($pWnd)
+					STGUI()
 					_GUICtrlRichEdit_SetText($pEditWindow, $Status_Buffer)
 				Case $vSE
 					$webText = _GUICtrlRichEdit_GetSelText($pEditWindow) ; get any selected text
@@ -423,9 +419,7 @@ Func STGUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM, $textl, $forSyn, $forTags
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
-	_GUICtrlRichEdit_Destroy($pEditWindow)
-	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 460, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
-	$Status_Box = GUICtrlCreateLabel("Ln " & $Status_Ln & " Col " & $Status_Col, 550, 460)
+	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
 	$ctMenu = _GUICtrlMenu_CreatePopup() ; create our context menu
 	$idUndo = _GUICtrlMenu_InsertMenuItem($ctMenu, 0, "&Undo", $e_idUndo) ; undo ct menu item
 	_GUICtrlMenu_InsertMenuItem($ctMenu, 1, "") ; line break
@@ -499,7 +493,7 @@ Func STGUI()
 	$hVH = GUICtrlCreateMenuItem("Version History", $HelpM, 4) ; create the second level version history menu item
 	setNew() ; set the window to have a new file
 	GUISetState(@SW_SHOW) ; show the window
-EndFunc   ;==>STGUI
+	EndFunc
 
 Func cGUI()
 	Local $getTitle, $winTitle

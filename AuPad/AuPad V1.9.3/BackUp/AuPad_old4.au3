@@ -69,7 +69,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$au3tool_Pos, $ctMenu, _
 		$Status_Flag = False, _
 		$Status_Buffer = "", $Status_Ln, _
-		$Status_Col, $Status_Box
+		$Status_Col
 
 ; context menu items
 Local $idUndo, $idCut, $idCopy, $idPaste, $idDelete, $idSelAll
@@ -234,11 +234,9 @@ While 1
 						$Status_Flag = False
 					EndIf
 					_GUICtrlRichEdit_Destroy($pEditWindow)
-					GUIDelete()
+					GUIDelete($pWnd)
 					If $Status_Flag = True Then
-						STGUI()
-					Else
-						GUI()
+					STGUI()
 					EndIf
 					_GUICtrlRichEdit_SetText($pEditWindow, $Status_Buffer)
 				Case $vSE
@@ -423,9 +421,7 @@ Func STGUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM, $textl, $forSyn, $forTags
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
-	_GUICtrlRichEdit_Destroy($pEditWindow)
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 460, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
-	$Status_Box = GUICtrlCreateLabel("Ln " & $Status_Ln & " Col " & $Status_Col, 550, 460)
 	$ctMenu = _GUICtrlMenu_CreatePopup() ; create our context menu
 	$idUndo = _GUICtrlMenu_InsertMenuItem($ctMenu, 0, "&Undo", $e_idUndo) ; undo ct menu item
 	_GUICtrlMenu_InsertMenuItem($ctMenu, 1, "") ; line break

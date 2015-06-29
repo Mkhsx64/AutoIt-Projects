@@ -69,7 +69,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$au3tool_Pos, $ctMenu, _
 		$Status_Flag = False, _
 		$Status_Buffer = "", $Status_Ln, _
-		$Status_Col, $Status_Box
+		$Status_Col
 
 ; context menu items
 Local $idUndo, $idCut, $idCopy, $idPaste, $idDelete, $idSelAll
@@ -234,12 +234,8 @@ While 1
 						$Status_Flag = False
 					EndIf
 					_GUICtrlRichEdit_Destroy($pEditWindow)
-					GUIDelete()
-					If $Status_Flag = True Then
-						STGUI()
-					Else
-						GUI()
-					EndIf
+					GUIDelete($pWnd)
+					GUI()
 					_GUICtrlRichEdit_SetText($pEditWindow, $Status_Buffer)
 				Case $vSE
 					$webText = _GUICtrlRichEdit_GetSelText($pEditWindow) ; get any selected text
@@ -343,7 +339,8 @@ Func GUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM, $textl, $forSyn, $forTags
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
-	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
+		$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
+
 	$ctMenu = _GUICtrlMenu_CreatePopup() ; create our context menu
 	$idUndo = _GUICtrlMenu_InsertMenuItem($ctMenu, 0, "&Undo", $e_idUndo) ; undo ct menu item
 	_GUICtrlMenu_InsertMenuItem($ctMenu, 1, "") ; line break
@@ -418,88 +415,6 @@ Func GUI()
 	setNew() ; set the window to have a new file
 	GUISetState(@SW_SHOW) ; show the window
 EndFunc   ;==>GUI
-
-Func STGUI()
-	Local $FileM, $EditM, $FormatM, $ViewM, _
-			$HelpM, $textl, $forSyn, $forTags
-	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
-	_GUICtrlRichEdit_Destroy($pEditWindow)
-	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 460, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
-	$Status_Box = GUICtrlCreateLabel("Ln " & $Status_Ln & " Col " & $Status_Col, 550, 460)
-	$ctMenu = _GUICtrlMenu_CreatePopup() ; create our context menu
-	$idUndo = _GUICtrlMenu_InsertMenuItem($ctMenu, 0, "&Undo", $e_idUndo) ; undo ct menu item
-	_GUICtrlMenu_InsertMenuItem($ctMenu, 1, "") ; line break
-	$idCut = _GUICtrlMenu_InsertMenuItem($ctMenu, 2, "&Cut", $e_idCut) ; cut ct menu item
-	$idCopy = _GUICtrlMenu_InsertMenuItem($ctMenu, 3, "&Copy", $e_idCopy) ; copy ct menu item
-	$idPaste = _GUICtrlMenu_InsertMenuItem($ctMenu, 4, "&Paste", $e_idPaste) ; paste ct menu item
-	$idDelete = _GUICtrlMenu_InsertMenuItem($ctMenu, 5, "&Delete", $e_idDelete) ; delete ct menu item
-	_GUICtrlMenu_InsertMenuItem($ctMenu, 6, "") ; line break
-	$idSelAll = _GUICtrlMenu_InsertMenuItem($ctMenu, 7, "&Select all", $e_idSelAll) ; select all ct menu item
-	$cLabel_1 = GUICtrlCreateLabel("", 0, 0, 600, 480) ; create the label behind the rich edit
-	GUICtrlSetState($cLabel_1, $GUI_DISABLE) ; set the state of the ctrl to disabled
-	GUICtrlSetResizing($cLabel_1, $GUI_DOCKAUTO) ; set the resizing to auto
-	GUICtrlSetBkColor($cLabel_1, $GUI_BKCOLOR_TRANSPARENT) ; make the ctrl transparent
-	_GUICtrlRichEdit_SetLimitOnText($pEditWindow, $tLimit) ; set the limit of the rich edit control
-	GUICtrlSetResizing($pEditWindow, $GUI_DOCKAUTO) ; added to make sure edit control sizes correctly even when display properties change_GUICtrlEdit_SetLimitText($pEditWindow, $tLimit) ; set the text limit for the edit control
-	$FileM = GUICtrlCreateMenu("File") ; create the first level file menu item
-	$fNew = GUICtrlCreateMenuItem("New" & @TAB & "Ctrl + N", $FileM, 0) ; create second level menu item new ^ file
-	$fOpen = GUICtrlCreateMenuItem("Open..." & @TAB & "Ctrl + O", $FileM, 1) ; create second level menu item open ^ file
-	$fSave = GUICtrlCreateMenuItem("Save" & @TAB & "Ctrl + S", $FileM, 2) ; create second level menu item save ^ file
-	$fSaveAs = GUICtrlCreateMenuItem("Save As..." & @TAB & "Ctrl + Shft + S", $FileM, 3) ; create second level menu item save as ^ file
-	GUICtrlCreateMenuItem("", $FileM, 4) ; create line
-	$fPrint = GUICtrlCreateMenuItem("Print..." & @TAB & "Ctrl + P", $FileM, 5) ; create second level menu item print ^ file
-	GUICtrlCreateMenuItem("", $FileM, 6) ; create line
-	$fAR = GUICtrlCreateMenu("Recent Files", $FileM, 7) ; create the menu item for recent files
-	GUICtrlCreateMenuItem("", $FileM, 8) ; create line
-	$fExit = GUICtrlCreateMenuItem("Exit" & @TAB & "ESC", $FileM, 9) ; create second level menu item exit ^ file
-	$EditM = GUICtrlCreateMenu("Edit") ; create the first level edit menu item
-	$eUndo = GUICtrlCreateMenuItem("Undo" & @TAB & "Ctrl + Z", $EditM, 0) ; create the second level undo menu item
-	$eRedo = GUICtrlCreateMenuItem("Redo" & @TAB & "Ctrl + R", $EditM, 1) ; create the second level redo menu item
-	GUICtrlCreateMenuItem("", $EditM, 2) ; create line
-	$eCut = GUICtrlCreateMenuItem("Cut" & @TAB & "Ctrl + X", $EditM, 3) ; create the second level cut menu item
-	$eCopy = GUICtrlCreateMenuItem("Copy" & @TAB & "Ctrl + C", $EditM, 4) ; create the second level copy menu item
-	$ePaste = GUICtrlCreateMenuItem("Paste" & @TAB & "Ctrl + V", $EditM, 5) ; create the second level paste menu item
-	$eDelete = GUICtrlCreateMenuItem("Delete" & @TAB & "Del", $EditM, 6) ; create the second level delete menu item
-	GUICtrlCreateMenuItem("", $EditM, 7) ; create line
-	$eFind = GUICtrlCreateMenuItem("Find..." & @TAB & "Ctrl + F", $EditM, 8) ; create the second level find menu item
-	$eReplace = GUICtrlCreateMenuItem("Replace..." & @TAB & "Ctrl + H", $EditM, 9) ; create the second level replace menu item
-	GUICtrlCreateMenuItem("", $EditM, 10) ; create line
-	$eTab = GUICtrlCreateMenuItem("Tab" & @TAB & "Tab", $EditM, 11) ; create the tab second level menu item
-	$eSA = GUICtrlCreateMenuItem("Select All..." & @TAB & "Ctrl + A", $EditM, 12) ; create the second level select all menu item
-	$eTD = GUICtrlCreateMenuItem("Time/Date" & @TAB & "F5", $EditM, 13) ; create the second level time/date menu item
-	GUICtrlCreateMenuItem("", $EditM, 14) ; create line
-	$eWC = GUICtrlCreateMenuItem("Word Count" & @TAB & "Ctrl + W", $EditM, 15) ; create the second level word count menu item
-	$eLC = GUICtrlCreateMenuItem("Line Count" & @TAB & "Ctrl + L", $EditM, 16) ; create the second level line count menu item
-	GUICtrlCreateMenuItem("", $EditM, 17) ; create line
-	$eSU = GUICtrlCreateMenuItem("Uppercase Text" & @TAB & "Ctrl + Shft + U", $EditM, 18) ; create the second level uppercase text menu item
-	$eSL = GUICtrlCreateMenuItem("Lowercase Text" & @TAB & "Ctrl + Shft + L", $EditM, 19) ; create the second level lowercase text menu item
-	$FormatM = GUICtrlCreateMenu("Format") ; create the first level format menu item
-	$forComp = GUICtrlCreateMenuItem("Compile" & @TAB & "F7", $FormatM, 0) ; create the second level compile menu option
-	GUICtrlCreateMenuItem("", $FormatM, 1) ; create line
-	$forFont = GUICtrlCreateMenuItem("Font...", $FormatM, 2) ; create the second level font menu item
-	$forBkClr = GUICtrlCreateMenuItem("Background Color", $FormatM, 3) ; create the second level background color menu item
-	GUICtrlCreateMenuItem("", $FormatM, 4) ; create line
-	$forSyn = GUICtrlCreateMenu("Syntax Highlighting", $FormatM, 5) ; create the second level syntax highlighting menu
-	$synAu3 = GUICtrlCreateMenuItem("AutoIt", $forSyn) ; create the third level menu item for autoit syntax highlighting
-	GUICtrlCreateMenuItem("", $FormatM, 6) ; create line
-	$forTags = GUICtrlCreateMenu("Tags", $FormatM, 7) ; create the first level tags menu item
-	$mCombo[0] = GUICtrlCreateMenuItem("Quote" & @TAB & "Ctrl + Shft + Q", $forTags, 0) ; create the second level quote menu item
-	$mCombo[1] = GUICtrlCreateMenuItem("Code" & @TAB & "Ctrl + Shft + A", $forTags, 1) ; create the second level code menu item
-	$mCombo[2] = GUICtrlCreateMenuItem("Link" & @TAB & "Ctrl + Shft + H", $forTags, 2) ;create the second level link menu item
-	$ViewM = GUICtrlCreateMenu("View") ; create the first level view menu item
-	$vStatus = GUICtrlCreateMenuItem("Status Bar", $ViewM, 0) ; create the second level status bar menu item
-	$vTxt_Spch = GUICtrlCreateMenuItem("Text to Speech" & @TAB & "F3", $ViewM, 2) ; create the second level text to speech menu item
-	GUICtrlCreateMenuItem("", $ViewM, 3) ; create line
-	$vSE = GUICtrlCreateMenuItem("Web Search" & @TAB & "F4", $ViewM, 4) ; create the second level web search menu item
-	$HelpM = GUICtrlCreateMenu("Help") ;  create the first level help menu item
-	$au3help = GUICtrlCreateMenuItem("AutoIt Help" & @TAB & "F1", $HelpM, 0) ; create the second level autoit search menu item
-	$hVHelp = GUICtrlCreateMenuItem("View Help" & @TAB & "F2", $HelpM, 1) ; create the second level view help menu item
-	GUICtrlCreateMenuItem("", $HelpM, 2) ; create line
-	$hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 3) ; create the second level about aupad menu item
-	$hVH = GUICtrlCreateMenuItem("Version History", $HelpM, 4) ; create the second level version history menu item
-	setNew() ; set the window to have a new file
-	GUISetState(@SW_SHOW) ; show the window
-EndFunc   ;==>STGUI
 
 Func cGUI()
 	Local $getTitle, $winTitle

@@ -415,7 +415,9 @@ Func GUI()
 	GUICtrlCreateMenuItem("", $HelpM, 2) ; create line
 	$hAA = GUICtrlCreateMenuItem("About AuPad", $HelpM, 3) ; create the second level about aupad menu item
 	$hVH = GUICtrlCreateMenuItem("Version History", $HelpM, 4) ; create the second level version history menu item
+	If $saveCounter <> 0 Then
 	setNew() ; set the window to have a new file
+	EndIf
 	GUISetState(@SW_SHOW) ; show the window
 EndFunc   ;==>GUI
 
@@ -423,7 +425,6 @@ Func STGUI()
 	Local $FileM, $EditM, $FormatM, $ViewM, _
 			$HelpM, $textl, $forSyn, $forTags
 	$pWnd = GUICreate("AuPad", 600, 500, -1, -1, BitOR($WS_POPUP, $WS_OVERLAPPEDWINDOW), $WS_EX_ACCEPTFILES) ; created window with min, max, resizing, and ability to accept files
-	_GUICtrlRichEdit_Destroy($pEditWindow)
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 460, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
 	$Status_Box = GUICtrlCreateLabel("Ln " & $Status_Ln & " Col " & $Status_Col, 550, 460)
 	$ctMenu = _GUICtrlMenu_CreatePopup() ; create our context menu
