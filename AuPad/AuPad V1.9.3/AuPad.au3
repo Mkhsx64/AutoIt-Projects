@@ -301,11 +301,6 @@ While 1
 				$bSysMsg = False ; reset the flag
 				_Resize_RichEdit() ; resize the rich edit control
 			EndIf
-;~ 		Case $abChild
-;~ 			Switch $msg[0]
-;~ 				Case $GUI_EVENT_CLOSE
-;~ 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
-;~ 			EndSwitch
 		Case $cChild
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
@@ -772,21 +767,13 @@ Func addRecent($sPath)
 EndFunc   ;==>addRecent
 ;======================================================
 
-;~ Func aChild()
-;~ 	Local $authLabel, $nameLabel
-;~ 	$abChild = GUICreate("About AuPad", 155, 150) ; create the window
-;~ 	$authLabel = GUICtrlCreateLabel("Author:", 54, 25) ; set the author label
-;~ 	$nameLabel = GUICtrlCreateLabel("MikahS", 55, 45) ; set name
-;~ 	GUICtrlCreateLabel("Just a simple notepad program", 5, 80) ; set the label description 1
-;~ 	GUICtrlCreateLabel("Made completely with AutoIt", 13, 100) ; set the label description 2
-;~ 	GUICtrlCreateLabel("Version: 3.3.12.0", 38, 120) ; set the label description 3
-;~ 	GUISetFont(8.5 * _GDIPlus_GraphicsGetDPIRatio()[0]) ; set the dpi resolution
-;~ 	GUISetState() ; show the window
-;~ EndFunc   ;==>aChild
-
+; Thanks to Jefrey for the contribution
+; https://www.autoitscript.com/forum/topic/164383-aupad-notepad-in-autoit-updated-march-31th-2015/?do=findComment&comment=1255986
+;======================================================
 Func aChild()
     DllCall('shell32.dll', 'int', 'ShellAbout', 'hwnd', $pWnd, 'str', "AuPad", 'str', "Just a simple notepad program made completely with AutoIt." & @CRLF & "Author: MikahS", 'ptr', @AutoItExe)
 EndFunc   ;==>aChild
+;======================================================
 
 Func chkSel()
 	Local $gs, $gc, $getState, $readWin, $strMid
