@@ -301,11 +301,11 @@ While 1
 				$bSysMsg = False ; reset the flag
 				_Resize_RichEdit() ; resize the rich edit control
 			EndIf
-		Case $abChild
-			Switch $msg[0]
-				Case $GUI_EVENT_CLOSE
-					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
-			EndSwitch
+;~ 		Case $abChild
+;~ 			Switch $msg[0]
+;~ 				Case $GUI_EVENT_CLOSE
+;~ 					GUIDelete($abChild) ; if the exit event is sent call the GUIDelete Function
+;~ 			EndSwitch
 		Case $cChild
 			Switch $msg[0]
 				Case $GUI_EVENT_CLOSE
