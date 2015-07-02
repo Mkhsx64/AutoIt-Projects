@@ -134,4 +134,5 @@ try changing the x86 force directive for printing.
 ---==== 1.9.3 ====---
 
 - Fixed version number in directives
+- Used Jefrey's code to cut back aChild function and event loop - https://www.autoitscript.com/forum/topic/164383-aupad-notepad-in-autoit-updated-march-31th-2015/?do=findComment&comment=1255986
 *- feature to add: status bar, need to repaint GUI & RichEdit
