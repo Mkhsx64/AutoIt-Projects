@@ -423,7 +423,7 @@ Func NSTGUI()
 	_GUICtrlRichEdit_Destroy($pEditWindow)
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
 	; set status bar
-EndFunc   ;==>NSTGUI
+EndFunc
 
 Func cGUI()
 	Local $getTitle, $winTitle
@@ -701,7 +701,7 @@ EndFunc   ;==>addRecent
 ; https://www.autoitscript.com/forum/topic/164383-aupad-notepad-in-autoit-updated-march-31th-2015/?do=findComment&comment=1255986
 ;======================================================
 Func aChild()
-	DllCall('shell32.dll', 'int', 'ShellAbout', 'hwnd', $pWnd, 'str', "AuPad", 'str', "Just a simple notepad program made completely with AutoIt." & @CRLF & "Author: MikahS", 'ptr', @AutoItExe)
+    DllCall('shell32.dll', 'int', 'ShellAbout', 'hwnd', $pWnd, 'str', "AuPad", 'str', "Just a simple notepad program made completely with AutoIt." & @CRLF & "Author: MikahS", 'ptr', @AutoItExe)
 EndFunc   ;==>aChild
 ;======================================================
 
