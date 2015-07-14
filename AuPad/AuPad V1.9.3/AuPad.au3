@@ -416,13 +416,13 @@ EndFunc   ;==>GUI
 Func STGUI()
 	_GUICtrlRichEdit_Destroy($pEditWindow)
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 460, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
-	; set status bar
+	GUICtrlSetState($vStatus, $GUI_CHECKED) ; set status bar
 EndFunc   ;==>STGUI
 
 Func NSTGUI()
 	_GUICtrlRichEdit_Destroy($pEditWindow)
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
-	; set status bar
+	GUICtrlSetState($vStatus, $GUI_UNCHECKED) ; set status bar
 EndFunc   ;==>NSTGUI
 
 Func cGUI()
