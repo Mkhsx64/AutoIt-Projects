@@ -227,19 +227,19 @@ While 1
 				Case $hVHelp
 					Help() ; if we selected the help menu option call the help function
 				Case $vStatus
-					$Status_Buffer = _GUICtrlRichEdit_GetText($pEditWindow)
+					$Status_Buffer = _GUICtrlRichEdit_GetText($pEditWindow) ; get the text in the window
 					If $Status_Flag = False Then
-						$Status_Flag = True
+						$Status_Flag = True ; switch flag
 					Else
-						$Status_Flag = False
+						$Status_Flag = False ; switch flag
 					EndIf
-					_GUICtrlRichEdit_Destroy($pEditWindow)
+					_GUICtrlRichEdit_Destroy($pEditWindow) ; delete the rich edit
 					If $Status_Flag = True Then
-						STGUI()
+						STGUI() ; create the status bar
 					Else
-						NSTGUI()
+						NSTGUI() ; take away the status bar
 					EndIf
-					_GUICtrlRichEdit_SetText($pEditWindow, $Status_Buffer)
+					_GUICtrlRichEdit_SetText($pEditWindow, $Status_Buffer) ; reset the text from the old rich edit
 				Case $vSE
 					$webText = _GUICtrlRichEdit_GetSelText($pEditWindow) ; get any selected text
 					If @error Then ; if there is no selection
