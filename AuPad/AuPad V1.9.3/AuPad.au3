@@ -249,6 +249,7 @@ While 1
 					EndIf
 				Case $au3help
 					$au3Help_Seltext = _GUICtrlRichEdit_GetSelText($pEditWindow) ; get any selected text
+					_GUICtrlRichEdit_SetSel
 					If @error = -1 Then
 						ShellExecute(@ProgramFilesDir & "\AutoIt3\AutoIt.chm") ; if there isn't any selected text
 					Else
@@ -417,7 +418,7 @@ Func STGUI()
 	_GUICtrlRichEdit_Destroy($pEditWindow) ; destroy the ctrl
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 460, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
 	GUICtrlSetState($vStatus, $GUI_CHECKED) ; set status bar
-	$Status_Label = GUICtrlCreateLabel("Ln: " & "   |  Col: ", 480, 460) ; create the shell for the label
+	$Status_Label = GUICtrlCreateLabel("Ln: " & "   |  Col: ", 480, 460, 1000) ; create the shell for the label
 	AdlibRegister("chkLineCol", 1000) ; check the line count & column count
 	GUISetState() ; make sure we can see the control
 EndFunc   ;==>STGUI
@@ -433,6 +434,7 @@ Func NSTGUI()
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
 	GUICtrlSetState($vStatus, $GUI_UNCHECKED) ; set status bar
 	AdlibUnRegister("chkLineCol") ; unregister the function for the status bar label
+	GUICtrlDelete($Status_Label) ; delete the label
 EndFunc   ;==>NSTGUI
 
 Func cGUI()
