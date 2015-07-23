@@ -419,20 +419,19 @@ Func STGUI()
 	GUICtrlSetState($vStatus, $GUI_CHECKED) ; set status bar
 	$Status_Label = GUICtrlCreateLabel("Ln: " & "   |  Col: ", 480, 460) ; create the shell for the label
 	AdlibRegister("chkLineCol", 1000) ; check the line count & column count
-	GUISetState() ; make sure we can see the control
+	GUISetState()
 EndFunc   ;==>STGUI
 
 Func chkLineCol()
 	Local $lineCount = _GUICtrlRichEdit_GetLineCount($pEditWindow), $CharPos = _GUICtrlRichEdit_GetSel($pEditWindow), _
-			$ColCount = _GUICtrlRichEdit_GetLineLength($pEditWindow, _GUICtrlRichEdit_GetLineNumberFromCharPos($pEditWindow, $CharPos[0]))
-	GUICtrlSetData($Status_Label, "Ln:" & $lineCount & "   |  Col:" & $ColCount) ; set the data
-EndFunc   ;==>chkLineCol
+	$ColCount = _GUICtrlRichEdit_GetLineLength($pEditWindow, _GUICtrlRichEdit_GetLineNumberFromCharPos($pEditWindow, $CharPos[0]))
+	GUICtrlSetData($Status_Label, "Ln: " & $lineCount & "   |  Col: " & _GUICtrlRichEdit_GetLineLength(
+EndFunc
 
 Func NSTGUI()
 	_GUICtrlRichEdit_Destroy($pEditWindow) ; destroy the ctrl
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 480, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
 	GUICtrlSetState($vStatus, $GUI_UNCHECKED) ; set status bar
-	AdlibUnRegister("chkLineCol") ; unregister the function for the status bar label
 EndFunc   ;==>NSTGUI
 
 Func cGUI()
