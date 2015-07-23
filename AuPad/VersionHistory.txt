@@ -137,3 +137,4 @@ try changing the x86 force directive for printing.
 - Used Jefrey's code to cut back aChild function and event loop - https://www.autoitscript.com/forum/topic/164383-aupad-notepad-in-autoit-updated-march-31th-2015/?do=findComment&comment=1255986
 - Added status bar feature to add box at bottom of AuPad window.
 - Added checked state to menu item for status bar to show if it is working.
+- Added line and column number to status bar.

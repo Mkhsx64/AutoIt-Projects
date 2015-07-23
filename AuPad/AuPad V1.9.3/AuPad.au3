@@ -69,7 +69,7 @@ Local $pWnd, $msg, $control, $fNew, $fOpen, _
 		$au3tool_Pos, $ctMenu, _
 		$Status_Flag = False, _
 		$Status_Buffer = "", $Status_Ln, _
-		$Status_Col, $Status_Box
+		$Status_Col, $Status_Label
 
 ; context menu items
 Local $idUndo, $idCut, $idCopy, $idPaste, $idDelete, $idSelAll
@@ -417,7 +417,19 @@ Func STGUI()
 	_GUICtrlRichEdit_Destroy($pEditWindow) ; destroy the ctrl
 	$pEditWindow = _GUICtrlRichEdit_Create($pWnd, "", 0, 0, 600, 460, BitOR($ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL)) ; creates the main text window for typing text
 	GUICtrlSetState($vStatus, $GUI_CHECKED) ; set status bar
+	$Status_Label = GUICtrlCreateLabel("Ln: " & "   |  Col: ", 480, 460)
+	AdlibRegister("chkLine", 1000) ; check the line count
+    AdlibRegister("chkCol", 1000) ; check the column count
+	GUISetState()
 EndFunc   ;==>STGUI
+
+Func chkLine()
+
+EndFunc
+
+Func chkCol()
+
+EndFunc
 
 Func NSTGUI()
 	_GUICtrlRichEdit_Destroy($pEditWindow) ; destroy the ctrl
