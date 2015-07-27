@@ -138,4 +138,4 @@ try changing the x86 force directive for printing.
 - Added status bar feature to add box at bottom of AuPad window.
 - Added checked state to menu item for status bar to show if it is working.
 - Added line and column number to status bar.
-- Need to strip trailing whitespace from syntax highlighting.
+- Fixed problem with RESH adding lines unintentially during syntax highlighting.
