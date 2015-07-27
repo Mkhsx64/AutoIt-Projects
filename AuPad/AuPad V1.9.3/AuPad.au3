@@ -426,7 +426,7 @@ EndFunc   ;==>STGUI
 Func chkLineCol()
 	Local $lineCount, $CharPos = _GUICtrlRichEdit_GetSel($pEditWindow), _
 			$ColCount = _GUICtrlRichEdit_GetLineLength($pEditWindow, _GUICtrlRichEdit_GetLineNumberFromCharPos($pEditWindow, $CharPos[0]))
-	$lineCount = _GUICtrlRichEdit_GetLineNumberFromCharPos($pEditWindow, $CharPos[0])
+	$lineCount = _GUICtrlRichEdit_GetLineNumberFromCharPos($pEditWindow, $CharPos[0]) ; set line count to current char position
 	GUICtrlSetData($Status_Label, "Ln:" & $lineCount & "   |  Col:" & $ColCount) ; set the data
 EndFunc   ;==>chkLineCol
 
