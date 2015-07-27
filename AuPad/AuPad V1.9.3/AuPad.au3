@@ -614,7 +614,13 @@ Func vhGUI()
 			"- state changing for context menu, just like regular menu items." & @CRLF & _
 			"- events with context menu use GUI accelerators." & _
 			"---==== 1.9.3 ====---" & _
-			"- Fixed version number in directives.", 0, 0, 400, 380)
+			"- Fixed version number in directives." & _
+			"- Used Jefrey's code to cut back aChild function and event loop -https://www.autoitscript.com/forum/topic/164383-aupad-notepad-in-autoit-updated-march-31th-2015/?do=findComment&comment=1255986" & _
+			"- Added status bar feature to add box at bottom of AuPad window." & _
+			"- Added checked state to menu item for status bar to show if it is working." & _
+			"- Added line and column number to status bar." & _
+			"- Fixed problem with RESH adding lines unintentially during syntax highlighting." & _
+			"- Added V1.9.3 version history.", 0, 0, 400, 380)
 	$vhButton = GUICtrlCreateButton("Okay", 360, 380) ; create the okay button to close the window
 	GUICtrlSetState($vhButton, $GUI_FOCUS) ; give focus to button and unlight text
 	GUISetState() ; set the state of the gui window (default is $SW_SHOW)

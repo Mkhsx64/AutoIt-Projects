@@ -139,3 +139,4 @@ try changing the x86 force directive for printing.
 - Added checked state to menu item for status bar to show if it is working.
 - Added line and column number to status bar.
 - Fixed problem with RESH adding lines unintentially during syntax highlighting.
+- Added V1.9.3 version history.
