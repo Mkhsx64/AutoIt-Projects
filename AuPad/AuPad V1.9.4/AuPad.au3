@@ -132,7 +132,7 @@ $aRecent[0][0] = 0 ; start the recent files counter
 GUICtrlSetState($eRedo, 128) ; set the state of the redo menu item
 
 Local $o_speech = ObjCreate("SAPI.SpVoice")
-$o_speech.Voice = $o_speech.GetVoices("Name=Microsoft Mary", "Language=409").Item(0)
+$o_speech.Voice = $o_speech.GetVoices("Name=Microsoft Mary", "Language=409")
 
 Local $aAccelKeys[23][23] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], _
 		["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], _

@@ -140,3 +140,7 @@ try changing the x86 force directive for printing.
 - Added line and column number to status bar.
 - Fixed problem with RESH adding lines unintentially during syntax highlighting.
 - Added V1.9.3 version history.
+
+---==== 1.9.4 ====---
+
+- Fixed text to speech w/ new AutoIt 3.3.14.0 update.
