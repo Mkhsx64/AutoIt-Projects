@@ -144,3 +144,4 @@ try changing the x86 force directive for printing.
 ---==== 1.9.4 ====---
 
 - Fixed text to speech w/ new AutoIt 3.3.14.0 update.
+- Need to fix version history text*
