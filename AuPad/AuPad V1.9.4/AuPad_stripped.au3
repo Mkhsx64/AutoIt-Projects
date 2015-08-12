@@ -7,13 +7,18 @@ Global Const $tagMENUINFO = "dword Size;INT Mask;dword Style;uint YMax;handle hB
 Global Const $tagMENUITEMINFO = "uint Size;uint Mask;uint Type;uint State;uint ID;handle SubMenu;handle BmpChecked;handle BmpUnchecked;" & "ulong_ptr ItemData;ptr TypeData;uint CCH;handle BmpItem"
 Global Const $tagREBARBANDINFO = "uint cbSize;uint fMask;uint fStyle;dword clrFore;dword clrBack;ptr lpText;uint cch;" & "int iImage;hwnd hwndChild;uint cxMinChild;uint cyMinChild;uint cx;handle hbmBack;uint wID;uint cyChild;uint cyMaxChild;" & "uint cyIntegral;uint cxIdeal;lparam lParam;uint cxHeader" &((@OSVersion = "WIN_XP") ? "" : ";" & $tagRECT & ";uint uChevronState")
 Global Const $tagLOGFONT = "struct;long Height;long Width;long Escapement;long Orientation;long Weight;byte Italic;byte Underline;" & "byte Strikeout;byte CharSet;byte OutPrecision;byte ClipPrecision;byte Quality;byte PitchAndFamily;wchar FaceName[32];endstruct"
-Func _WinAPI_GetLastError($iError = @error, $iExtended = @extended)
+Func _WinAPI_GetLastError(Const $_iCurrentError = @error, Const $_iCurrentExtended = @extended)
 Local $aResult = DllCall("kernel32.dll", "dword", "GetLastError")
-Return SetError($iError, $iExtended, $aResult[0])
+Return SetError($_iCurrentError, $_iCurrentExtended, $aResult[0])
 EndFunc
-Func _WinAPI_SetLastError($iErrorCode, $iError = @error, $iExtended = @extended)
+Func _WinAPI_SetLastError($iErrorCode, Const $_iCurrentError = @error, Const $_iCurrentExtended = @extended)
 DllCall("kernel32.dll", "none", "SetLastError", "dword", $iErrorCode)
-Return SetError($iError, $iExtended, Null)
+Return SetError($_iCurrentError, $_iCurrentExtended, Null)
+EndFunc
+Func __COMErrorFormating($oCOMError, $sPrefix = @TAB)
+Local Const $STR_STRIPTRAILING = 2
+Local $sError = "COM Error encountered in " & @ScriptName & " (" & $oCOMError.Scriptline & ") :" & @CRLF & $sPrefix & "Number        " & @TAB & "= 0x" & Hex($oCOMError.Number, 8) & " (" & $oCOMError.Number & ")" & @CRLF & $sPrefix & "WinDescription" & @TAB & "= " & StringStripWS($oCOMError.WinDescription, $STR_STRIPTRAILING) & @CRLF & $sPrefix & "Description   " & @TAB & "= " & StringStripWS($oCOMError.Description, $STR_STRIPTRAILING) & @CRLF & $sPrefix & "Source        " & @TAB & "= " & $oCOMError.Source & @CRLF & $sPrefix & "HelpFile      " & @TAB & "= " & $oCOMError.HelpFile & @CRLF & $sPrefix & "HelpContext   " & @TAB & "= " & $oCOMError.HelpContext & @CRLF & $sPrefix & "LastDllError  " & @TAB & "= " & $oCOMError.LastDllError & @CRLF & $sPrefix & "Retcode       " & @TAB & "= 0x" & Hex($oCOMError.retcode)
+Return $sError
 EndFunc
 Global $__g_hHeap = 0, $__g_iRGBMode = 1
 Global Const $tagOSVERSIONINFO = 'struct;dword OSVersionInfoSize;dword MajorVersion;dword MinorVersion;dword BuildNumber;dword PlatformId;wchar CSDVersion[128];endstruct'
@@ -42,7 +47,7 @@ Return $aRet[0]
 EndFunc
 Func __HeapFree(ByRef $pMemory, $bCheck = False, $iCurErr = @error, $iCurExt = @extended)
 If $bCheck And(Not __HeapValidate($pMemory)) Then Return SetError(@error, @extended, 0)
-Local $aRet = DllCall('kernel32.dll', 'int', 'HeapFree', 'ptr', $__g_hHeap, 'dword', 0, 'ptr', $pMemory)
+Local $aRet = DllCall('kernel32.dll', 'int', 'HeapFree', 'handle', $__g_hHeap, 'dword', 0, 'ptr', $pMemory)
 If @error Or Not $aRet[0] Then Return SetError(@error + 40, @extended, 0)
 $pMemory = 0
 Return SetError($iCurErr, $iCurExt, 1)
@@ -193,8 +198,8 @@ Global Const $SE_PRIVILEGE_ENABLED = 0x00000002
 Global Enum $SECURITYANONYMOUS = 0, $SECURITYIDENTIFICATION, $SECURITYIMPERSONATION, $SECURITYDELEGATION
 Global Const $TOKEN_QUERY = 0x00000008
 Global Const $TOKEN_ADJUST_PRIVILEGES = 0x00000020
-Func _Security__AdjustTokenPrivileges($hToken, $bDisableAll, $pNewState, $iBufferLen, $pPrevState = 0, $pRequired = 0)
-Local $aCall = DllCall("advapi32.dll", "bool", "AdjustTokenPrivileges", "handle", $hToken, "bool", $bDisableAll, "struct*", $pNewState, "dword", $iBufferLen, "struct*", $pPrevState, "struct*", $pRequired)
+Func _Security__AdjustTokenPrivileges($hToken, $bDisableAll, $tNewState, $iBufferLen, $tPrevState = 0, $pRequired = 0)
+Local $aCall = DllCall("advapi32.dll", "bool", "AdjustTokenPrivileges", "handle", $hToken, "bool", $bDisableAll, "struct*", $tNewState, "dword", $iBufferLen, "struct*", $tPrevState, "struct*", $pRequired)
 If @error Then Return SetError(@error, @extended, False)
 Return Not($aCall[0] = 0)
 EndFunc
@@ -272,7 +277,7 @@ Global Const $GWL_WNDPROC = 0xFFFFFFFC
 Global $__g_aInProcess_WinAPI[64][2] = [[0, 0]]
 Func _WinAPI_CreateWindowEx($iExStyle, $sClass, $sName, $iStyle, $iX, $iY, $iWidth, $iHeight, $hParent, $hMenu = 0, $hInstance = 0, $pParam = 0)
 If $hInstance = 0 Then $hInstance = _WinAPI_GetModuleHandle("")
-Local $aResult = DllCall("user32.dll", "hwnd", "CreateWindowExW", "dword", $iExStyle, "wstr", $sClass, "wstr", $sName, "dword", $iStyle, "int", $iX, "int", $iY, "int", $iWidth, "int", $iHeight, "hwnd", $hParent, "handle", $hMenu, "handle", $hInstance, "ptr", $pParam)
+Local $aResult = DllCall("user32.dll", "hwnd", "CreateWindowExW", "dword", $iExStyle, "wstr", $sClass, "wstr", $sName, "dword", $iStyle, "int", $iX, "int", $iY, "int", $iWidth, "int", $iHeight, "hwnd", $hParent, "handle", $hMenu, "handle", $hInstance, "struct*", $pParam)
 If @error Then Return SetError(@error, @extended, 0)
 Return $aResult[0]
 EndFunc
@@ -369,8 +374,8 @@ If StringUpper(StringMid($sClassCheck, 1, StringLen($aClassName[$x]))) = StringU
 Next
 Return False
 EndFunc
-Func _WinAPI_InvalidateRect($hWnd, $tRect = 0, $bErase = True)
-Local $aResult = DllCall("user32.dll", "bool", "InvalidateRect", "hwnd", $hWnd, "struct*", $tRect, "bool", $bErase)
+Func _WinAPI_InvalidateRect($hWnd, $tRECT = 0, $bErase = True)
+Local $aResult = DllCall("user32.dll", "bool", "InvalidateRect", "hwnd", $hWnd, "struct*", $tRECT, "bool", $bErase)
 If @error Then Return SetError(@error, @extended, False)
 Return $aResult[0]
 EndFunc
@@ -466,7 +471,6 @@ Global Const $CFE_STRIKEOUT = $CFM_STRIKEOUT
 Global Const $CFE_UNDERLINE = $CFM_UNDERLINE
 Global Const $SCF_SELECTION = 0x1
 Global Const $SCF_WORD = 0x2
-Global Const $SCF_ALL = 0x4
 Global Const $LF_FACESIZE = 32
 Global Const $SF_TEXT = 0x1
 Global Const $SF_RTF = 0x2
@@ -490,7 +494,7 @@ If @error Then Return SetError(@error, @extended, False)
 Return $bResult
 EndFunc
 Func _MemInit($hWnd, $iSize, ByRef $tMemMap)
-Local $aResult = DllCall("User32.dll", "dword", "GetWindowThreadProcessId", "hwnd", $hWnd, "dword*", 0)
+Local $aResult = DllCall("user32.dll", "dword", "GetWindowThreadProcessId", "hwnd", $hWnd, "dword*", 0)
 If @error Then Return SetError(@error + 10, @extended, 0)
 Local $iProcessID = $aResult[2]
 If $iProcessID = 0 Then Return SetError(1, 0, 0)
@@ -891,13 +895,13 @@ If Not _WinAPI_IsClassName($hWnd, $__g_sRTFClassName) Then Return SetError(101, 
 _SendMessage($hWnd, $__RICHEDITCONSTANT_WM_SETREDRAW, True)
 Return _WinAPI_InvalidateRect($hWnd)
 EndFunc
-Func _GUICtrlRichEdit_SetCharAttributes($hWnd, $sStatesAndAtts, $bWord = False)
-Local Const $aV[17][3] = [ ["bo", $CFM_BOLD, $CFE_BOLD],["di", $CFM_DISABLED, $CFE_DISABLED], ["em", $CFM_EMBOSS, $CFE_EMBOSS],["hi", $CFM_HIDDEN, $CFE_HIDDEN], ["im", $CFM_IMPRINT, $CFE_IMPRINT],["it", $CFM_ITALIC, $CFE_ITALIC], ["li", $CFM_LINK, $CFE_LINK],["ou", $CFM_OUTLINE, $CFE_OUTLINE], ["pr", $CFM_PROTECTED, $CFE_PROTECTED],["re", $CFM_REVISED, $CFE_REVISED], ["sh", $CFM_SHADOW, $CFE_SHADOW],["sm", $CFM_SMALLCAPS, $CFE_SMALLCAPS], ["st", $CFM_STRIKEOUT, $CFE_STRIKEOUT],["sb", $CFM_SUBSCRIPT, $CFE_SUBSCRIPT], ["sp", $CFM_SUPERSCRIPT, $CFE_SUPERSCRIPT],["un", $CFM_UNDERLINE, $CFE_UNDERLINE], ["al", $CFM_ALLCAPS, $CFE_ALLCAPS]]
+Func _GUICtrlRichEdit_SetCharAttributes($hWnd, $sStatesAndEffects, $bWord = False)
+Local Const $aV[17][3] = [ ["bo", $CFM_BOLD, $CFE_BOLD], ["di", $CFM_DISABLED, $CFE_DISABLED], ["em", $CFM_EMBOSS, $CFE_EMBOSS], ["hi", $CFM_HIDDEN, $CFE_HIDDEN], ["im", $CFM_IMPRINT, $CFE_IMPRINT], ["it", $CFM_ITALIC, $CFE_ITALIC], ["li", $CFM_LINK, $CFE_LINK], ["ou", $CFM_OUTLINE, $CFE_OUTLINE], ["pr", $CFM_PROTECTED, $CFE_PROTECTED], ["re", $CFM_REVISED, $CFE_REVISED], ["sh", $CFM_SHADOW, $CFE_SHADOW], ["sm", $CFM_SMALLCAPS, $CFE_SMALLCAPS], ["st", $CFM_STRIKEOUT, $CFE_STRIKEOUT], ["sb", $CFM_SUBSCRIPT, $CFE_SUBSCRIPT], ["sp", $CFM_SUPERSCRIPT, $CFE_SUPERSCRIPT], ["un", $CFM_UNDERLINE, $CFE_UNDERLINE], ["al", $CFM_ALLCAPS, $CFE_ALLCAPS]]
 If Not _WinAPI_IsClassName($hWnd, $__g_sRTFClassName) Then Return SetError(101, 0, False)
 If Not IsBool($bWord) Then Return SetError(103, 0, False)
 Local $iMask = 0, $iEffects = 0, $n, $s
-For $i = 1 To StringLen($sStatesAndAtts) Step 3
-$s = StringMid($sStatesAndAtts, $i + 1, 2)
+For $i = 1 To StringLen($sStatesAndEffects) Step 3
+$s = StringMid($sStatesAndEffects, $i + 1, 2)
 $n = -1
 For $j = 0 To UBound($aV) - 1
 If $aV[$j][0] = $s Then
@@ -907,7 +911,7 @@ EndIf
 Next
 If $n = -1 Then Return SetError(1023, $s, False)
 $iMask = BitOR($iMask, $aV[$n][1])
-$s = StringMid($sStatesAndAtts, $i, 1)
+$s = StringMid($sStatesAndEffects, $i, 1)
 Switch $s
 Case "+"
 $iEffects = BitOR($iEffects, $aV[$n][2])
@@ -920,8 +924,8 @@ Local $tCharFormat = DllStructCreate($tagCHARFORMAT)
 DllStructSetData($tCharFormat, 1, DllStructGetSize($tCharFormat))
 DllStructSetData($tCharFormat, 2, $iMask)
 DllStructSetData($tCharFormat, 3, $iEffects)
-Local $iWparam =($bWord ? BitOR($SCF_WORD, $SCF_SELECTION) : $SCF_SELECTION)
-Local $iRet = _SendMessage($hWnd, $EM_SETCHARFORMAT, $iWparam, $tCharFormat, 0, "wparam", "struct*")
+Local $wParam =($bWord ? BitOR($SCF_WORD, $SCF_SELECTION) : $SCF_SELECTION)
+Local $iRet = _SendMessage($hWnd, $EM_SETCHARFORMAT, $wParam, $tCharFormat, 0, "wparam", "struct*")
 If Not $iRet Then Return SetError(700, 0, False)
 Return True
 EndFunc
@@ -937,12 +941,7 @@ If BitAND($iColor, 0xff000000) Then Return SetError(1022, 0, False)
 EndIf
 DllStructSetData($tCharFormat, 2, $CFM_COLOR)
 DllStructSetData($tCharFormat, 6, $iColor)
-Local $aI = _GUICtrlRichEdit_GetSel($hWnd)
-If $aI[0] = $aI[1] Then
-Return _SendMessage($hWnd, $EM_SETCHARFORMAT, $SCF_ALL, $tCharFormat, 0, "wparam", "struct*") <> 0
-Else
 Return _SendMessage($hWnd, $EM_SETCHARFORMAT, $SCF_SELECTION, $tCharFormat, 0, "wparam", "struct*") <> 0
-EndIf
 EndFunc
 Func _GUICtrlRichEdit_SetBkColor($hWnd, $iBngColor = Default)
 If Not _WinAPI_IsClassName($hWnd, $__g_sRTFClassName) Then Return SetError(101, 0, False)
@@ -1039,55 +1038,55 @@ EndIf
 If Not $iRet Then Return SetError(700, 0, False)
 Return True
 EndFunc
-Func _GUICtrlRichEdit_StreamFromFile($hWnd, $sFilespec)
+Func _GUICtrlRichEdit_StreamFromFile($hWnd, $sFileSpec)
 If Not _WinAPI_IsClassName($hWnd, $__g_sRTFClassName) Then Return SetError(101, 0, False)
 Local $tEditStream = DllStructCreate($tagEDITSTREAM)
 DllStructSetData($tEditStream, "pfnCallback", DllCallbackGetPtr($__g_pGRC_StreamFromFileCallback))
-Local $hFile = FileOpen($sFilespec, $FO_READ)
+Local $hFile = FileOpen($sFileSpec, $FO_READ)
 If $hFile = -1 Then Return SetError(1021, 0, False)
 Local $sBuf = FileRead($hFile, 5)
 FileClose($hFile)
-$hFile = FileOpen($sFilespec, $FO_READ)
+$hFile = FileOpen($sFileSpec, $FO_READ)
 DllStructSetData($tEditStream, "dwCookie", $hFile)
-Local $iWparam =($sBuf == "{\rtf" Or $sBuf == "{urtf") ? $SF_RTF : $SF_TEXT
-$iWparam = BitOR($iWparam, $SFF_SELECTION)
+Local $wParam =($sBuf == "{\rtf" Or $sBuf == "{urtf") ? $SF_RTF : $SF_TEXT
+$wParam = BitOR($wParam, $SFF_SELECTION)
 If Not _GUICtrlRichEdit_IsTextSelected($hWnd) Then
 _GUICtrlRichEdit_SetText($hWnd, "")
 EndIf
-Local $iQchs = _SendMessage($hWnd, $EM_STREAMIN, $iWparam, $tEditStream, 0, "wparam", "struct*")
+Local $iQchs = _SendMessage($hWnd, $EM_STREAMIN, $wParam, $tEditStream, 0, "wparam", "struct*")
 FileClose($hFile)
 Local $iError = DllStructGetData($tEditStream, "dwError")
 If $iError <> 1 Then SetError(700, $iError, False)
 If $iQchs = 0 Then
-If FileGetSize($sFilespec) = 0 Then Return SetError(1022, 0, False)
+If FileGetSize($sFileSpec) = 0 Then Return SetError(1022, 0, False)
 Return SetError(700, $iError, False)
 EndIf
 Return True
 EndFunc
-Func _GUICtrlRichEdit_StreamToFile($hWnd, $sFilespec, $bIncludeCOM = True, $iOpts = 0, $iCodePage = 0)
+Func _GUICtrlRichEdit_StreamToFile($hWnd, $sFileSpec, $bIncludeCOM = True, $iOpts = 0, $iCodePage = 0)
 If Not _WinAPI_IsClassName($hWnd, $__g_sRTFClassName) Then Return SetError(101, 0, False)
-Local $iWparam
-If StringRight($sFilespec, 4) = ".rtf" Then
-$iWparam =($bIncludeCOM ? $SF_RTF : $SF_RTFNOOBJS)
+Local $wParam
+If StringRight($sFileSpec, 4) = ".rtf" Then
+$wParam =($bIncludeCOM ? $SF_RTF : $SF_RTFNOOBJS)
 Else
-$iWparam =($bIncludeCOM ? $SF_TEXTIZED : $SF_TEXT)
+$wParam =($bIncludeCOM ? $SF_TEXTIZED : $SF_TEXT)
 If BitAND($iOpts, $SFF_PLAINRTF) Then Return SetError(1041, 0, False)
 EndIf
 If BitAND($iOpts, BitNOT(BitOR($SFF_PLAINRTF, $SF_UNICODE))) Then Return SetError(1042, 0, False)
 If BitAND($iOpts, $SF_UNICODE) Then
-If Not BitAND($iWparam, $SF_TEXT) Then Return SetError(1043, 0, False)
+If Not BitAND($wParam, $SF_TEXT) Then Return SetError(1043, 0, False)
 EndIf
-If _GUICtrlRichEdit_IsTextSelected($hWnd) Then $iWparam = BitOR($iWparam, $SFF_SELECTION)
-$iWparam = BitOR($iWparam, $iOpts)
+If _GUICtrlRichEdit_IsTextSelected($hWnd) Then $wParam = BitOR($wParam, $SFF_SELECTION)
+$wParam = BitOR($wParam, $iOpts)
 If $iCodePage <> 0 Then
-$iWparam = BitOR($iWparam, $SF_USECODEPAGE, BitShift($iCodePage, -16))
+$wParam = BitOR($wParam, $SF_USECODEPAGE, BitShift($iCodePage, -16))
 EndIf
 Local $tEditStream = DllStructCreate($tagEDITSTREAM)
 DllStructSetData($tEditStream, "pfnCallback", DllCallbackGetPtr($__g_pGRC_StreamToFileCallback))
-Local $hFile = FileOpen($sFilespec, $FO_OVERWRITE)
-If $hFile - 1 Then Return SetError(102, 0, False)
+Local $hFile = FileOpen($sFileSpec, $FO_OVERWRITE)
+If $hFile = -1 Then Return SetError(102, 0, False)
 DllStructSetData($tEditStream, "dwCookie", $hFile)
-_SendMessage($hWnd, $EM_STREAMOUT, $iWparam, $tEditStream, 0, "wparam", "struct*")
+_SendMessage($hWnd, $EM_STREAMOUT, $wParam, $tEditStream, 0, "wparam", "struct*")
 FileClose($hFile)
 Local $iError = DllStructGetData($tEditStream, "dwError")
 If $iError <> 0 Then SetError(700, $iError, False)
@@ -1122,7 +1121,7 @@ Local $tQbytes = DllStructCreate("long", $pQbytes)
 DllStructSetData($tQbytes, 1, 0)
 Local $tBuf = DllStructCreate("char[" & $iBuflen & "]", $pBuf)
 Local $sBuf = FileRead($hFile, $iBuflen - 1)
-If @error <> 0 Then Return 1
+If @error Then Return 1
 DllStructSetData($tBuf, 1, $sBuf)
 DllStructSetData($tQbytes, 1, StringLen($sBuf))
 Return 0
@@ -1310,6 +1309,7 @@ EndIf
 EndFunc
 Func _ChooseFont($sFontName = "Courier New", $iPointSize = 10, $iFontColorRef = 0, $iFontWeight = 0, $bItalic = False, $bUnderline = False, $bStrikethru = False, $hWndOwner = 0)
 Local $iItalic = 0, $iUnderline = 0, $iStrikeout = 0
+$iFontColorRef = BitOR(BitShift(BitAND($iFontColorRef, 0x000000FF), -16), BitAND($iFontColorRef, 0x0000FF00), BitShift(BitAND($iFontColorRef, 0x00FF0000), 16))
 Local $hDC = __MISC_GetDC(0)
 Local $iHeight = Round(($iPointSize * __MISC_GetDeviceCaps($hDC, $LOGPIXELSX)) / 72, 0)
 __MISC_ReleaseDC(0, $hDC)
@@ -1344,27 +1344,27 @@ Local $sColor_picked = Hex(String($iColorRef), 6)
 Return StringSplit($iAttributes & "," & $sFaceName & "," & $iSize & "," & $iWeight & "," & $iColorRef & "," & '0x' & $sColor_picked & "," & '0x' & StringMid($sColor_picked, 5, 2) & StringMid($sColor_picked, 3, 2) & StringMid($sColor_picked, 1, 2), ",")
 EndFunc
 Func __MISC_GetDC($hWnd)
-Local $aResult = DllCall("User32.dll", "handle", "GetDC", "hwnd", $hWnd)
+Local $aResult = DllCall("user32.dll", "handle", "GetDC", "hwnd", $hWnd)
 If @error Or Not $aResult[0] Then Return SetError(1, _WinAPI_GetLastError(), 0)
 Return $aResult[0]
 EndFunc
 Func __MISC_GetDeviceCaps($hDC, $iIndex)
-Local $aResult = DllCall("GDI32.dll", "int", "GetDeviceCaps", "handle", $hDC, "int", $iIndex)
+Local $aResult = DllCall("gdi32.dll", "int", "GetDeviceCaps", "handle", $hDC, "int", $iIndex)
 If @error Then Return SetError(@error, @extended, 0)
 Return $aResult[0]
 EndFunc
 Func __MISC_ReleaseDC($hWnd, $hDC)
-Local $aResult = DllCall("User32.dll", "int", "ReleaseDC", "hwnd", $hWnd, "handle", $hDC)
+Local $aResult = DllCall("user32.dll", "int", "ReleaseDC", "hwnd", $hWnd, "handle", $hDC)
 If @error Then Return SetError(@error, @extended, False)
 Return $aResult[0] <> 0
 EndFunc
-Func _ColorGetRGB($nColor, $iCurExt = @extended)
-If BitAND($nColor, 0xFF000000) Then Return SetError(1, 0, 0)
+Func _ColorGetRGB($iColor, Const $_iCurrentExtended = @extended)
+If BitAND($iColor, 0xFF000000) Then Return SetError(1, 0, 0)
 Local $aColor[3]
-$aColor[0] = BitAND(BitShift($nColor, 16), 0xFF)
-$aColor[1] = BitAND(BitShift($nColor, 8), 0xFF)
-$aColor[2] = BitAND($nColor, 0xFF)
-Return SetExtended($iCurExt, $aColor)
+$aColor[0] = BitAND(BitShift($iColor, 16), 0xFF)
+$aColor[1] = BitAND(BitShift($iColor, 8), 0xFF)
+$aColor[2] = BitAND($iColor, 0xFF)
+Return SetExtended($_iCurrentExtended, $aColor)
 EndFunc
 Global $g_cbCheckString = DllCallbackRegister('_CheckSendKeys', 'uint', 'uint;uint')
 Global $g_cbCheckUDFs = DllCallbackRegister('_CheckUDFs', 'uint', 'uint')
@@ -1603,24 +1603,17 @@ $sUdfs &= '|_WinAPI_GetProcAddress|_WinAPI_ShellAboutDlg'
 Return $sUdfs
 EndFunc
 Func _StringInsert($sString, $sInsertString, $iPosition)
-$iPosition = Int($iPosition)
 Local $iLength = StringLen($sString)
-If Abs($iPosition) > $iLength Then
-Return SetError(1, 0, $sString)
-EndIf
-If Not IsString($sInsertString) Then $sInsertString = String($sInsertString)
-If Not IsString($sString) Then $sString = String($sString)
-$sInsertString = StringReplace($sInsertString, "\", "\\")
-If $iPosition >= 0 Then
-Return StringRegExpReplace($sString, "(?s)\A(.{" & $iPosition & "})(.*)\z", "${1}" & $sInsertString & "$2")
-Else
-Return StringRegExpReplace($sString, "(?s)\A(.*)(.{" & - $iPosition & "})\z", "${1}" & $sInsertString & "$2")
-EndIf
+$iPosition = Int($iPosition)
+If $iPosition < 0 Then $iPosition = $iLength + $iPosition
+If $iLength < $iPosition Or $iPosition < 0 Then Return SetError(1, 0, $sString)
+Return StringLeft($sString, $iPosition) & $sInsertString & StringRight($sString, $iLength - $iPosition)
 EndFunc
 Global $__g_iIELoadWaitTimeout = 300000
 Global $__g_bIEAU3Debug = False
 Global $__g_bIEErrorNotify = True
-Global Const $__gaIEAU3VersionInfo[6] = ["T", 3, 0, 1, "20130601", "T3.0-1"]
+Global $__g_oIEErrorHandler, $__g_sIEUserErrorHandler
+Global Const $__gaIEAU3VersionInfo[6] = ["T", 3, 0, 2, "20140819", "T3.0-2"]
 Global Const $LSFW_LOCK = 1, $LSFW_UNLOCK = 2
 Global Enum $_IESTATUS_Success = 0, $_IESTATUS_GeneralError, $_IESTATUS_ComError, $_IESTATUS_InvalidDataType, $_IESTATUS_InvalidObjectType, $_IESTATUS_InvalidValue, $_IESTATUS_LoadWaitTimeout, $_IESTATUS_NoMatch, $_IESTATUS_AccessIsDenied, $_IESTATUS_ClientDisconnected
 Func _IECreate($sUrl = "about:blank", $iTryAttach = 0, $iVisible = 1, $iWait = 1, $iTakeFocus = 1)
@@ -1670,7 +1663,7 @@ Return SetError(@error, 0, -1)
 EndIf
 Return SetError($_IESTATUS_Success, 0, -1)
 EndFunc
-Func _IEAttach($sString, $sMode = "Title", $iInstance = 1)
+Func _IEAttach($sString, $sMode = "title", $iInstance = 1)
 $sMode = StringLower($sMode)
 $iInstance = Int($iInstance)
 If $iInstance < 1 Then
@@ -1709,8 +1702,11 @@ Local $oShell = ObjCreate("Shell.Application")
 Local $oShellWindows = $oShell.Windows()
 Local $iTmp = 1
 Local $iNotifyStatus, $bIsBrowser, $sTmp
+Local $bStatus
 For $oWindow In $oShellWindows
 $bIsBrowser = True
+$bStatus = __IEInternalErrorHandlerRegister()
+If Not $bStatus Then __IEConsoleWriteError("Warning", "_IEAttach", "Cannot register internal error handler, cannot trap COM errors", "Use _IEErrorHandlerRegister() to register a user error handler")
 $iNotifyStatus = _IEErrorNotify()
 _IEErrorNotify(False)
 If $bIsBrowser Then
@@ -1722,6 +1718,7 @@ $sTmp = $oWindow.document.title
 If @error Then $bIsBrowser = False
 EndIf
 _IEErrorNotify($iNotifyStatus)
+__IEInternalErrorHandlerDeRegister()
 If $bIsBrowser Then
 Switch $sMode
 Case "title"
@@ -1805,6 +1802,8 @@ __IEConsoleWriteError("Error", "_IELoadWait", "$_IESTATUS_InvalidObjectType", Ob
 Return SetError($_IESTATUS_InvalidObjectType, 1, 0)
 EndIf
 Local $oTemp, $bAbort = False, $iErrorStatusCode = $_IESTATUS_Success
+Local $bStatus = __IEInternalErrorHandlerRegister()
+If Not $bStatus Then __IEConsoleWriteError("Warning", "_IELoadWait", "Cannot register internal error handler, cannot trap COM errors", "Use _IEErrorHandlerRegister() to register a user error handler")
 Local $iNotifyStatus = _IEErrorNotify()
 _IEErrorNotify(False)
 Sleep($iDelay)
@@ -1812,7 +1811,7 @@ Local $iError
 Local $hIELoadWaitTimer = TimerInit()
 If $iTimeout = -1 Then $iTimeout = $__g_iIELoadWaitTimeout
 Select
-Case __IEIsObjType($oObject, "browser")
+Case __IEIsObjType($oObject, "browser", False)
 While Not(String($oObject.readyState) = "complete" Or $oObject.readyState = 4 Or $bAbort)
 If @error Then
 $iError = @error
@@ -1839,7 +1838,7 @@ $bAbort = True
 EndIf
 Sleep(100)
 WEnd
-Case __IEIsObjType($oObject, "window")
+Case __IEIsObjType($oObject, "window", False)
 While Not(String($oObject.document.readyState) = "complete" Or $oObject.document.readyState = 4 Or $bAbort)
 If @error Then
 $iError = @error
@@ -1866,7 +1865,7 @@ $bAbort = True
 EndIf
 Sleep(100)
 WEnd
-Case __IEIsObjType($oObject, "document")
+Case __IEIsObjType($oObject, "document", False)
 $oTemp = $oObject.parentWindow
 While Not(String($oTemp.document.readyState) = "complete" Or $oTemp.document.readyState = 4 Or $bAbort)
 If @error Then
@@ -1924,6 +1923,7 @@ Sleep(100)
 WEnd
 EndSelect
 _IEErrorNotify($iNotifyStatus)
+__IEInternalErrorHandlerDeRegister()
 Switch $iErrorStatusCode
 Case $_IESTATUS_Success
 Return SetError($_IESTATUS_Success, 0, 1)
@@ -2362,6 +2362,31 @@ $__g_bIEErrorNotify = False
 EndIf
 Return 1
 EndFunc
+Func __IEInternalErrorHandlerRegister()
+Local $sCurrentErrorHandler = ObjEvent("AutoIt.Error")
+If $sCurrentErrorHandler <> "" And Not IsObj($__g_oIEErrorHandler) Then
+Return SetError($_IEStatus_GeneralError, 0, False)
+EndIf
+$__g_oIEErrorHandler = ObjEvent("AutoIt.Error", "__IEInternalErrorHandler")
+If IsObj($__g_oIEErrorHandler) Then
+Return SetError($_IESTATUS_Success, 0, True)
+Else
+$__g_oIEErrorHandler = ""
+Return SetError($_IEStatus_GeneralError, 0, False)
+EndIf
+EndFunc
+Func __IEInternalErrorHandlerDeRegister()
+$__g_oIEErrorHandler = ""
+If $__g_sIEUserErrorHandler <> "" Then
+$__g_oIEErrorHandler = ObjEvent("AutoIt.Error", $__g_sIEUserErrorHandler)
+EndIf
+Return SetError($_IESTATUS_Success, 0, 1)
+EndFunc
+Func __IEInternalErrorHandler($oCOMError)
+If $__g_bIEErrorNotify Or $__g_bIEAU3Debug Then ConsoleWrite("--> " & __COMErrorFormating($oCOMError, "----> $IEComError") & @CRLF)
+SetError($_IEStatus_ComError)
+Return
+EndFunc
 Func _IEQuit(ByRef $oObject)
 If Not IsObj($oObject) Then
 __IEConsoleWriteError("Error", "_IEQuit", "$_IESTATUS_InvalidDataType")
@@ -2406,7 +2431,7 @@ DllStructSetData($tUUID, 4, 0x37, 8)
 Local $aRet = DllCall("oleacc.dll", "long", "ObjectFromLresult", "lresult", $iResult, "struct*", $tUUID, "wparam", 0, "idispatch*", 0)
 If @error Then Return SetError(3, @error, 0)
 If IsObj($aRet[4]) Then
-Local $oIE = $aRet[4] .Script()
+Local $oIE = $aRet[4].Script()
 Return $oIE.Document.parentwindow
 Else
 Return SetError(1, $aRet[0], 0)
@@ -2428,22 +2453,27 @@ $vOut = $aRet[7]
 If $r >= 0 And $r <= 4 Then Return $aRet[$r]
 Return $aRet
 EndFunc
-Func __IEIsObjType(ByRef $oObject, $sType)
+Func __IEIsObjType(ByRef $oObject, $sType, $bRegister = True)
 If Not IsObj($oObject) Then
 Return SetError($_IESTATUS_InvalidDataType, 1, 0)
+EndIf
+Local $bStatus = $bRegister
+If $bRegister Then
+$bStatus = __IEInternalErrorHandlerRegister()
+If Not $bStatus Then __IEConsoleWriteError("Warning", "internal function __IEIsObjType", "Cannot register internal error handler, cannot trap COM errors", "Use _IEErrorHandlerRegister() to register a user error handler")
 EndIf
 Local $iNotifyStatus = _IEErrorNotify()
 _IEErrorNotify(False)
 Local $sName = String(ObjName($oObject)), $iErrorStatus = $_IESTATUS_InvalidObjectType
 Switch $sType
 Case "browserdom"
-If __IEIsObjType($oObject, "documentcontainer") Then
+If __IEIsObjType($oObject, "documentcontainer", False) Then
 $iErrorStatus = $_IESTATUS_Success
-ElseIf __IEIsObjType($oObject, "document") Then
+ElseIf __IEIsObjType($oObject, "document", False) Then
 $iErrorStatus = $_IESTATUS_Success
 Else
 Local $oTemp = $oObject.document
-If __IEIsObjType($oTemp, "document") Then
+If __IEIsObjType($oTemp, "document", False) Then
 $iErrorStatus = $_IESTATUS_Success
 EndIf
 EndIf
@@ -2452,7 +2482,7 @@ If($sName = "IWebBrowser2") Or($sName = "IWebBrowser") Or($sName = "WebBrowser")
 Case "window"
 If $sName = "HTMLWindow2" Then $iErrorStatus = $_IESTATUS_Success
 Case "documentContainer"
-If __IEIsObjType($oObject, "window") Or __IEIsObjType($oObject, "browser") Then $iErrorStatus = $_IESTATUS_Success
+If __IEIsObjType($oObject, "window", False) Or __IEIsObjType($oObject, "browser", False) Then $iErrorStatus = $_IESTATUS_Success
 Case "document"
 If $sName = "HTMLDocument" Then $iErrorStatus = $_IESTATUS_Success
 Case "table"
@@ -2469,6 +2499,9 @@ Case Else
 $iErrorStatus = $_IESTATUS_InvalidValue
 EndSwitch
 _IEErrorNotify($iNotifyStatus)
+If $bRegister Then
+__IEInternalErrorHandlerDeRegister()
+EndIf
 If $iErrorStatus = $_IESTATUS_Success Then
 Return SetError($_IESTATUS_Success, 0, 1)
 Else
@@ -2526,7 +2559,7 @@ Global Const $TPM_RETURNCMD = 0x00000100
 Global Const $SC_MAXIMIZE = 0xF030
 Global Const $SC_RESTORE = 0xF120
 Func _GUICtrlMenu_CreatePopup($iStyle = $MNS_CHECKORBMP)
-Local $aResult = DllCall("User32.dll", "handle", "CreatePopupMenu")
+Local $aResult = DllCall("user32.dll", "handle", "CreatePopupMenu")
 If @error Then Return SetError(@error, @extended, 0)
 If $aResult[0] = 0 Then Return SetError(10, 0, 0)
 _GUICtrlMenu_SetMenuStyle($aResult[0], $iStyle)
@@ -2536,7 +2569,7 @@ Func _GUICtrlMenu_GetItemInfo($hMenu, $iItem, $bByPos = True)
 Local $tInfo = DllStructCreate($tagMENUITEMINFO)
 DllStructSetData($tInfo, "Size", DllStructGetSize($tInfo))
 DllStructSetData($tInfo, "Mask", $MIIM_DATAMASK)
-Local $aResult = DllCall("User32.dll", "bool", "GetMenuItemInfo", "handle", $hMenu, "uint", $iItem, "bool", $bByPos, "struct*", $tInfo)
+Local $aResult = DllCall("user32.dll", "bool", "GetMenuItemInfo", "handle", $hMenu, "uint", $iItem, "bool", $bByPos, "struct*", $tInfo)
 If @error Then Return SetError(@error, @extended, 0)
 Return SetExtended($aResult[0], $tInfo)
 EndFunc
@@ -2559,7 +2592,7 @@ Local $tText = DllStructCreate("wchar Text[" & StringLen($sText) + 1 & "]")
 DllStructSetData($tText, "Text", $sText)
 DllStructSetData($tMenu, "TypeData", DllStructGetPtr($tText))
 EndIf
-Local $aResult = DllCall("User32.dll", "bool", "InsertMenuItemW", "handle", $hMenu, "uint", $iIndex, "bool", True, "struct*", $tMenu)
+Local $aResult = DllCall("user32.dll", "bool", "InsertMenuItemW", "handle", $hMenu, "uint", $iIndex, "bool", True, "struct*", $tMenu)
 If @error Then Return SetError(@error, @extended, False)
 Return $aResult[0]
 EndFunc
@@ -2568,7 +2601,7 @@ Return _GUICtrlMenu_SetItemState($hMenu, $iItem, $MFS_GRAYED, $bState, $bByPos)
 EndFunc
 Func _GUICtrlMenu_SetItemInfo($hMenu, $iItem, ByRef $tInfo, $bByPos = True)
 DllStructSetData($tInfo, "Size", DllStructGetSize($tInfo))
-Local $aResult = DllCall("User32.dll", "bool", "SetMenuItemInfoW", "handle", $hMenu, "uint", $iItem, "bool", $bByPos, "struct*", $tInfo)
+Local $aResult = DllCall("user32.dll", "bool", "SetMenuItemInfoW", "handle", $hMenu, "uint", $iItem, "bool", $bByPos, "struct*", $tInfo)
 If @error Then Return SetError(@error, @extended, False)
 Return $aResult[0]
 EndFunc
@@ -2587,7 +2620,7 @@ Return _GUICtrlMenu_SetItemInfo($hMenu, $iItem, $tInfo, $bByPos)
 EndFunc
 Func _GUICtrlMenu_SetMenuInfo($hMenu, ByRef $tInfo)
 DllStructSetData($tInfo, "Size", DllStructGetSize($tInfo))
-Local $aResult = DllCall("User32.dll", "bool", "SetMenuInfo", "handle", $hMenu, "struct*", $tInfo)
+Local $aResult = DllCall("user32.dll", "bool", "SetMenuInfo", "handle", $hMenu, "struct*", $tInfo)
 If @error Then Return SetError(@error, @extended, False)
 Return $aResult[0]
 EndFunc
@@ -2625,7 +2658,7 @@ $iFlags = BitOR($iFlags, $TPM_RIGHTBUTTON)
 Case Else
 $iFlags = BitOR($iFlags, $TPM_LEFTBUTTON)
 EndSwitch
-Local $aResult = DllCall("User32.dll", "bool", "TrackPopupMenu", "handle", $hMenu, "uint", $iFlags, "int", $iX, "int", $iY, "int", 0, "hwnd", $hWnd, "ptr", 0)
+Local $aResult = DllCall("user32.dll", "bool", "TrackPopupMenu", "handle", $hMenu, "uint", $iFlags, "int", $iX, "int", $iY, "int", 0, "hwnd", $hWnd, "ptr", 0)
 If @error Then Return SetError(@error, @extended, 0)
 Return $aResult[0]
 EndFunc
@@ -2663,7 +2696,7 @@ GUIRegisterMsg($WM_SYSCOMMAND, "_WM_SYSCOMMAND")
 $aRecent[0][0] = 0
 GUICtrlSetState($eRedo, 128)
 Local $o_speech = ObjCreate("SAPI.SpVoice")
-$o_speech.Voice = $o_speech.GetVoices("Name=Microsoft Mary", "Language=409").Item(0)
+$o_speech.Voice = $o_speech.GetVoices("Name=Microsoft Mary", "Language=409")
 Local $aAccelKeys[23][23] = [["{TAB}", $eTab], ["^s", $fSave], ["^o", $fOpen], ["^a", $eSA], ["^f", $eFind], ["^h", $eReplace], ["^p", $fPrint], ["^n", $fNew], ["^w", $eWC], ["^l", $eLC], ["^+u", $eSU], ["^+l", $eSL], ["^+s", $fSaveAs], ["^r", $eRedo], ["{F5}", $eTD], ["{F2}", $hVHelp], ["^+a", $mCombo[1]], ["^+h", $mCombo[2]], ["^+q", $mCombo[0]], ["{F7}", $forComp], ["{F3}", $vTxt_Spch], ["{F4}", $vSE], ["{F1}", $au3help]]
 GUISetAccelerators($aAccelKeys, $pWnd)
 GUIRegisterMsg($WM_DROPFILES, "WM_DROPFILES")
@@ -3014,7 +3047,7 @@ EndFunc
 Func vhGUI()
 $vhChild = GUICreate("Vresion History", 400, 405)
 GUICtrlCreateEdit("---==== 1.0.0 ====---" & @CRLF & "- All basic notepad features" & @CRLF & "---==== 1.5.0 ====---" & @CRLF & "- Took out extra save dialog in the Save() function." & @CRLF & "- Drag and drop functionality added (thanks to AZJIO)" & @CRLF & "- Took out check for txt file when opening" & @CRLF & "- Fixed open function to delete text already in control and ask to save" & @CRLF & "- Added $ws_ex_composite to stop flicker on xp machines." & @CRLF & "- Added default font" & @CRLF & "- Set the font in the setWW() function" & @CRLF & "- added word count functionality with a accelerator key" & @CRLF & "---==== 1.5.1 ====---" & @CRLF & "- Fixed word count function" & @CRLF & "- Added line count thanks to DreamVB" & @CRLF & "- Added uppercase and lowercase thanks to DreamVB" & @CRLF & "---==== 1.6.0 ====---" & @CRLF & "- Added better text limit" & @CRLF & "- Fixed the edit control to show the horizontal scrollbar" & @CRLF & "- Made resizing of the edit control AUTO; making the menu AUTO, instead of just 5 pixel height" & @CRLF & "- Changed any file over 100 MB to read in as binary" & @CRLF & "- Changed any file dragged and dropped to read in as binary if over 100 MB in size" & @CRLF & "- Added accelerator keys for uppercase, lowercase and save as" & @CRLF & "- Took out unnecarry MsgBox in save function" & @CRLF & "- Added keyboard shortcuts to menu items" & @CRLF & "- Added print by line support" & @CRLF & "- Added ini file for settings saved" & @CRLF & "- Added setting in ini for word wrap" & @CRLF & "---==== 1.7.0 ====---" & @CRLF & "- Added cancel button when quitting" & @CRLF & "- Took out extra include" & @CRLF & "- Set default font into font variables" & @CRLF & "- Set default font when word wrap has been selected" & @CRLF & "- Set default font when taking off word wrap" & @CRLF & "- Added RTF files and All files to save dialog" & @CRLF & "- Added redo functionality" & @CRLF & "- added character attribute functionality for rich edit" & @CRLF & "- added rtf files to the open file dialog" & @CRLF & "- Added color support" & @CRLF & "- Added picture support" & @CRLF & "- Added background color support" & @CRLF & "- Added stream rtf from file support" & @CRLF & "- Added stream rtf to file support" & @CRLF & "- Added recent files to menu item" & @CRLF & "- Added AutoIt syntax highlighting; thanks goes to Beege for RESH UDF" & @CRLF & "- Took out word wrap function and menu item as RichEdit is word wrapped already" & @CRLF & "- Took out ini for the word wrap, but want to be very portable anyway" & @CRLF & "- Added check for character attributes change" & @CRLF & "---==== 1.8.0 ====---" & @CRLF & "- Fixed upper, lower, tab" & @CRLF & "- Fixed resizing of window and rich edit control" & @CRLF & "- Fixed recent files" & @CRLF & "- Fixed time/date at cursor position" & @CRLF & "- Fixed RESH.au3 comment block functionality (added check in Do..While loop & added -1 to Ubound call)" & @CRLF & "---==== 1.8.2 ====---" & @CRLF & "- Took out HotkeySets and made GUI accelerator keys (F2 (about), F5 (time/date))" & @CRLF & "- Fixed Au3 syntax highlighting setting caret position" & @CRLF & "- Added cancel to New file dialog" & @CRLF & "- Switched to ASM RESH UDF by Beege (thanks!)" & @CRLF & "- Added check when Syntax Highlighting to not highlight if there has not been any more user interaction. Cutting down a ton of processing." & @CRLF & "- Added check for quotes, due to problem with RESH - It will crash the entire program when trying to syntax highlight an unterminated quote." & @CRLF & "- Commented out Addrecent as problems with messageloop and GUI dummy creation" & @CRLF & "- F2 was fixed to bring up help instead of about AuPad." & @CRLF & "---==== 1.8.4 ====---" & @CRLF & "- added version developed in the about child window" & @CRLF & "- added tags quote, link, autoit (code). (all thanks for the Idea from The Saint's webpad - http://www.autoitscript.com/forum/topic/153265-web-pad-update/?hl=+webpad" & @CRLF & "- added GUI Accelerator keys for tags." & @CRLF & "- added compiler GUI." & @CRLF & _
-"- added ability to compile au3 scripts." & @CRLF & "- ability to open aut2exe for more options." & @CRLF & "---==== 1.8.6 ====---" & @CRLF & "- fixed tag labels to show gui accelerator keys." & @CRLF & "- fixed add recent function." & @CRLF & "- ability to open recent files in recent files menu." & @CRLF & "- Added text to speech ability (idea from betapad - http://www.autoitscript.com/forum/topic/38353-betapad/)" & @CRLF & "- added menu item for text to speech" & @CRLF & "- accel key added for text to speech and web search" & @CRLF & "- added child gui for web search" & @CRLF & "- fixed tag accelerator keys to ctrl + shft combo." & @CRLF & "- added ability to search web using 4 search providers in seperate gui." & @CRLF & "- added accelerator keys for web search GUI." & @CRLF & "- fixed version number in directives." & @CRLF & "- added version history gui." & @CRLF & "---==== 1.8.8 ====---" & @CRLF & "- took off $ES_READONLY style on version history edit control." & @CRLF & "- fixed view about aupad event. When opening it would call folderpath() in a loop making it unable to close" & @CRLF & "---==== 1.9.0 ====---" & @CRLF & "- added ability to highlight, then websearch the selected text." & @CRLF & "- Took out printing UDF by martin" & @CRLF & "- Took out x86 force directive. Can now be x64" & @CRLF & "- ability to open AutoIt helpfile" & @CRLF & "- ability to highlight and search the AutoIt helpfile with keyword" & @CRLF & "- changed _guictrlrichedit_setsel() hide sel to false, instead of true, as it would hide the selection after changing the highlighting." & @CRLF & "- printing will print to default printer only. Trying to make more portable, which will exclude print dll and library now. Changing of printer is in the works." & @CRLF & "- took out debugging code from last version to fix folderpath() loop." & @CRLF & "---==== 1.9.1 ====---" & @CRLF & "- added default style to web search button. - idea from mLipok" & @CRLF & "- deleted the child window for web search on successfully opening IE." & @CRLF & "- added abillity to open au3 file and have syntax highlighting start automatically. -idea by mLipok." & @CRLF & "- added tooltip to show when syntax highlighting for AutoIt has started or ended." & @CRLF & "---==== 1.9.2 ====---" & @CRLF & "- added default style to version history 'okay' button (unhighlights edit text)." & @CRLF & "- added dpi awareness to about AuPad GUI. Thanks to mLipok - http://www.autoitscript.com/forum/topic/166479-writing-dpi-awareness-app-workaround/" & @CRLF & "- added context menu with much thanks to Mat - http://www.autoitscript.com/forum/topic/152271-rich-edit-context-menu/?p=1092314" & @CRLF & "- state changing for context menu, just like regular menu items." & @CRLF & "- events with context menu use GUI accelerators." & "---==== 1.9.3 ====---" & "- Fixed version number in directives." & "- Used Jefrey's code to cut back aChild function and event loop -https://www.autoitscript.com/forum/topic/164383-aupad-notepad-in-autoit-updated-march-31th-2015/?do=findComment&comment=1255986" & "- Added status bar feature to add box at bottom of AuPad window." & "- Added checked state to menu item for status bar to show if it is working." & "- Added line and column number to status bar." & "- Fixed problem with RESH adding lines unintentially during syntax highlighting." & "- Added V1.9.3 version history.", 0, 0, 400, 380)
+"- added ability to compile au3 scripts." & @CRLF & "- ability to open aut2exe for more options." & @CRLF & "---==== 1.8.6 ====---" & @CRLF & "- fixed tag labels to show gui accelerator keys." & @CRLF & "- fixed add recent function." & @CRLF & "- ability to open recent files in recent files menu." & @CRLF & "- Added text to speech ability (idea from betapad - http://www.autoitscript.com/forum/topic/38353-betapad/)" & @CRLF & "- added menu item for text to speech" & @CRLF & "- accel key added for text to speech and web search" & @CRLF & "- added child gui for web search" & @CRLF & "- fixed tag accelerator keys to ctrl + shft combo." & @CRLF & "- added ability to search web using 4 search providers in seperate gui." & @CRLF & "- added accelerator keys for web search GUI." & @CRLF & "- fixed version number in directives." & @CRLF & "- added version history gui." & @CRLF & "---==== 1.8.8 ====---" & @CRLF & "- took off $ES_READONLY style on version history edit control." & @CRLF & "- fixed view about aupad event. When opening it would call folderpath() in a loop making it unable to close" & @CRLF & "---==== 1.9.0 ====---" & @CRLF & "- added ability to highlight, then websearch the selected text." & @CRLF & "- Took out printing UDF by martin" & @CRLF & "- Took out x86 force directive. Can now be x64" & @CRLF & "- ability to open AutoIt helpfile" & @CRLF & "- ability to highlight and search the AutoIt helpfile with keyword" & @CRLF & "- changed _guictrlrichedit_setsel() hide sel to false, instead of true, as it would hide the selection after changing the highlighting." & @CRLF & "- printing will print to default printer only. Trying to make more portable, which will exclude print dll and library now. Changing of printer is in the works." & @CRLF & "- took out debugging code from last version to fix folderpath() loop." & @CRLF & "---==== 1.9.1 ====---" & @CRLF & "- added default style to web search button. - idea from mLipok" & @CRLF & "- deleted the child window for web search on successfully opening IE." & @CRLF & "- added abillity to open au3 file and have syntax highlighting start automatically. -idea by mLipok." & @CRLF & "- added tooltip to show when syntax highlighting for AutoIt has started or ended." & @CRLF & "---==== 1.9.2 ====---" & @CRLF & "- added default style to version history 'okay' button (unhighlights edit text)." & @CRLF & "- added dpi awareness to about AuPad GUI. Thanks to mLipok - http://www.autoitscript.com/forum/topic/166479-writing-dpi-awareness-app-workaround/" & @CRLF & "- added context menu with much thanks to Mat - http://www.autoitscript.com/forum/topic/152271-rich-edit-context-menu/?p=1092314" & @CRLF & "- state changing for context menu, just like regular menu items." & @CRLF & "- events with context menu use GUI accelerators." & @CRLF & "---==== 1.9.3 ====---" & @CRLF & "- Fixed version number in directives." & @CRLF & "- Used Jefrey's code to cut back aChild function and event loop -https://www.autoitscript.com/forum/topic/164383-aupad-notepad-in-autoit-updated-march-31th-2015/?do=findComment&comment=1255986" & @CRLF & "- Added status bar feature to add box at bottom of AuPad window." & @CRLF & "- Added checked state to menu item for status bar to show if it is working." & @CRLF & "- Added line and column number to status bar." & @CRLF & "- Fixed problem with RESH adding lines unintentially during syntax highlighting." & @CRLF & "- Added V1.9.3 version history." & @CRLF & "---==== 1.9.4 ====---" & @CRLF & "- Fixed text to speech w/ new AutoIt 3.3.14.0 update." & @CRLF & "- Fixed version history text." & @CRLF & "- Added V1.9.4 version history.", 0, 0, 400, 380)
 $vhButton = GUICtrlCreateButton("Okay", 360, 380)
 GUICtrlSetState($vhButton, $GUI_FOCUS)
 GUISetState()
