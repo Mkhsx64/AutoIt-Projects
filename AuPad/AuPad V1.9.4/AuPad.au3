@@ -612,15 +612,19 @@ Func vhGUI()
 			"- added dpi awareness to about AuPad GUI. Thanks to mLipok - http://www.autoitscript.com/forum/topic/166479-writing-dpi-awareness-app-workaround/" & @CRLF & _
 			"- added context menu with much thanks to Mat - http://www.autoitscript.com/forum/topic/152271-rich-edit-context-menu/?p=1092314" & @CRLF & _
 			"- state changing for context menu, just like regular menu items." & @CRLF & _
-			"- events with context menu use GUI accelerators." & _
-			"---==== 1.9.3 ====---" & _
-			"- Fixed version number in directives." & _
-			"- Used Jefrey's code to cut back aChild function and event loop -https://www.autoitscript.com/forum/topic/164383-aupad-notepad-in-autoit-updated-march-31th-2015/?do=findComment&comment=1255986" & _
-			"- Added status bar feature to add box at bottom of AuPad window." & _
-			"- Added checked state to menu item for status bar to show if it is working." & _
-			"- Added line and column number to status bar." & _
-			"- Fixed problem with RESH adding lines unintentially during syntax highlighting." & _
-			"- Added V1.9.3 version history.", 0, 0, 400, 380)
+			"- events with context menu use GUI accelerators." & @CRLF & _
+			"---==== 1.9.3 ====---" & @CRLF & _
+			"- Fixed version number in directives." & @CRLF & _
+			"- Used Jefrey's code to cut back aChild function and event loop -https://www.autoitscript.com/forum/topic/164383-aupad-notepad-in-autoit-updated-march-31th-2015/?do=findComment&comment=1255986" & @CRLF & _
+			"- Added status bar feature to add box at bottom of AuPad window." & @CRLF & _
+			"- Added checked state to menu item for status bar to show if it is working." & @CRLF & _
+			"- Added line and column number to status bar." & @CRLF & _
+			"- Fixed problem with RESH adding lines unintentially during syntax highlighting." & @CRLF & _
+			"- Added V1.9.3 version history." & @CRLF & _
+			"---==== 1.9.4 ====---" & @CRLF & _
+			"- Fixed text to speech w/ new AutoIt 3.3.14.0 update." & @CRLF & _
+			"- Fixed version history text." & @CRLF & _
+			"- Added V1.9.4 version history.", 0, 0, 400, 380)
 	$vhButton = GUICtrlCreateButton("Okay", 360, 380) ; create the okay button to close the window
 	GUICtrlSetState($vhButton, $GUI_FOCUS) ; give focus to button and unlight text
 	GUISetState() ; set the state of the gui window (default is $SW_SHOW)
