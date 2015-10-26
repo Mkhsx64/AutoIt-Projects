@@ -151,3 +151,4 @@ try changing the x86 force directive for printing.
 
 - Fixed crash when selecting AutoIt Help
 - Set version number as 1.9.5
+- Updated version history
