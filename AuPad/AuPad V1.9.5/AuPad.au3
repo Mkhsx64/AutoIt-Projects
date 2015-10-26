@@ -623,7 +623,10 @@ Func vhGUI()
 			"---==== 1.9.4 ====---" & @CRLF & _
 			"- Fixed text to speech w/ new AutoIt 3.3.14.0 update." & @CRLF & _
 			"- Fixed version history text." & @CRLF & _
-			"- Added V1.9.4 version history.", 0, 0, 400, 380)
+			"- Added V1.9.4 version history." & @CRLF & _
+			"---==== 1.9.5 ====---" & @CRLF & _
+			"- Fixed crash when selecting AutoIt Help" & @CRLF & _
+			"- Set version number as 1.9.5", 0, 0, 400, 380)
 	$vhButton = GUICtrlCreateButton("Okay", 360, 380) ; create the okay button to close the window
 	GUICtrlSetState($vhButton, $GUI_FOCUS) ; give focus to button and unlight text
 	GUISetState() ; set the state of the gui window (default is $SW_SHOW)
