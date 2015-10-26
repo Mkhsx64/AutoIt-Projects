@@ -146,3 +146,8 @@ try changing the x86 force directive for printing.
 - Fixed text to speech w/ new AutoIt 3.3.14.0 update.
 - Fixed version history text.
 - Added V1.9.4 version history.
+
+---==== 1.9.5 ====---
+
+- Fixed crash when selecting AutoIt Help
+- Set version number as 1.9.5

@@ -1,9 +1,9 @@
 #Region ;**** Directives created by AutoIt3Wrapper_GUI ****
 #AutoIt3Wrapper_Icon=aupad.ico
 #AutoIt3Wrapper_Outfile=
-#AutoIt3Wrapper_Res_Comment=Version 1.9.4
+#AutoIt3Wrapper_Res_Comment=Version 1.9.5
 #AutoIt3Wrapper_Res_Description=Notepad written in AutoIt
-#AutoIt3Wrapper_Res_Fileversion=1.9.4
+#AutoIt3Wrapper_Res_Fileversion=1.9.5
 #AutoIt3Wrapper_Run_Au3Stripper=y
 #Au3Stripper_Parameters=/so
 #EndRegion ;**** Directives created by AutoIt3Wrapper_GUI ****
@@ -249,7 +249,6 @@ While 1
 					EndIf
 				Case $au3help
 					$au3Help_Seltext = _GUICtrlRichEdit_GetSelText($pEditWindow) ; get any selected text
-					_GUICtrlRichEdit_SetSel
 					If @error = -1 Then
 						ShellExecute(@ProgramFilesDir & "\AutoIt3\AutoIt.chm") ; if there isn't any selected text
 					Else
